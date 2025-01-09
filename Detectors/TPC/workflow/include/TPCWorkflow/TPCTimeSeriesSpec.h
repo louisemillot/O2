@@ -23,7 +23,7 @@ namespace tpc
 static constexpr header::DataDescription getDataDescriptionTimeSeries() { return header::DataDescription{"TIMESERIES"}; }
 static constexpr header::DataDescription getDataDescriptionTPCTimeSeriesTFId() { return header::DataDescription{"ITPCTSTFID"}; }
 
-o2::framework::DataProcessorSpec getTPCTimeSeriesSpec(const bool disableWriter, const o2::base::Propagator::MatCorrType matType, const bool enableUnbinnedWriter, o2::dataformats::GlobalTrackID::mask_t src);
+o2::framework::DataProcessorSpec getTPCTimeSeriesSpec(const bool disableWriter, const o2::base::Propagator::MatCorrType matType, const bool enableUnbinnedWriter, o2::dataformats::GlobalTrackID::mask_t src, bool useft0 = false);
 
 } // end namespace tpc
 } // end namespace o2
