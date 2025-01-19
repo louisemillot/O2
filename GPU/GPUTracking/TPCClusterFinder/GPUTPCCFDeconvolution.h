@@ -23,7 +23,7 @@
 #include "Array2D.h"
 #include "PackedCharge.h"
 
-namespace GPUCA_NAMESPACE::gpu
+namespace o2::gpu
 {
 
 class GPUTPCCFDeconvolution : public GPUKernelTemplate
@@ -59,6 +59,6 @@ class GPUTPCCFDeconvolution : public GPUKernelTemplate
   static GPUdi() uint8_t countPeaksOuter(uint16_t, uint8_t, const uint8_t*);
 };
 
-} // namespace GPUCA_NAMESPACE::gpu
+} // namespace o2::gpu
 
 #endif

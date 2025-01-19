@@ -26,7 +26,7 @@
 #include "GPUReconstructionKernelIncludes.h"
 #include "GPUReconstructionKernels.h"
 
-namespace GPUCA_NAMESPACE
+namespace o2
 {
 namespace gpu
 {
@@ -307,6 +307,6 @@ HighResTimer& GPUReconstructionCPU::getTimer(const char* name, int32_t num)
 }
 
 } // namespace gpu
-} // namespace GPUCA_NAMESPACE
+} // namespace o2
 
 #endif

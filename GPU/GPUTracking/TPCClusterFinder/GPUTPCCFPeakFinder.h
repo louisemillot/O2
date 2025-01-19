@@ -22,7 +22,7 @@
 #include "Array2D.h"
 #include "PackedCharge.h"
 
-namespace GPUCA_NAMESPACE::gpu
+namespace o2::gpu
 {
 
 struct ChargePos;
@@ -58,6 +58,6 @@ class GPUTPCCFPeakFinder : public GPUKernelTemplate
   static GPUd() bool isPeak(GPUSharedMemory&, tpccf::Charge, const ChargePos&, uint16_t, const Array2D<PackedCharge>&, const GPUSettingsRec&, ChargePos*, PackedCharge*);
 };
 
-} // namespace GPUCA_NAMESPACE::gpu
+} // namespace o2::gpu
 
 #endif

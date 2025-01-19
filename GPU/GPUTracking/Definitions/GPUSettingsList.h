@@ -27,10 +27,10 @@
 // clang-format off
 
 #ifdef QCONFIG_INSTANCE
-using namespace GPUCA_NAMESPACE::gpu;
+using namespace o2::gpu;
 #endif
 #ifdef BeginNamespace // File should not be included without defining the macros, but rootcling will do for dictionary generation
-BeginNamespace(GPUCA_NAMESPACE)
+BeginNamespace(o2)
 BeginNamespace(gpu)
 
 // Settings concerning the reconstruction, stored as parameters in GPU constant memory
@@ -136,10 +136,10 @@ AddOptionRTC(dEdxTruncLow, uint8_t, 2, "", 0, "Low truncation threshold, fractio
 AddOptionRTC(dEdxTruncHigh, uint8_t, 77, "", 0, "High truncation threshold, fraction of 128")
 AddOptionRTC(globalTracking, int8_t, 1, "", 0, "Enable Global Tracking (prolong tracks to adjacent sectors to find short segments)")
 AddOptionRTC(disableRefitAttachment, uint8_t, 0, "", 0, "Bitmask to disable certain attachment steps during refit (1: attachment, 2: propagation, 4: loop following, 8: mirroring)")
-AddOptionRTC(rejectionStrategy, uint8_t, GPUCA_NAMESPACE::gpu::GPUSettings::RejectionStrategyA, "", 0, "Enable rejection of TPC clusters for compression (0 = no, 1 = strategy A, 2 = strategy B)")
+AddOptionRTC(rejectionStrategy, uint8_t, o2::gpu::GPUSettings::RejectionStrategyA, "", 0, "Enable rejection of TPC clusters for compression (0 = no, 1 = strategy A, 2 = strategy B)")
 AddOptionRTC(mergeLoopersAfterburner, uint8_t, 1, "", 0, "Run afterburner for additional looper merging")
-AddOptionRTC(compressionTypeMask, uint8_t, GPUCA_NAMESPACE::gpu::GPUSettings::CompressionFull, "", 0, "TPC Compression mode bits (1=truncate charge/width LSB, 2=differences, 4=track-model)")
-AddOptionRTC(compressionSortOrder, uint8_t, GPUCA_NAMESPACE::gpu::GPUSettings::SortTime, "", 0, "Sort order of TPC compression (0 = time, 1 = pad, 2 = Z-time-pad, 3 = Z-pad-time, 4 = no sorting (use incoming order))")
+AddOptionRTC(compressionTypeMask, uint8_t, o2::gpu::GPUSettings::CompressionFull, "", 0, "TPC Compression mode bits (1=truncate charge/width LSB, 2=differences, 4=track-model)")
+AddOptionRTC(compressionSortOrder, uint8_t, o2::gpu::GPUSettings::SortTime, "", 0, "Sort order of TPC compression (0 = time, 1 = pad, 2 = Z-time-pad, 3 = Z-pad-time, 4 = no sorting (use incoming order))")
 AddOptionRTC(sigBitsCharge, uint8_t, 4, "", 0, "Number of significant bits for TPC cluster charge in compression mode 1")
 AddOptionRTC(sigBitsWidth, uint8_t, 3, "", 0, "Number of significant bits for TPC cluster width in compression mode 1")
 AddOptionRTC(forceEarlyTransform, int8_t, -1, "", 0, "Force early TPC transformation also for continuous data (-1 = auto)")
@@ -299,7 +299,7 @@ AddOption(RTCprependCommand, std::string, "", "", 0, "Prepend RTC compilation co
 AddOption(RTCoverrideArchitecture, std::string, "", "", 0, "Override arhcitecture part of RTC compilation command line")
 AddOption(oclCompileFromSources, bool, false, "", 0, "Compile OpenCL binary from included source code instead of using included spirv code")
 AddOption(printSettings, bool, false, "", 0, "Print all settings when initializing")
-AddVariable(eventDisplay, GPUCA_NAMESPACE::gpu::GPUDisplayFrontendInterface*, nullptr)
+AddVariable(eventDisplay, o2::gpu::GPUDisplayFrontendInterface*, nullptr)
 AddSubConfig(GPUSettingsProcessingRTC, rtc)
 AddSubConfig(GPUSettingsProcessingParam, param)
 AddHelp("help", 'h')
@@ -588,7 +588,7 @@ AddVariableRTC(debugLevel, int8_t, 0)         // Debug level
 EndConfig()
 
 EndNamespace() // gpu
-EndNamespace() // GPUCA_NAMESPACE
+EndNamespace() // o2
 #endif // #ifdef BeginNamespace
 
   // clang-format on

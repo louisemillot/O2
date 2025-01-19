@@ -35,7 +35,7 @@ struct CompressedClustersFlat {
 } // namespace o2::tpc
 #endif
 
-namespace GPUCA_NAMESPACE::gpu
+namespace o2::gpu
 {
 
 class GPUTPCDecompression : public GPUProcessor
@@ -85,5 +85,5 @@ class GPUTPCDecompression : public GPUProcessor
   int16_t mResourceClusterNativeAccess = -1;
   int16_t mResourceNClusterPerSectorRow = -1;
 };
-} // namespace GPUCA_NAMESPACE::gpu
+} // namespace o2::gpu
 #endif // GPUTPCDECOMPRESSION_H

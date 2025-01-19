@@ -18,7 +18,7 @@
 #include "GPUReconstructionCPU.h"
 #include "GPUReconstructionHelpers.h"
 
-namespace GPUCA_NAMESPACE
+namespace o2
 {
 namespace gpu
 {
@@ -308,6 +308,6 @@ int32_t GPUChain::runRecoStep(RecoStep step, S T::*func, Args... args)
 }
 
 } // namespace gpu
-} // namespace GPUCA_NAMESPACE
+} // namespace o2
 
 #endif

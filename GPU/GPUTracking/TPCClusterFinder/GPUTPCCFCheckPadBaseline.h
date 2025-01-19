@@ -20,7 +20,7 @@
 
 #include "clusterFinderDefs.h"
 
-namespace GPUCA_NAMESPACE::gpu
+namespace o2::gpu
 {
 
 class GPUTPCCFCheckPadBaseline : public GPUKernelTemplate
@@ -58,6 +58,6 @@ class GPUTPCCFCheckPadBaseline : public GPUKernelTemplate
   GPUd() static void updatePadBaseline(int32_t pad, const GPUTPCClusterFinder&, int32_t totalCharges, int32_t consecCharges, tpccf::Charge maxCharge);
 };
 
-} // namespace GPUCA_NAMESPACE::gpu
+} // namespace o2::gpu
 
 #endif

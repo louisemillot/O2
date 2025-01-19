@@ -41,7 +41,7 @@ class Digit;
 
 } // namespace o2
 
-namespace GPUCA_NAMESPACE::gpu
+namespace o2::gpu
 {
 struct GPUTPCClusterMCInterimArray;
 struct TPCPadGainCalib;
@@ -153,6 +153,6 @@ class GPUTPCClusterFinder : public GPUProcessor
 #endif
 };
 
-} // namespace GPUCA_NAMESPACE::gpu
+} // namespace o2::gpu
 
 #endif

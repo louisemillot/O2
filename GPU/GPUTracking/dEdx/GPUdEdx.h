@@ -26,7 +26,7 @@
 #include "GPUDebugStreamer.h"
 #endif
 
-namespace GPUCA_NAMESPACE
+namespace o2
 {
 namespace gpu
 {
@@ -214,6 +214,6 @@ GPUdi() void GPUdEdx::fillSubThreshold(int32_t padRow, const GPUParam& GPUrestri
 
 #endif // !GPUCA_HAVE_O2HEADERS
 } // namespace gpu
-} // namespace GPUCA_NAMESPACE
+} // namespace o2
 
 #endif

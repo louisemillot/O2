@@ -62,20 +62,14 @@
 #include "GPUO2FakeClasses.h"
 #endif
 
-using namespace GPUCA_NAMESPACE::gpu;
+using namespace o2::gpu;
 using namespace o2::tpc;
 using namespace gputpcgmmergertypes;
 
 static constexpr int32_t kMaxParts = 400;
 static constexpr int32_t kMaxClusters = GPUCA_MERGER_MAX_TRACK_CLUSTERS;
 
-//#define OFFLINE_FITTER
-
-#if !defined(GPUCA_ALIROOT_LIB) || defined(GPUCA_GPUCODE)
-#undef OFFLINE_FITTER
-#endif
-
-namespace GPUCA_NAMESPACE::gpu
+namespace o2::gpu
 {
 struct MergeLooperParam {
   float refz;
@@ -83,7 +77,7 @@ struct MergeLooperParam {
   float y;
   uint32_t id;
 };
-} // namespace GPUCA_NAMESPACE::gpu
+} // namespace o2::gpu
 
 #ifndef GPUCA_GPUCODE
 
@@ -1808,12 +1802,6 @@ GPUd() void GPUTPCGMMerger::CollectMergedTracks(int32_t nBlocks, int32_t nThread
         const ClusterNative& c = GetConstantMem()->ioPtrs.clustersNative->clustersLinear[trackClusters[i].id];
         state = c.getFlags();
       }
-#ifdef GPUCA_ALIROOT_LIB
-      cl[i].x = clXYZ[i].x;
-      cl[i].y = clXYZ[i].y;
-      cl[i].z = clXYZ[i].z;
-      cl[i].amp = clXYZ[i].amp;
-#endif
       cl[i].state = state & GPUTPCGMMergedTrackHit::clustererAndSharedFlags; // Only allow edge, deconvoluted, and shared flags
       cl[i].row = trackClusters[i].row;
       if (!Param().rec.nonConsecutiveIDs) // We already have global consecutive numbers from the slice tracker, and we need to keep them for late cluster attachment

@@ -51,7 +51,7 @@ class MatLayerCylSet;
 }
 } // namespace o2
 
-namespace GPUCA_NAMESPACE
+namespace o2
 {
 namespace gpu
 {
@@ -193,7 +193,6 @@ class GPUChainTracking : public GPUChain, GPUReconstructionHelpers::helperDelega
   void SetCalibObjects(const GPUCalibObjectsConst& obj) { processors()->calibObjects = obj; }
   void SetCalibObjects(const GPUCalibObjects& obj) { memcpy((void*)&processors()->calibObjects, (const void*)&obj, sizeof(obj)); }
   void SetUpdateCalibObjects(const GPUCalibObjectsConst& obj, const GPUNewCalibValues& vals);
-  void LoadClusterErrors();
   void SetSubOutputControl(int32_t i, GPUOutputControl* v) { mSubOutputControls[i] = v; }
   void SetFinalInputCallback(std::function<void()> v) { mWaitForFinalInputs = v; }
 
@@ -327,6 +326,6 @@ class GPUChainTracking : public GPUChain, GPUReconstructionHelpers::helperDelega
   int32_t OutputStream() const { return mRec->NStreams() - 2; }
 };
 } // namespace gpu
-} // namespace GPUCA_NAMESPACE
+} // namespace o2
 
 #endif

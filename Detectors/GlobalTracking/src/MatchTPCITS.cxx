@@ -2890,7 +2890,7 @@ void MatchTPCITS::dumpTPCOrig(bool acc, int tpcIndex)
   for (int i = 0; i < tpcOrig.getNClusterReferences(); i++) {
     tpcOrig.getClusterReference(mTPCTrackClusIdx, i, clSect, clRow, clIdx);
     unsigned int absoluteIndex = mTPCClusterIdxStruct->clusterOffset[clSect][clRow] + clIdx;
-    if (mTPCRefitterShMap[absoluteIndex] & GPUCA_NAMESPACE::gpu::GPUTPCGMMergedTrackHit::flagShared) {
+    if (mTPCRefitterShMap[absoluteIndex] & o2::gpu::GPUTPCGMMergedTrackHit::flagShared) {
       if (!(prevRow == clRow && prevRawShared)) {
         nshared++;
       }

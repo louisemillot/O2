@@ -19,7 +19,7 @@
 #include "utils/strtag.h"
 #include <fstream>
 
-using namespace GPUCA_NAMESPACE::gpu;
+using namespace o2::gpu;
 
 void GPUChainTracking::RunTPCTrackingMerger_MergeBorderTracks(int8_t withinSlice, int8_t mergeMode, GPUReconstruction::krnlDeviceType deviceType)
 {

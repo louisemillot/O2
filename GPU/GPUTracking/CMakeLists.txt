@@ -21,20 +21,11 @@ endif()
 
 include(cmake/helpers.cmake)
 
-if(ALIGPU_BUILD_TYPE STREQUAL "ALIROOT")
-  if(ENABLE_CUDA OR ENABLE_OPENCL OR ENABLE_HIP)
-    include(FeatureSummary)
-    find_package(O2GPU)
-  else()
-    include("cmake/kernel_helpers.cmake")
-  endif()
-else()
-  if((ALIGPU_BUILD_TYPE STREQUAL "Standalone" AND GPUCA_BUILD_EVENT_DISPLAY) OR (ALIGPU_BUILD_TYPE STREQUAL "O2" AND NOT CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND TARGET AliceO2::DebugGUI AND OPENGL_FOUND AND GLFW_FOUND))
-    set(GPUCA_EVENT_DISPLAY ON)
-  endif()
-  if(ROOT_FOUND)
-    set(GPUCA_QA ON)
-  endif()
+if((ALIGPU_BUILD_TYPE STREQUAL "Standalone" AND GPUCA_BUILD_EVENT_DISPLAY) OR (ALIGPU_BUILD_TYPE STREQUAL "O2" AND NOT CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND TARGET AliceO2::DebugGUI AND OPENGL_FOUND AND GLFW_FOUND))
+  set(GPUCA_EVENT_DISPLAY ON)
+endif()
+if(ROOT_FOUND)
+  set(GPUCA_QA ON)
 endif()
 
 # General sources
@@ -236,27 +227,6 @@ if(ALIGPU_BUILD_TYPE STREQUAL "O2")
       Interface/GPUO2InterfaceConfigurableParam.cxx)
 endif()
 
-# Sources only for AliRoot
-if(ALIGPU_BUILD_TYPE STREQUAL "ALIROOT")
-  set(SRCS
-      ${SRCS}
-      Merger/GPUTPCGlobalMergerComponent.cxx
-      SliceTracker/GPUTPCTrackerComponent.cxx
-      Merger/GPUTPCGMTracksToTPCSeeds.cxx
-      DataCompression/AliHLTTPCClusterStatComponent.cxx
-      TRDTracking/GPUTRDTrackerComponent.cxx
-      TRDTracking/GPUTRDTrackletReaderComponent.cxx
-      Global/AliHLTGPUDumpComponent.cxx)
-
-  set(SRCS_NO_CINT ${SRCS_NO_CINT}
-                   ${CMAKE_SOURCE_DIR}/HLT/TPCLib/AliHLTTPCGeometry.cxx
-                   ${CMAKE_SOURCE_DIR}/HLT/TPCLib/AliHLTTPCLog.cxx
-                   ${CMAKE_SOURCE_DIR}/HLT/TPCLib/AliHLTTPCDefinitions.cxx
-                   ${CMAKE_SOURCE_DIR}/HLT/TRD/AliHLTTRDDefinitions.cxx)
-
-  set(HDRS_INSTALL ${HDRS_INSTALL} SliceTracker/GPUTPCDefinitions.h)
-endif()
-
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/include_gpu_onthefly)
 file(GENERATE
      OUTPUT include_gpu_onthefly/GPUReconstructionKernelList.h
@@ -374,100 +344,6 @@ if(ALIGPU_BUILD_TYPE STREQUAL "O2")
                          LABELS its COMPILE_ONLY)
 
   add_subdirectory(Interface)
-endif()
-
-# Main CMake part for AliRoot
-if(ALIGPU_BUILD_TYPE STREQUAL "ALIROOT")
-  set(HDRS_SRCS ${HDRS_SRCS}
-                        DataTypes/GPUO2DataTypes.h)
-  add_definitions(-DGPUCA_ALIROOT_LIB)
-  include_directories(qa)
-  include_directories(SYSTEM ${ROOT_INCLUDE_DIR})
-  include_directories(${CMAKE_SOURCE_DIR}/HLT/BASE
-                      ${CMAKE_SOURCE_DIR}/HLT/BASE/util
-                      ${CMAKE_SOURCE_DIR}/HLT/TPCLib
-                      ${CMAKE_SOURCE_DIR}/HLT/TPCLib/transform
-                      ${CMAKE_SOURCE_DIR}/HLT/TPCLib/comp
-                      ${CMAKE_SOURCE_DIR}/HLT/TRD
-                      ${CMAKE_SOURCE_DIR}/TRD/TRDbase
-                      ${CMAKE_SOURCE_DIR}/STEER/STEERBase
-                      ${CMAKE_SOURCE_DIR}/STEER/STEER
-                      ${CMAKE_SOURCE_DIR}/STEER/ESD
-                      ${CMAKE_SOURCE_DIR}/STEER/CDB
-                      ${CMAKE_SOURCE_DIR}/TPC/TPCbase
-                      ${CMAKE_SOURCE_DIR}/TPC/TPCcalib
-                      ${CMAKE_SOURCE_DIR}/TPC/TPCrec
-                      ${CMAKE_SOURCE_DIR}/GPU/Common
-                      ${CMAKE_SOURCE_DIR}/GPU/Utils
-                      ${CMAKE_SOURCE_DIR}/GPU/GPUTracking
-                      ${CMAKE_SOURCE_DIR}/GPU/GPUTracking/Debug
-                      ${CMAKE_SOURCE_DIR}/GPU/GPUTracking/Definitions
-                      ${CMAKE_SOURCE_DIR}/GPU/GPUTracking/DataTypes
-                      ${CMAKE_SOURCE_DIR}/GPU/GPUTracking/Base
-                      ${CMAKE_SOURCE_DIR}/GPU/GPUTracking/SliceTracker
-                      ${CMAKE_SOURCE_DIR}/GPU/GPUTracking/Merger
-                      ${CMAKE_SOURCE_DIR}/GPU/GPUTracking/Global
-                      ${CMAKE_SOURCE_DIR}/GPU/GPUTracking/TPCConvert
-                      ${CMAKE_SOURCE_DIR}/GPU/GPUTracking/dEdx
-                      ${CMAKE_SOURCE_DIR}/GPU/GPUTracking/TRDTracking
-                      ${CMAKE_SOURCE_DIR}/GPU/GPUTracking/utils
-                      ${CMAKE_SOURCE_DIR}/GPU/GPUTracking/Base/cuda
-                      ${CMAKE_SOURCE_DIR}/GPU/GPUTracking/Base/hip
-                      ${CMAKE_SOURCE_DIR}/GPU/GPUTracking/Base/opencl
-                      ${CMAKE_SOURCE_DIR}/GPU/TPCFastTransformation)
-  alice_usevc()
-
-  # Generate the dictionary
-  get_directory_property(incdirs INCLUDE_DIRECTORIES)
-  generate_dictionary_flat("Ali${MODULE}" "GPUTrackingLinkDef_AliRoot.h"
-                           "${HDRS_SRCS}" "${incdirs}")
-
-  # Generate the ROOT map Dependecies
-  set(LIBDEPS
-      STEERBase
-      STEER
-      ESD
-      CDB
-      HLTbase
-      TPCbase
-      TPCrec
-      TPCcalib
-      TRDbase
-      AliTPCFastTransformation)
-  generate_rootmap("Ali${MODULE}" "${LIBDEPS}"
-                   "${CMAKE_CURRENT_SOURCE_DIR}/GPUTrackingLinkDef_AliRoot.h")
-  # Don't pass Vc to root
-  set(LIBDEPS ${LIBDEPS} Vc)
-
-  # Add a library to the project using the specified source files
-  add_library_tested(Ali${MODULE}
-                     SHARED
-                     ${SRCS}
-                     ${SRCS_NO_CINT}
-                     ${SRCS_NO_H}
-                     ${SRCS_DATATYPES}
-                     G__Ali${MODULE}.cxx)
-  target_link_libraries(Ali${MODULE} ${LIBDEPS})
-
-  # Additional compilation flags
-  set_target_properties(Ali${MODULE} PROPERTIES COMPILE_FLAGS "")
-
-  # System dependent: Modify the way the library is build
-  if(${CMAKE_SYSTEM} MATCHES Darwin)
-    set_target_properties(Ali${MODULE}
-                          PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
-  endif(${CMAKE_SYSTEM} MATCHES Darwin)
-
-  # Installation
-  install(TARGETS Ali${MODULE} ARCHIVE DESTINATION lib LIBRARY DESTINATION lib)
-
-  install(FILES ${HDRS_SRCS} ${HDRS_INSTALL} DESTINATION include)
-  install(DIRECTORY utils
-          DESTINATION include
-          FILES_MATCHING PATTERN *.h)
-
-  set(targetName Ali${MODULE})
-  add_library(O2::${MODULE} ALIAS Ali${MODULE})
 endif()
 
 # Main CMake part for Standalone

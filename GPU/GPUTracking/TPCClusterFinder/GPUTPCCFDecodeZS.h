@@ -23,7 +23,7 @@
 #include "DataFormatsTPC/ZeroSuppressionLinkBased.h"
 #include "DetectorsRaw/RDHUtils.h"
 
-namespace GPUCA_NAMESPACE::gpu
+namespace o2::gpu
 {
 
 class GPUTPCClusterFinder;
@@ -181,6 +181,6 @@ class GPUTPCCFDecodeZSDenseLink : public GPUTPCCFDecodeZSLinkBase
   GPUd() static uint16_t DecodeTBMultiThread(processorType& clusterer, GPUSharedMemory& smem, const int32_t iThread, const uint8_t*& page, uint32_t pageDigitOffset, const header::RAWDataHeader* rawDataHeader, int32_t firstHBF, int32_t cru, const uint8_t* payloadEnd, const uint8_t* nextPage);
 };
 
-} // namespace GPUCA_NAMESPACE::gpu
+} // namespace o2::gpu
 
 #endif

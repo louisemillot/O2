@@ -29,7 +29,7 @@
 #include "GPUParam.inc"
 #include "GPUCommonMath.h"
 
-using namespace GPUCA_NAMESPACE::gpu;
+using namespace o2::gpu;
 
 GPUdii() void GPUTPCTrackletConstructor::InitTracklet(GPUTPCTrackParam& GPUrestrict() tParam)
 {

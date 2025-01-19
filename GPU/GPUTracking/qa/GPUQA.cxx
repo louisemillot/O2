@@ -78,7 +78,7 @@
 #include "utils/qconfig.h"
 #include "utils/timer.h"
 
-using namespace GPUCA_NAMESPACE::gpu;
+using namespace o2::gpu;
 
 #ifdef GPUCA_MERGER_BY_MC_LABEL
 #define CHECK_CLUSTER_STATE_INIT_LEG_BY_MC()                                        \
@@ -315,12 +315,12 @@ void GPUQA::createHist(T*& h, const char* name, Args... args)
   p.second->emplace_back(&h);
 }
 
-namespace GPUCA_NAMESPACE::gpu
+namespace o2::gpu
 {
 struct GPUQAGarbageCollection {
   std::tuple<std::vector<std::unique_ptr<TCanvas>>, std::vector<std::unique_ptr<TLegend>>, std::vector<std::unique_ptr<TPad>>, std::vector<std::unique_ptr<TLatex>>, std::vector<std::unique_ptr<TH1D>>> v;
 };
-} // namespace GPUCA_NAMESPACE::gpu
+} // namespace o2::gpu
 
 template <class T, typename... Args>
 T* GPUQA::createGarbageCollected(Args... args)
@@ -1379,7 +1379,7 @@ void GPUQA::RunQA(bool matchOnly, const std::vector<o2::tpc::TrackTPC>* tracksEx
         prop.SetTrack(&param, alpha);
         bool inFlyDirection = 0;
         if (mConfig.strict) {
-          const float dx = param.X() - std::max<float>(mclocal[0], TRACK_EXPECTED_REFERENCE_X_DEFAULT); // Limit distance check if the O2 MC position is farther inside than the AliRoot MC position.
+          const float dx = param.X() - std::max<float>(mclocal[0], TRACK_EXPECTED_REFERENCE_X_DEFAULT); // Limit distance check
           const float dy = param.Y() - mclocal[1];
           const float dz = getdz();
           if (dx * dx + dy * dy + dz * dz > 5.f * 5.f) {

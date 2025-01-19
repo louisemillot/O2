@@ -42,7 +42,7 @@ struct ClusterNative;
 }
 } // namespace o2
 
-namespace GPUCA_NAMESPACE
+namespace o2
 {
 namespace gpu
 {
@@ -298,6 +298,6 @@ class GPUTPCGMMerger : public GPUProcessor
   GPUTPCGMLoopData* mLoopData;
 };
 } // namespace gpu
-} // namespace GPUCA_NAMESPACE
+} // namespace o2
 
 #endif // GPUTPCGMMERGER_H

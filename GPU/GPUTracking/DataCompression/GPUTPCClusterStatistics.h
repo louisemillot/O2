@@ -24,7 +24,7 @@ namespace o2::tpc
 struct ClusterNativeAccess;
 } // namespace o2::tpc
 
-namespace GPUCA_NAMESPACE::gpu
+namespace o2::gpu
 {
 class GPUTPCClusterStatistics
 {
@@ -89,6 +89,6 @@ class GPUTPCClusterStatistics
   size_t mNTotalClusters = 0;
 #endif
 };
-} // namespace GPUCA_NAMESPACE::gpu
+} // namespace o2::gpu
 
 #endif

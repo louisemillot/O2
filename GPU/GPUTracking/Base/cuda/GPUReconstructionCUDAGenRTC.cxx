@@ -27,18 +27,15 @@
 #include <fcntl.h>
 #include <filesystem>
 
-using namespace GPUCA_NAMESPACE::gpu;
+using namespace o2::gpu;
 
-#ifndef GPUCA_ALIROOT_LIB
 #include "utils/qGetLdBinarySymbols.h"
 QGET_LD_BINARY_SYMBOLS(GPUReconstructionCUDArtc_src);
 QGET_LD_BINARY_SYMBOLS(GPUReconstructionCUDArtc_command);
 QGET_LD_BINARY_SYMBOLS(GPUReconstructionCUDArtc_command_arch);
-#endif
 
 int32_t GPUReconstructionCUDA::genRTC(std::string& filename, uint32_t& nCompile)
 {
-#ifndef GPUCA_ALIROOT_LIB
   std::string rtcparam = std::string(mProcessingSettings.rtc.optSpecialCode ? "#define GPUCA_RTC_SPECIAL_CODE(...) __VA_ARGS__\n" : "#define GPUCA_RTC_SPECIAL_CODE(...)\n") + GPUParamRTC::generateRTCCode(param(), mProcessingSettings.rtc.optConstexpr);
   if (filename == "") {
     filename = "/tmp/o2cagpu_rtc_";
@@ -253,6 +250,5 @@ int32_t GPUReconstructionCUDA::genRTC(std::string& filename, uint32_t& nCompile)
     close(fd);
   }
 
-#endif
   return 0;
 }

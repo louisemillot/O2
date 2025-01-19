@@ -21,7 +21,7 @@
 #include "GPUChain.h"
 #include <vector>
 
-namespace GPUCA_NAMESPACE
+namespace o2
 {
 namespace gpu
 {
@@ -103,6 +103,6 @@ inline size_t GPUReconstructionDeviceBase::GPUMemCpyAlways(bool onGpu, void* dst
   }
 }
 } // namespace gpu
-} // namespace GPUCA_NAMESPACE
+} // namespace o2
 
 #endif

@@ -21,25 +21,10 @@
 #include "GPUErrors.h"
 
 #include "GPUTPCGMMerger.h"
-#if (!defined(GPUCA_GPUCODE) || !defined(GPUCA_ALIROOT_LIB))
 #include "GPUTRDTracker.h"
-#else
-#include "GPUTRDDef.h"
-namespace GPUCA_NAMESPACE
-{
-namespace gpu
-{
-template <class T, class P>
-class GPUTRDTracker_t
-{
-  void SetMaxData(const GPUTrackingInOutPointers& io) {}
-};
-} // namespace gpu
-} // namespace GPUCA_NAMESPACE
-#endif
 
 // Dummies for stuff not suppored in legacy code, or for what requires O2 headers while not available
-#if (!defined(GPUCA_GPUCODE) || !defined(GPUCA_ALIROOT_LIB)) && defined(GPUCA_HAVE_O2HEADERS)
+#if defined(GPUCA_HAVE_O2HEADERS)
 #include "GPUTPCConvert.h"
 #include "GPUTPCCompression.h"
 #include "GPUTPCDecompression.h"
@@ -54,7 +39,7 @@ class GPUTRDTracker_t
 #include "GPUKernelDebugOutput.h"
 #endif
 
-namespace GPUCA_NAMESPACE
+namespace o2
 {
 namespace gpu
 {
@@ -123,11 +108,11 @@ union GPUConstantMemCopyable {
 static constexpr size_t gGPUConstantMemBufferSize = (sizeof(GPUConstantMem) + sizeof(uint4) - 1);
 #endif
 } // namespace gpu
-} // namespace GPUCA_NAMESPACE
+} // namespace o2
 #if defined(GPUCA_HAS_GLOBAL_SYMBOL_CONSTANT_MEM) && !defined(GPUCA_GPUCODE_HOSTONLY)
-GPUconstant() GPUCA_NAMESPACE::gpu::GPUConstantMemCopyable gGPUConstantMemBuffer;
+GPUconstant() o2::gpu::GPUConstantMemCopyable gGPUConstantMemBuffer;
 #endif // GPUCA_HAS_GLOBAL_SYMBOL_CONSTANT_MEM
-namespace GPUCA_NAMESPACE
+namespace o2
 {
 namespace gpu
 {
@@ -153,6 +138,6 @@ GPUdi() void GPUProcessor::raiseError(uint32_t code, uint32_t param1, uint32_t p
 }
 
 } // namespace gpu
-} // namespace GPUCA_NAMESPACE
+} // namespace o2
 
 #endif

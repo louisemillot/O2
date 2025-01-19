@@ -17,35 +17,7 @@
 
 #include "GPUCommonDef.h"
 
-#ifdef GPUCA_ALIROOT_LIB
-#include "AliTRDgeometry.h"
-#include "AliTRDpadPlane.h"
-#include "AliGeomManager.h"
-#include "TGeoMatrix.h"
-
-namespace GPUCA_NAMESPACE
-{
-namespace gpu
-{
-
-typedef AliTRDpadPlane GPUTRDpadPlane;
-
-class GPUTRDGeometry : public AliTRDgeometry
-{
- public:
-  static bool CheckGeometryAvailable() { return AliGeomManager::GetGeometry(); }
-
-  // Make sub-functionality available directly in GPUTRDGeometry
-  double GetPadPlaneWidthIPad(int32_t det) const { return GetPadPlane(det)->GetWidthIPad(); }
-  double GetPadPlaneRowPos(int32_t layer, int32_t stack, int32_t row) const { return GetPadPlane(layer, stack)->GetRowPos(row); }
-  double GetPadPlaneRowSize(int32_t layer, int32_t stack, int32_t row) const { return GetPadPlane(layer, stack)->GetRowSize(row); }
-  int32_t GetGeomManagerVolUID(int32_t det, int32_t modId) const { return AliGeomManager::LayerToVolUID(AliGeomManager::ELayerID(AliGeomManager::kTRD1 + GetLayer(det)), modId); }
-  float GetCdrHght() const { return CdrHght(); }
-};
-} // namespace gpu
-} // namespace GPUCA_NAMESPACE
-
-#elif defined(GPUCA_HAVE_O2HEADERS) //&& defined(GPUCA_GPUCODE)
+#if defined(GPUCA_HAVE_O2HEADERS) //&& defined(GPUCA_GPUCODE)
 
 class TObjArray;
 #include "GPUDef.h"
@@ -54,7 +26,7 @@ class TObjArray;
 #include "DataFormatsTRD/Constants.h"
 #include "GPUCommonTransform3D.h"
 
-namespace GPUCA_NAMESPACE
+namespace o2
 {
 namespace gpu
 {
@@ -109,13 +81,13 @@ class GPUTRDGeometry : private o2::trd::GeometryFlat
   static constexpr int32_t kNstack = o2::trd::constants::NSTACK;
 };
 } // namespace gpu
-} // namespace GPUCA_NAMESPACE
+} // namespace o2
 
-#else // below are dummy definitions to enable building the standalone version with AliRoot
+#else // below are dummy definitions to enable building the standalone version without O2 Headers
 
 #include "GPUDef.h"
 
-namespace GPUCA_NAMESPACE
+namespace o2
 {
 namespace gpu
 {
@@ -178,8 +150,8 @@ class GPUTRDGeometry
   static constexpr const int32_t kNstack = 0;
 };
 } // namespace gpu
-} // namespace GPUCA_NAMESPACE
+} // namespace o2
 
-#endif // !GPUCA_ALIROOT_LIB && !defined(GPUCA_HAVE_O2HEADERS)
+#endif // !defined(GPUCA_HAVE_O2HEADERS)
 
 #endif // GPUTRDGEOMETRY_H

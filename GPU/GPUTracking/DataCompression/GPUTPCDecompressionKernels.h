@@ -30,7 +30,7 @@ struct CompressedClusters {
 } // namespace o2::tpc
 #endif
 
-namespace GPUCA_NAMESPACE::gpu
+namespace o2::gpu
 {
 
 class GPUTPCDecompressionKernels : public GPUKernelTemplate
@@ -70,5 +70,5 @@ class GPUTPCDecompressionUtilKernels : public GPUKernelTemplate
   GPUdi() static bool isClusterKept(const o2::tpc::ClusterNative& cl, const GPUParam& GPUrestrict() param);
 };
 
-} // namespace GPUCA_NAMESPACE::gpu
+} // namespace o2::gpu
 #endif // GPUTPCDECOMPRESSIONKERNELS_H

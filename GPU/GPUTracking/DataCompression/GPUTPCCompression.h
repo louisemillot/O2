@@ -34,7 +34,7 @@ struct CompressedClustersFlat {
 } // namespace o2::tpc
 #endif
 
-namespace GPUCA_NAMESPACE::gpu
+namespace o2::gpu
 {
 class GPUTPCGMMerger;
 
@@ -125,6 +125,6 @@ GPUdi() void GPUTPCCompression::truncateSignificantBits(T& v, uint32_t nBits, ui
     v = val;
   }
 }
-} // namespace GPUCA_NAMESPACE::gpu
+} // namespace o2::gpu
 
 #endif

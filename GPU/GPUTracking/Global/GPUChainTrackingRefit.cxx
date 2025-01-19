@@ -16,7 +16,7 @@
 #include "GPULogging.h"
 #include "GPUO2DataTypes.h"
 
-using namespace GPUCA_NAMESPACE::gpu;
+using namespace o2::gpu;
 
 int32_t GPUChainTracking::RunRefit()
 {

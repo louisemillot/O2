@@ -19,7 +19,7 @@
 #include "DataFormatsTPC/dEdxInfo.h"
 #endif
 
-namespace GPUCA_NAMESPACE
+namespace o2
 {
 namespace gpu
 {
@@ -30,6 +30,6 @@ struct GPUdEdxInfo {
 };
 #endif
 } // namespace gpu
-} // namespace GPUCA_NAMESPACE
+} // namespace o2
 
 #endif

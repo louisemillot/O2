@@ -22,7 +22,7 @@
 #include "Array2D.h"
 #include "PackedCharge.h"
 
-namespace GPUCA_NAMESPACE::gpu
+namespace o2::gpu
 {
 
 struct ChargePos;
@@ -72,6 +72,6 @@ class GPUTPCCFNoiseSuppression : public GPUKernelTemplate
   static GPUd() void findMinimaAndPeaks(const Array2D<PackedCharge>&, const Array2D<uint8_t>&, const GPUSettingsRec&, float, const ChargePos&, ChargePos*, PackedCharge*, uint64_t*, uint64_t*, uint64_t*);
 };
 
-} // namespace GPUCA_NAMESPACE::gpu
+} // namespace o2::gpu
 
 #endif

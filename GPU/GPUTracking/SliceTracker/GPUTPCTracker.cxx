@@ -34,7 +34,7 @@
 #include "GPUMemorySizeScalers.h"
 #endif
 
-using namespace GPUCA_NAMESPACE::gpu;
+using namespace o2::gpu;
 using namespace o2::tpc;
 
 #if !defined(GPUCA_GPUCODE)

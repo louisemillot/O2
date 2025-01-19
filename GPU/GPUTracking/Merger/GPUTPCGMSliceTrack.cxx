@@ -20,7 +20,7 @@
 #include "GPUTPCConvertImpl.h"
 #include "GPUParam.inc"
 
-using namespace GPUCA_NAMESPACE::gpu;
+using namespace o2::gpu;
 using namespace o2::tpc;
 
 GPUd() void GPUTPCGMSliceTrack::Set(const GPUTPCGMMerger* merger, const GPUTPCTrack* sliceTr, float alpha, int32_t slice)

@@ -59,7 +59,7 @@
 
 #include "utils/linux_helpers.h"
 #include "utils/strtag.h"
-using namespace GPUCA_NAMESPACE::gpu;
+using namespace o2::gpu;
 
 #include "GPUO2DataTypes.h"
 
@@ -204,12 +204,10 @@ bool GPUChainTracking::ValidateSteps()
     return false;
   }
   bool tpcClustersAvail = (GetRecoStepsInputs() & GPUDataTypes::InOutType::TPCClusters) || (GetRecoSteps() & GPUDataTypes::RecoStep::TPCClusterFinding) || (GetRecoSteps() & GPUDataTypes::RecoStep::TPCDecompression);
-#ifndef GPUCA_ALIROOT_LIB
   if ((GetRecoSteps() & GPUDataTypes::RecoStep::TPCMerging) && !tpcClustersAvail) {
     GPUError("Invalid Inputs for track merging, TPC Clusters required");
     return false;
   }
-#endif
 #ifndef GPUCA_TPC_GEOMETRY_O2
   if (GetRecoSteps() & GPUDataTypes::RecoStep::TPCClusterFinding) {
     GPUError("Can not run TPC GPU Cluster Finding with Run 2 Data");
@@ -383,9 +381,7 @@ int32_t GPUChainTracking::Init()
     }
   }
   if (GetProcessingSettings().eventDisplay) {
-#ifndef GPUCA_ALIROOT_LIB
     mEventDisplay.reset(GPUDisplayInterface::getDisplay(GetProcessingSettings().eventDisplay, this, GetQA()));
-#endif
     if (mEventDisplay == nullptr) {
       throw std::runtime_error("Error loading event display");
     }
@@ -603,8 +599,6 @@ void GPUChainTracking::AllocateIOMemory()
   AllocateIOMemoryHelper(mIOPtrs.nTRDTriggerRecords, mIOPtrs.trdTriggerTimes, mIOMem.trdTriggerTimes);
   AllocateIOMemoryHelper(mIOPtrs.nTRDTriggerRecords, mIOPtrs.trdTrackletIdxFirst, mIOMem.trdTrackletIdxFirst);
 }
-
-void GPUChainTracking::LoadClusterErrors() { param().LoadClusterErrors(); }
 
 void GPUChainTracking::SetTPCFastTransform(std::unique_ptr<TPCFastTransform>&& tpcFastTransform, std::unique_ptr<CorrectionMapsHelper>&& tpcTransformHelper)
 {

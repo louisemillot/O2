@@ -23,13 +23,12 @@
 #include "GPUTRDTrackerKernels.h"
 #include "utils/strtag.h"
 
-using namespace GPUCA_NAMESPACE::gpu;
+using namespace o2::gpu;
 using namespace o2::trd;
 
 template <int32_t I>
 int32_t GPUChainTracking::RunTRDTracking()
 {
-#ifndef GPUCA_ALIROOT_LIB
   auto& Tracker = processors()->getTRDTracker<I>();
   if (!Tracker.IsInitialized()) {
     return 1;
@@ -129,7 +128,6 @@ int32_t GPUChainTracking::RunTRDTracking()
   }
   mRec->PopNonPersistentMemory(RecoStep::TRDTracking, qStr2Tag("TRDTRACK"));
 
-#endif // GPUCA_ALIROOT_LIB
   return 0;
 }
 

@@ -22,7 +22,7 @@
 #include "utils/strtag.h"
 #include <fstream>
 
-using namespace GPUCA_NAMESPACE::gpu;
+using namespace o2::gpu;
 
 int32_t GPUChainTracking::GlobalTracking(uint32_t iSlice, int32_t threadId, bool synchronizeOutput)
 {

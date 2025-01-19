@@ -46,7 +46,7 @@
 
 #include "GPUReconstructionIncludesITS.h"
 
-namespace GPUCA_NAMESPACE
+namespace o2
 {
 namespace gpu
 {
@@ -66,9 +66,9 @@ struct GPUReconstructionPipelineContext {
   bool terminate = false;
 };
 } // namespace gpu
-} // namespace GPUCA_NAMESPACE
+} // namespace o2
 
-using namespace GPUCA_NAMESPACE::gpu;
+using namespace o2::gpu;
 
 constexpr const char* const GPUReconstruction::GEOMETRY_TYPE_NAMES[];
 constexpr const char* const GPUReconstruction::IOTYPENAMES[];

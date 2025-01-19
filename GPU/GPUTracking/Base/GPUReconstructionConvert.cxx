@@ -42,7 +42,7 @@
 #include "DetectorsRaw/RDHUtils.h"
 #endif
 
-using namespace GPUCA_NAMESPACE::gpu;
+using namespace o2::gpu;
 using namespace o2::tpc;
 using namespace o2::tpc::constants;
 using namespace std::string_literals;

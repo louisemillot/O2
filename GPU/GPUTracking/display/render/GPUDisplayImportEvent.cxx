@@ -35,7 +35,7 @@
 #include "ITSMFTBase/DPLAlpideParam.h"
 #endif
 
-using namespace GPUCA_NAMESPACE::gpu;
+using namespace o2::gpu;
 
 void GPUDisplay::DrawGLScene_updateEventData()
 {

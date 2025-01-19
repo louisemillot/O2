@@ -27,7 +27,7 @@ namespace o2::tpc
 class Digit;
 } // namespace o2::tpc
 
-namespace GPUCA_NAMESPACE::gpu
+namespace o2::gpu
 {
 
 struct ChargePos;
@@ -65,6 +65,6 @@ class GPUTPCCFChargeMapFiller : public GPUKernelTemplate
   static GPUd() size_t findTransition(int32_t, const tpc::Digit*, size_t, size_t);
 };
 
-} // namespace GPUCA_NAMESPACE::gpu
+} // namespace o2::gpu
 
 #endif

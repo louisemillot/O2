@@ -94,7 +94,7 @@ class ConstMCTruthContainer
 } // namespace dataformats
 } // namespace o2
 
-namespace GPUCA_NAMESPACE
+namespace o2
 {
 namespace gpu
 {
@@ -143,6 +143,6 @@ class GPUTPCClusterStatistics
 };
 #endif
 } // namespace gpu
-} // namespace GPUCA_NAMESPACE
+} // namespace o2
 
 #endif

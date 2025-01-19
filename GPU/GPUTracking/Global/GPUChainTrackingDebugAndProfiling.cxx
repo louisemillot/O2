@@ -29,7 +29,7 @@
 
 #define PROFILE_MAX_SIZE (100 * 1024 * 1024)
 
-using namespace GPUCA_NAMESPACE::gpu;
+using namespace o2::gpu;
 
 static inline uint32_t RGB(uint8_t r, uint8_t g, uint8_t b) { return (uint32_t)r | ((uint32_t)g << 8) | ((uint32_t)b << 16); }
 

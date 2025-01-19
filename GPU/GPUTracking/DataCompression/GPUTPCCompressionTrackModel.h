@@ -31,7 +31,7 @@
 #else // Default internal track model for compression
 #endif
 
-namespace GPUCA_NAMESPACE::gpu
+namespace o2::gpu
 {
 // ATTENTION! This track model is used for the data compression.
 // Changes to the propagation and fit will prevent the decompression of data
@@ -164,6 +164,6 @@ class GPUTPCCompressionTrackModel
   PhysicalTrackModel mTrk;
 #endif
 };
-} // namespace GPUCA_NAMESPACE::gpu
+} // namespace o2::gpu
 
 #endif

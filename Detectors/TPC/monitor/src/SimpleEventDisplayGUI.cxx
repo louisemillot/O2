@@ -1195,7 +1195,7 @@ void SimpleEventDisplayGUI::showClusters(int roc, int row)
     selFlags += mCheckClFlags[iFlag]->IsDown() << (iFlag - 1);
   }
   const bool fillSingleTB = mCheckSingleTB->IsDown();
-  const GPUCA_NAMESPACE::gpu::GPUTPCGeometry gpuGeom;
+  const o2::gpu::GPUTPCGeometry gpuGeom;
 
   const int rowMin = fillSingleTB ? 0 : row;
   const int rowMax = fillSingleTB ? constants::MAXGLOBALPADROW : row + 1;

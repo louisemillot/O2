@@ -18,7 +18,7 @@
 #include "GPUTPCTracker.h"
 #include "GPUTPCSliceOutput.h"
 
-using namespace GPUCA_NAMESPACE::gpu;
+using namespace o2::gpu;
 
 #if defined(_WIN32)
 #include "../utils/pthread_mutex_win32_wrapper.h"
@@ -39,12 +39,7 @@ GPUReconstructionDeviceBase::GPUReconstructionDeviceBase(const GPUSettingsDevice
   }
 }
 
-GPUReconstructionDeviceBase::~GPUReconstructionDeviceBase()
-{
-  // make d'tor such that vtable is created for this class
-  // needed for build with AliRoot, otherwise dynamic loading of GPU libraries will fail
-  (void)0; // Avoid compiler warnings
-}
+GPUReconstructionDeviceBase::~GPUReconstructionDeviceBase() = default;
 
 void* GPUReconstructionDeviceBase::helperWrapper_static(void* arg)
 {
