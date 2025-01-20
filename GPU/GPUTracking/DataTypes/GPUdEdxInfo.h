@@ -15,20 +15,13 @@
 #ifndef GPUDEDXINFO_H
 #define GPUDEDXINFO_H
 
-#ifdef GPUCA_HAVE_O2HEADERS
 #include "DataFormatsTPC/dEdxInfo.h"
-#endif
 
 namespace o2
 {
 namespace gpu
 {
-#ifdef GPUCA_HAVE_O2HEADERS
 using GPUdEdxInfo = o2::tpc::dEdxInfo;
-#else
-struct GPUdEdxInfo {
-};
-#endif
 } // namespace gpu
 } // namespace o2
 

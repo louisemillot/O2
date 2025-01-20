@@ -49,11 +49,8 @@
 #elif defined(__CUDACC__) || defined(__HIPCC__)
   #define GPUCA_HAS_GLOBAL_SYMBOL_CONSTANT_MEM
 #endif
-#if !defined(GPUCA_HAVE_O2HEADERS) && (defined(GPUCA_O2_LIB) || !defined(GPUCA_STANDALONE))
-  #define GPUCA_HAVE_O2HEADERS
-#endif
 
-#if defined(GPUCA_HAVE_O2HEADERS) && !defined(GPUCA_GPUCODE) && !defined(GPUCA_STANDALONE) && defined(DEBUG_STREAMER)
+#if !defined(GPUCA_GPUCODE) && !defined(GPUCA_STANDALONE) && defined(DEBUG_STREAMER)
 #define GPUCA_DEBUG_STREAMER_CHECK(...) __VA_ARGS__
 #else
 #define GPUCA_DEBUG_STREAMER_CHECK(...)

@@ -115,7 +115,6 @@ set(HDRS_INSTALL
     DataTypes/GPUdEdxInfo.h
     DataTypes/GPUHostDataTypes.h
     DataTypes/GPUO2DataTypes.h
-    DataTypes/GPUO2FakeClasses.h
     DataTypes/GPUOutputControl.h
     DataTypes/GPUSettings.h
     DataTypes/GPUTPCGeometry.h
@@ -159,67 +158,62 @@ set(HDRS_INSTALL
     DataTypes/GPUTPCGMPolynomialField.h
 )
 
-# Sources for O2 and for Standalone if requested in config file
-if(ALIGPU_BUILD_TYPE STREQUAL "O2" OR ALIGPU_BUILD_TYPE STREQUAL "Standalone")
-  set(SRCS_NO_CINT ${SRCS_NO_CINT} display/GPUDisplayInterface.cxx)
-endif()
-if(ALIGPU_BUILD_TYPE STREQUAL "O2" OR GPUCA_CONFIG_O2_EXTENSIONS)
-    set(SRCS_NO_CINT
-        ${SRCS_NO_CINT}
-        Global/GPUChainITS.cxx
-        ITS/GPUITSFitter.cxx
-        ITS/GPUITSFitterKernels.cxx
-        dEdx/GPUdEdx.cxx
-        TPCConvert/GPUTPCConvert.cxx
-        TPCConvert/GPUTPCConvertKernel.cxx
-        DataCompression/GPUTPCCompression.cxx
-        DataCompression/GPUTPCCompressionTrackModel.cxx
-        DataCompression/GPUTPCCompressionKernels.cxx
-        DataCompression/GPUTPCDecompression.cxx
-        DataCompression/GPUTPCDecompressionKernels.cxx
-        DataCompression/TPCClusterDecompressor.cxx
-        DataCompression/GPUTPCClusterStatistics.cxx
-        TPCClusterFinder/GPUTPCClusterFinder.cxx
-        TPCClusterFinder/ClusterAccumulator.cxx
-        TPCClusterFinder/MCLabelAccumulator.cxx
-        TPCClusterFinder/GPUTPCCFCheckPadBaseline.cxx
-        TPCClusterFinder/GPUTPCCFStreamCompaction.cxx
-        TPCClusterFinder/GPUTPCCFChargeMapFiller.cxx
-        TPCClusterFinder/GPUTPCCFPeakFinder.cxx
-        TPCClusterFinder/GPUTPCCFNoiseSuppression.cxx
-        TPCClusterFinder/GPUTPCCFClusterizer.cxx
-        TPCClusterFinder/GPUTPCCFDeconvolution.cxx
-        TPCClusterFinder/GPUTPCCFMCLabelFlattener.cxx
-        TPCClusterFinder/GPUTPCCFDecodeZS.cxx
-        TPCClusterFinder/GPUTPCCFGather.cxx
-        Refit/GPUTrackingRefit.cxx
-        Refit/GPUTrackingRefitKernel.cxx
-        Merger/GPUTPCGMO2Output.cxx)
+set(SRCS_NO_CINT ${SRCS_NO_CINT} display/GPUDisplayInterface.cxx)
+set(SRCS_NO_CINT
+    ${SRCS_NO_CINT}
+    Global/GPUChainITS.cxx
+    ITS/GPUITSFitter.cxx
+    ITS/GPUITSFitterKernels.cxx
+    dEdx/GPUdEdx.cxx
+    TPCConvert/GPUTPCConvert.cxx
+    TPCConvert/GPUTPCConvertKernel.cxx
+    DataCompression/GPUTPCCompression.cxx
+    DataCompression/GPUTPCCompressionTrackModel.cxx
+    DataCompression/GPUTPCCompressionKernels.cxx
+    DataCompression/GPUTPCDecompression.cxx
+    DataCompression/GPUTPCDecompressionKernels.cxx
+    DataCompression/TPCClusterDecompressor.cxx
+    DataCompression/GPUTPCClusterStatistics.cxx
+    TPCClusterFinder/GPUTPCClusterFinder.cxx
+    TPCClusterFinder/ClusterAccumulator.cxx
+    TPCClusterFinder/MCLabelAccumulator.cxx
+    TPCClusterFinder/GPUTPCCFCheckPadBaseline.cxx
+    TPCClusterFinder/GPUTPCCFStreamCompaction.cxx
+    TPCClusterFinder/GPUTPCCFChargeMapFiller.cxx
+    TPCClusterFinder/GPUTPCCFPeakFinder.cxx
+    TPCClusterFinder/GPUTPCCFNoiseSuppression.cxx
+    TPCClusterFinder/GPUTPCCFClusterizer.cxx
+    TPCClusterFinder/GPUTPCCFDeconvolution.cxx
+    TPCClusterFinder/GPUTPCCFMCLabelFlattener.cxx
+    TPCClusterFinder/GPUTPCCFDecodeZS.cxx
+    TPCClusterFinder/GPUTPCCFGather.cxx
+    Refit/GPUTrackingRefit.cxx
+    Refit/GPUTrackingRefitKernel.cxx
+    Merger/GPUTPCGMO2Output.cxx)
 
-    set(SRCS_DATATYPES
-        ${SRCS_DATATYPES}
-        DataTypes/TPCPadGainCalib.cxx
-        DataTypes/TPCPadBitMap.cxx
-        DataTypes/TPCZSLinkMapping.cxx
-        DataTypes/CalibdEdxContainer.cxx
-        DataTypes/CalibdEdxTrackTopologyPol.cxx
-        DataTypes/CalibdEdxTrackTopologySpline.cxx
-        DataTypes/GPUTRDTrackO2.cxx)
+set(SRCS_DATATYPES
+    ${SRCS_DATATYPES}
+    DataTypes/TPCPadGainCalib.cxx
+    DataTypes/TPCPadBitMap.cxx
+    DataTypes/TPCZSLinkMapping.cxx
+    DataTypes/CalibdEdxContainer.cxx
+    DataTypes/CalibdEdxTrackTopologyPol.cxx
+    DataTypes/CalibdEdxTrackTopologySpline.cxx
+    DataTypes/GPUTRDTrackO2.cxx)
 
-    set(SRCS_NO_H ${SRCS_NO_H}
-        TPCClusterFinder/GPUTPCClusterFinderDump.cxx)
+set(SRCS_NO_H ${SRCS_NO_H}
+    TPCClusterFinder/GPUTPCClusterFinderDump.cxx)
 
-    set(HDRS_INSTALL ${HDRS_INSTALL}
-                     ITS/GPUITSTrack.h
-                     TPCClusterFinder/Array2D.h
-                     TPCClusterFinder/CfConsts.h
-                     TPCClusterFinder/CfFragment.h
-                     TPCClusterFinder/CfUtils.h
-                     TPCClusterFinder/ChargePos.h
-                     Definitions/clusterFinderDefs.h
-                     TPCClusterFinder/PackedCharge.h
-                     TPCClusterFinder/GPUTPCCFChainContext.h)
-endif()
+set(HDRS_INSTALL ${HDRS_INSTALL}
+                  ITS/GPUITSTrack.h
+                  TPCClusterFinder/Array2D.h
+                  TPCClusterFinder/CfConsts.h
+                  TPCClusterFinder/CfFragment.h
+                  TPCClusterFinder/CfUtils.h
+                  TPCClusterFinder/ChargePos.h
+                  Definitions/clusterFinderDefs.h
+                  TPCClusterFinder/PackedCharge.h
+                  TPCClusterFinder/GPUTPCCFChainContext.h)
 
 if(ALIGPU_BUILD_TYPE STREQUAL "O2")
   set(SRCS_DATATYPES
@@ -278,7 +272,7 @@ if(ALIGPU_BUILD_TYPE STREQUAL "O2")
                                        O2::TPCFastTransformation
                  PRIVATE_LINK_LIBRARIES O2::DataFormatsTPC
                  SOURCES ${SRCS_DATATYPES})
-  target_compile_definitions(${targetName} PRIVATE GPUCA_O2_LIB GPUCA_TPC_GEOMETRY_O2 GPUCA_HAVE_O2HEADERS)
+  target_compile_definitions(${targetName} PRIVATE GPUCA_O2_LIB GPUCA_TPC_GEOMETRY_O2)
   o2_target_root_dictionary(GPUDataTypes
                             HEADERS ${HDRS_CINT_DATATYPES} ${HDRS_CINT_O2_ADDITIONAL}
                             LINKDEF GPUTrackingLinkDef_O2_DataTypes.h)
@@ -323,8 +317,7 @@ if(ALIGPU_BUILD_TYPE STREQUAL "O2")
     ${targetName}
     PRIVATE $<TARGET_PROPERTY:O2::Framework,INTERFACE_INCLUDE_DIRECTORIES>)
 
-  target_compile_definitions(${targetName} PRIVATE GPUCA_O2_LIB
-                             GPUCA_TPC_GEOMETRY_O2 GPUCA_HAVE_O2HEADERS)
+  target_compile_definitions(${targetName} PRIVATE GPUCA_O2_LIB GPUCA_TPC_GEOMETRY_O2)
 
   o2_target_root_dictionary(${MODULE}
                             HEADERS ${HDRS_CINT_O2} ${HDRS_CINT_O2_ADDITIONAL}

@@ -35,10 +35,8 @@
 #include "GPUReconstruction.h"
 #include "GPUDebugStreamer.h"
 #include "GPUTPCClusterOccupancyMap.h"
-#ifdef GPUCA_HAVE_O2HEADERS
 #include "GPUTrackingRefit.h"
 #include "CorrectionMapsHelper.h"
-#endif
 
 using namespace o2::gpu;
 using namespace gputpcgmmergertypes;
@@ -205,9 +203,7 @@ void GPUTPCGMMerger::DumpRefit(std::ostream& out) const
     const auto& p = trk.GetParam();
     const auto& po = trk.OuterParam();
     out << "  Track " << i << ": OK " << trk.OK() << " Alpha " << trk.GetAlpha() << " X " << p.GetX() << " offset " << p.GetTZOffset() << " Y " << p.GetY() << " Z " << p.GetZ() << " SPhi " << p.GetSinPhi() << " Tgl " << p.GetDzDs() << " QPt " << p.GetQPt() << " NCl " << trk.NClusters() << " / " << trk.NClustersFitted() << " Cov " << p.GetErr2Y() << "/" << p.GetErr2Z()
-#ifdef GPUCA_HAVE_O2HEADERS
         << " dEdx " << (trk.OK() ? mOutputTracksdEdx[i].dEdxTotTPC : -1.f) << "/" << (trk.OK() ? mOutputTracksdEdx[i].dEdxMaxTPC : -1.f)
-#endif
         << " Outer " << po.P[0] << "/" << po.P[1] << "/" << po.P[2] << "/" << po.P[3] << "/" << po.P[4] << "\n";
   }
   out << std::setprecision(ss);
@@ -299,7 +295,6 @@ const GPUTPCGMBorderTrack& GPUTPCGMMerger::MergedTrackStreamerFindBorderTrack(co
 
 void GPUTPCGMMerger::DebugRefitMergedTrack(const GPUTPCGMMergedTrack& track) const
 {
-#ifdef GPUCA_HAVE_O2HEADERS
   GPUTPCGMMergedTrack trk = track;
   GPUTrackingRefit refit;
   ((GPUConstantMem*)GetConstantMem())->ioPtrs.mergedTrackHitStates = ClusterStateExt();
@@ -326,7 +321,6 @@ void GPUTPCGMMerger::DebugRefitMergedTrack(const GPUTPCGMMergedTrack& track) con
   } else {
     printf("REFIT ERROR\n");
   }
-#endif
 }
 
 std::vector<uint32_t> GPUTPCGMMerger::StreamerOccupancyBin(int32_t iSlice, int32_t iRow, float time) const

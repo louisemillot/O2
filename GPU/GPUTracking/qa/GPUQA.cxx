@@ -52,10 +52,8 @@
 #include "TPCFastTransform.h"
 #include "CorrectionMapsHelper.h"
 #include "GPUROOTDump.h"
-#ifdef GPUCA_HAVE_O2HEADERS
 #include "SimulationDataFormat/ConstMCTruthContainer.h"
 #include "SimulationDataFormat/MCCompLabel.h"
-#endif
 #ifdef GPUCA_O2_LIB
 #include "DetectorsRaw/HBFUtils.h"
 #include "DataFormatsTPC/TrackTPC.h"

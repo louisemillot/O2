@@ -16,11 +16,10 @@
 #define GPUTRIGGEROUTPUTS_H
 
 #include "GPUCommonDef.h"
+#include "DataFormatsTPC/ZeroSuppression.h"
+
 #include <unordered_set>
 #include <array>
-#ifdef GPUCA_HAVE_O2HEADERS
-#include "DataFormatsTPC/ZeroSuppression.h"
-#endif
 
 namespace o2
 {
@@ -28,7 +27,6 @@ namespace gpu
 {
 
 struct GPUTriggerOutputs {
-#ifdef GPUCA_HAVE_O2HEADERS
   struct hasher {
     size_t operator()(const o2::tpc::TriggerInfoDLBZS& key) const
     {
@@ -52,7 +50,6 @@ struct GPUTriggerOutputs {
 
   std::unordered_set<o2::tpc::TriggerInfoDLBZS, hasher, equal> triggers;
   static_assert(sizeof(o2::tpc::TriggerInfoDLBZS) % sizeof(uint32_t) == 0);
-#endif
 };
 
 } // namespace gpu

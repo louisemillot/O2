@@ -12,10 +12,8 @@
 /// \file GPUChainTracking.cxx
 /// \author David Rohr
 
-#ifdef GPUCA_HAVE_O2HEADERS
 #include "SimulationDataFormat/MCCompLabel.h"
 #include "SimulationDataFormat/MCTruthContainer.h"
-#endif
 #include <fstream>
 #include <chrono>
 
@@ -44,15 +42,11 @@
 #include "GPUNewCalibValues.h"
 #include "GPUTriggerOutputs.h"
 
-#ifdef GPUCA_HAVE_O2HEADERS
 #include "GPUTPCClusterStatistics.h"
 #include "GPUHostDataTypes.h"
 #include "GPUTPCCFChainContext.h"
 #include "GPUTrackingRefit.h"
 #include "CalibdEdxContainer.h"
-#else
-#include "GPUO2FakeClasses.h"
-#endif
 
 #include "TPCFastTransform.h"
 #include "CorrectionMapsHelper.h"
@@ -95,7 +89,6 @@ void GPUChainTracking::RegisterPermanentMemoryAndProcessors()
   if (GetRecoSteps() & RecoStep::TRDTracking) {
     mRec->RegisterGPUProcessor(&processors()->trdTrackerGPU, GetRecoStepsGPU() & RecoStep::TRDTracking);
   }
-#ifdef GPUCA_HAVE_O2HEADERS
   if (GetRecoSteps() & RecoStep::TRDTracking) {
     mRec->RegisterGPUProcessor(&processors()->trdTrackerO2, GetRecoStepsGPU() & RecoStep::TRDTracking);
   }
@@ -116,7 +109,6 @@ void GPUChainTracking::RegisterPermanentMemoryAndProcessors()
   if (GetRecoSteps() & RecoStep::Refit) {
     mRec->RegisterGPUProcessor(&processors()->trackingRefit, GetRecoStepsGPU() & RecoStep::Refit);
   }
-#endif
 #ifdef GPUCA_KERNEL_DEBUGGER_OUTPUT
   mRec->RegisterGPUProcessor(&processors()->debugOutput, true);
 #endif
@@ -141,7 +133,6 @@ void GPUChainTracking::RegisterGPUProcessors()
     mRec->RegisterGPUDeviceProcessor(&processorsShadow()->trdTrackerGPU, &processors()->trdTrackerGPU);
   }
 
-#ifdef GPUCA_HAVE_O2HEADERS
   memcpy((void*)&processorsShadow()->trdTrackerO2, (const void*)&processors()->trdTrackerO2, sizeof(processors()->trdTrackerO2));
   if (GetRecoStepsGPU() & RecoStep::TRDTracking) {
     mRec->RegisterGPUDeviceProcessor(&processorsShadow()->trdTrackerO2, &processors()->trdTrackerO2);
@@ -163,7 +154,6 @@ void GPUChainTracking::RegisterGPUProcessors()
   if (GetRecoStepsGPU() & RecoStep::Refit) {
     mRec->RegisterGPUDeviceProcessor(&processorsShadow()->trackingRefit, &processors()->trackingRefit);
   }
-#endif
 #ifdef GPUCA_KERNEL_DEBUGGER_OUTPUT
   mRec->RegisterGPUDeviceProcessor(&processorsShadow()->debugOutput, &processors()->debugOutput);
 #endif
@@ -434,7 +424,6 @@ void GPUChainTracking::UpdateGPUCalibObjects(int32_t stream, const GPUCalibObjec
     mFlatObjectsShadow.mCalibObjects.fastTransformHelper->setCorrMapRef(mFlatObjectsShadow.mCalibObjects.fastTransformRef);
     mFlatObjectsShadow.mCalibObjects.fastTransformHelper->setCorrMapMShape(mFlatObjectsShadow.mCalibObjects.fastTransformMShape);
   }
-#ifdef GPUCA_HAVE_O2HEADERS
   if (processors()->calibObjects.dEdxCalibContainer && (ptrMask == nullptr || ptrMask->dEdxCalibContainer)) {
     memcpy((void*)mFlatObjectsShadow.mCalibObjects.dEdxCalibContainer, (const void*)processors()->calibObjects.dEdxCalibContainer, sizeof(*processors()->calibObjects.dEdxCalibContainer));
     memcpy((void*)mFlatObjectsShadow.mdEdxSplinesBuffer, (const void*)processors()->calibObjects.dEdxCalibContainer->getFlatBufferPtr(), processors()->calibObjects.dEdxCalibContainer->getFlatBufferSize());
@@ -464,7 +453,6 @@ void GPUChainTracking::UpdateGPUCalibObjects(int32_t stream, const GPUCalibObjec
     mFlatObjectsShadow.mCalibObjects.o2Propagator->setGPUField(&processorsDevice()->param.polynomialField);
     mFlatObjectsShadow.mCalibObjects.o2Propagator->setMatLUT(mFlatObjectsShadow.mCalibObjects.matLUT);
   }
-#endif
   TransferMemoryResourceLinkToGPU(RecoStep::NoRecoStep, mFlatObjectsShadow.mMemoryResFlat, stream);
   memcpy((void*)&processorsShadow()->calibObjects, (void*)&mFlatObjectsDevice.mCalibObjects, sizeof(mFlatObjectsDevice.mCalibObjects));
 }
@@ -541,7 +529,6 @@ void* GPUChainTracking::GPUTrackingFlatObjects::SetPointersFlatObjects(void* mem
   if (mChainTracking->processors()->calibObjects.tpcZSLinkMapping) {
     computePointerWithAlignment(mem, mCalibObjects.tpcZSLinkMapping, 1);
   }
-#ifdef GPUCA_HAVE_O2HEADERS
   char* dummyPtr;
   if (mChainTracking->processors()->calibObjects.matLUT) {
     computePointerWithAlignment(mem, mCalibObjects.matLUT, 1);
@@ -560,7 +547,6 @@ void* GPUChainTracking::GPUTrackingFlatObjects::SetPointersFlatObjects(void* mem
   if (!mChainTracking->processors()->calibObjects.o2Propagator) {
     mCalibObjects.o2Propagator = nullptr; // Always reserve memory for o2::Propagator, since it may be propagatred only during run() not during init().
   }
-#endif
   if (!mChainTracking->mUpdateNewCalibObjects) {
     mem = (char*)mem + mChainTracking->GetProcessingSettings().calibObjectsExtraMemorySize; // TODO: Fixme and do proper dynamic allocation
   }
@@ -648,11 +634,9 @@ int32_t GPUChainTracking::DoQueuedUpdates(int32_t stream, bool updateSlave)
     retVal = 1;
   }
   if (mUpdateNewCalibObjects) {
-#ifdef GPUCA_HAVE_O2HEADERS
     if (mNewCalibObjects->o2Propagator && ((mNewCalibObjects->o2Propagator->getGPUField() != nullptr) ^ GetProcessingSettings().o2PropagatorUseGPUField)) {
       GPUFatal("GPU magnetic field for propagator requested, but received an O2 propagator without GPU field");
     }
-#endif
     void* const* pSrc = (void* const*)mNewCalibObjects.get();
     void** pDst = (void**)&processors()->calibObjects;
     for (uint32_t i = 0; i < sizeof(processors()->calibObjects) / sizeof(void*); i++) {
@@ -661,15 +645,12 @@ int32_t GPUChainTracking::DoQueuedUpdates(int32_t stream, bool updateSlave)
       }
     }
     if (mNewCalibObjects->trdGeometry && (GetRecoSteps() & GPUDataTypes::RecoStep::TRDTracking)) {
-#ifdef GPUCA_HAVE_O2HEADERS
       if (GetProcessingSettings().trdTrackModelO2) {
         processors()->trdTrackerO2.UpdateGeometry();
         if (mRec->IsGPU()) {
           TransferMemoryResourceLinkToGPU(RecoStep::NoRecoStep, processors()->trdTrackerO2.MemoryPermanent(), stream);
         }
-      } else
-#endif
-      {
+      } else {
         processors()->trdTrackerGPU.UpdateGeometry();
         if (mRec->IsGPU()) {
           TransferMemoryResourceLinkToGPU(RecoStep::NoRecoStep, processors()->trdTrackerGPU.MemoryPermanent(), stream);
@@ -791,11 +772,9 @@ int32_t GPUChainTracking::RunChain()
     }
   }
 
-#ifdef GPUCA_HAVE_O2HEADERS
   if (GetProcessingSettings().trdTrackModelO2 ? runRecoStep(RecoStep::TRDTracking, &GPUChainTracking::RunTRDTracking<GPUTRDTrackerKernels::o2Version>) : runRecoStep(RecoStep::TRDTracking, &GPUChainTracking::RunTRDTracking<GPUTRDTrackerKernels::gpuVersion>)) {
     return 1;
   }
-#endif
 
   if (runRecoStep(RecoStep::Refit, &GPUChainTracking::RunRefit)) {
     return 1;
@@ -826,12 +805,10 @@ int32_t GPUChainTracking::RunChain()
 
 int32_t GPUChainTracking::RunChainFinalize()
 {
-#ifdef GPUCA_HAVE_O2HEADERS
   if (mIOPtrs.clustersNative && (GetRecoSteps() & RecoStep::TPCCompression) && GetProcessingSettings().runCompressionStatistics) {
     CompressedClusters c = *mIOPtrs.tpcCompressedClusters;
     mCompressionStatistics->RunStatistics(mIOPtrs.clustersNative, &c, param());
   }
-#endif
 
   if (GetProcessingSettings().outputSanityCheck) {
     SanityCheck();
@@ -1008,9 +985,7 @@ const o2::base::Propagator* GPUChainTracking::GetDeviceO2Propagator()
 void GPUChainTracking::SetO2Propagator(const o2::base::Propagator* prop)
 {
   processors()->calibObjects.o2Propagator = prop;
-#ifdef GPUCA_HAVE_O2HEADERS
   if ((prop->getGPUField() != nullptr) ^ GetProcessingSettings().o2PropagatorUseGPUField) {
     GPUFatal("GPU magnetic field for propagator requested, but received an O2 propagator without GPU field");
   }
-#endif
 }

@@ -23,17 +23,12 @@
 #include "GPUTPCGMMerger.h"
 #include "GPUTRDTracker.h"
 
-// Dummies for stuff not suppored in legacy code, or for what requires O2 headers while not available
-#if defined(GPUCA_HAVE_O2HEADERS)
 #include "GPUTPCConvert.h"
 #include "GPUTPCCompression.h"
 #include "GPUTPCDecompression.h"
 #include "GPUITSFitter.h"
 #include "GPUTPCClusterFinder.h"
 #include "GPUTrackingRefit.h"
-#else
-#include "GPUO2FakeClasses.h"
-#endif
 
 #ifdef GPUCA_KERNEL_DEBUGGER_OUTPUT
 #include "GPUKernelDebugOutput.h"
@@ -52,9 +47,7 @@ struct GPUConstantMem {
   GPUTPCDecompression tpcDecompressor;
   GPUTPCGMMerger tpcMerger;
   GPUTRDTrackerGPU trdTrackerGPU;
-#ifdef GPUCA_HAVE_O2HEADERS
   GPUTRDTracker trdTrackerO2;
-#endif
   GPUTPCClusterFinder tpcClusterer[GPUCA_NSLICES];
   GPUITSFitter itsFitter;
   GPUTrackingRefitProcessor trackingRefit;
@@ -65,19 +58,10 @@ struct GPUConstantMem {
   GPUKernelDebugOutput debugOutput;
 #endif
 
-#if defined(GPUCA_HAVE_O2HEADERS)
   template <int32_t I>
   GPUd() auto& getTRDTracker();
-#else  // GPUCA_HAVE_O2HEADERS
-  template <int32_t I>
-  GPUdi() GPUTRDTrackerGPU& getTRDTracker()
-  {
-    return trdTrackerGPU;
-  }
-#endif // !GPUCA_HAVE_O2HEADERS
 };
 
-#if defined(GPUCA_HAVE_O2HEADERS)
 template <>
 GPUdi() auto& GPUConstantMem::getTRDTracker<0>()
 {
@@ -88,7 +72,6 @@ GPUdi() auto& GPUConstantMem::getTRDTracker<1>()
 {
   return trdTrackerO2;
 }
-#endif
 
 union GPUConstantMemCopyable {
 #if !defined(__OPENCL__) || defined(__OPENCL_HOST__)

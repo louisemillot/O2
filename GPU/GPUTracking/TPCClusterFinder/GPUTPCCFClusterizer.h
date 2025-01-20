@@ -43,13 +43,11 @@ class GPUTPCCFClusterizer : public GPUKernelTemplate
     uint8_t innerAboveThreshold[SCRATCH_PAD_WORK_GROUP_SIZE];
   };
 
-#ifdef GPUCA_HAVE_O2HEADERS
   typedef GPUTPCClusterFinder processorType;
   GPUhdi() static processorType* Processor(GPUConstantMem& processors)
   {
     return processors.tpcClusterer;
   }
-#endif
 
   GPUhdi() constexpr static GPUDataTypes::RecoStep GetRecoStep()
   {

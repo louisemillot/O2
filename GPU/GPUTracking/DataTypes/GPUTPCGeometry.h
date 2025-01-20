@@ -17,7 +17,7 @@
 
 #include "GPUCommonDef.h"
 
-#if !defined(GPUCA_NSLICES) && !defined(GPUCA_ROW_COUNT) && defined(GPUCA_HAVE_O2HEADERS)
+#if !defined(GPUCA_NSLICES) && !defined(GPUCA_ROW_COUNT)
 #include "DataFormatsTPC/Constants.h"
 #define GPUCA_NSLICES o2::tpc::constants::MAXSECTOR
 #define GPUCA_ROW_COUNT o2::tpc::constants::MAXGLOBALPADROW

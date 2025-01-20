@@ -34,8 +34,6 @@ class propagatorInterface;
 } // namespace gpu
 } // namespace o2
 
-#if defined(GPUCA_HAVE_O2HEADERS) // Interface for O2, build only with O2
-
 #include "DetectorsBase/Propagator.h"
 #include "GPUTRDInterfaceO2Track.h"
 
@@ -92,15 +90,11 @@ class propagatorInterface<o2::base::Propagator>
 } // namespace gpu
 } // namespace o2
 
-#endif // GPUCA_HAVE_O2HEADERS
-
 #include "GPUTPCGMPropagator.h"
 #include "GPUParam.h"
 #include "GPUDef.h"
-#ifdef GPUCA_HAVE_O2HEADERS
 #include "DataFormatsTPC/TrackTPC.h"
 #include "ReconstructionDataFormats/TrackTPCITS.h"
-#endif
 
 namespace o2
 {
@@ -126,7 +120,6 @@ class trackInterface<GPUTPCGMTrackParam> : public GPUTPCGMTrackParam
   };
   GPUdDefault() trackInterface(const trackInterface<GPUTPCGMTrackParam>& param) = default;
   GPUdDefault() trackInterface& operator=(const trackInterface<GPUTPCGMTrackParam>& param) = default;
-#if defined(GPUCA_HAVE_O2HEADERS)
   GPUd() trackInterface(const o2::dataformats::TrackTPCITS& param) : GPUTPCGMTrackParam(), mAlpha(param.getParamOut().getAlpha())
   {
     SetX(param.getParamOut().getX());
@@ -151,7 +144,6 @@ class trackInterface<GPUTPCGMTrackParam> : public GPUTPCGMTrackParam
       SetCov(i, param.getParamOut().getCov()[i]);
     }
   }
-#endif
 
   GPUd() float getX() const
   {

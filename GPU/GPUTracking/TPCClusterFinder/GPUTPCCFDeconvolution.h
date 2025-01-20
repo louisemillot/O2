@@ -36,13 +36,11 @@ class GPUTPCCFDeconvolution : public GPUKernelTemplate
     uint8_t buf[SCRATCH_PAD_WORK_GROUP_SIZE * SCRATCH_PAD_COUNT_N];
   };
 
-#ifdef GPUCA_HAVE_O2HEADERS
   typedef GPUTPCClusterFinder processorType;
   GPUhdi() static processorType* Processor(GPUConstantMem& processors)
   {
     return processors.tpcClusterer;
   }
-#endif
 
   GPUhdi() constexpr static GPUDataTypes::RecoStep GetRecoStep()
   {

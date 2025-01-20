@@ -24,7 +24,6 @@
 #ifdef GPUCA_O2_LIB
 #include "CommonDataFormat/InteractionRecord.h"
 #endif
-#ifdef GPUCA_HAVE_O2HEADERS
 #include "GPUTriggerOutputs.h"
 #include "GPUHostDataTypes.h"
 #include "GPUTPCCFChainContext.h"
@@ -33,9 +32,6 @@
 #include "DataFormatsTPC/Digit.h"
 #include "DataFormatsTPC/Constants.h"
 #include "TPCBase/RDHUtils.h"
-#else
-#include "GPUO2FakeClasses.h"
-#endif
 
 #include "utils/strtag.h"
 

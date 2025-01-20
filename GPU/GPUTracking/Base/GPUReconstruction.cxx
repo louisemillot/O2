@@ -94,9 +94,7 @@ GPUReconstruction::GPUReconstruction(const GPUSettingsDeviceBackend& cfg) : mHos
   mMemoryScalers.reset(new GPUMemorySizeScalers);
   for (uint32_t i = 0; i < NSLICES; i++) {
     processors()->tpcTrackers[i].SetSlice(i); // TODO: Move to a better place
-#ifdef GPUCA_HAVE_O2HEADERS
     processors()->tpcClusterer[i].mISlice = i;
-#endif
   }
 #ifndef GPUCA_NO_ROOT
   mROOTDump = GPUROOTDumpCore::getAndCreate();
@@ -213,14 +211,6 @@ int32_t GPUReconstruction::InitPhaseBeforeDevice()
     }
     GPUConfigDump::dumpConfig(&param().rec, &mProcessingSettings, chTrk ? chTrk->GetQAConfig() : nullptr, chTrk ? chTrk->GetEventDisplayConfig() : nullptr, &mDeviceBackendSettings, &mRecoSteps);
   }
-#ifndef GPUCA_HAVE_O2HEADERS
-  mRecoSteps.steps.setBits(RecoStep::ITSTracking, false);
-  mRecoSteps.steps.setBits(RecoStep::TRDTracking, false);
-  mRecoSteps.steps.setBits(RecoStep::TPCConversion, false);
-  mRecoSteps.steps.setBits(RecoStep::TPCCompression, false);
-  mRecoSteps.steps.setBits(RecoStep::TPCdEdx, false);
-  mProcessingSettings.createO2Output = false;
-#endif
   mRecoSteps.stepsGPUMask &= mRecoSteps.steps;
   mRecoSteps.stepsGPUMask &= AvailableGPURecoSteps();
   if (!IsGPU()) {
@@ -258,7 +248,6 @@ int32_t GPUReconstruction::InitPhaseBeforeDevice()
 #ifndef GPUCA_NO_FAST_MATH
     GPUError("Warning, deterministicGPUReconstruction needs GPUCA_NO_FAST_MATH, otherwise results will never be deterministic!");
 #endif
-#ifdef GPUCA_HAVE_O2HEADERS
     mProcessingSettings.overrideClusterizerFragmentLen = TPC_MAX_FRAGMENT_LEN_GPU;
     param().rec.tpc.nWaysOuter = true;
     if (param().rec.tpc.looperInterpolationInExtraPass == -1) {
@@ -267,7 +256,6 @@ int32_t GPUReconstruction::InitPhaseBeforeDevice()
     if (mProcessingSettings.createO2Output > 1) {
       mProcessingSettings.createO2Output = 1;
     }
-#endif
   }
   if (mProcessingSettings.deterministicGPUReconstruction && mProcessingSettings.debugLevel >= 6) {
     mProcessingSettings.nTPCClustererLanes = 1;
@@ -347,7 +335,6 @@ int32_t GPUReconstruction::InitPhaseBeforeDevice()
     mNStreams = std::max<int32_t>(mProcessingSettings.nStreams, 3);
   }
 
-#ifdef GPUCA_HAVE_O2HEADERS
   if (mProcessingSettings.nTPCClustererLanes == -1) {
     mProcessingSettings.nTPCClustererLanes = (GetRecoStepsGPU() & RecoStep::TPCClusterFinding) ? 3 : std::max<int32_t>(1, std::min<int32_t>(GPUCA_NSLICES, mProcessingSettings.ompKernels ? (mProcessingSettings.ompThreads >= 4 ? std::min<int32_t>(mProcessingSettings.ompThreads / 2, mProcessingSettings.ompThreads >= 32 ? GPUCA_NSLICES : 4) : 1) : mProcessingSettings.ompThreads));
   }
@@ -358,7 +345,6 @@ int32_t GPUReconstruction::InitPhaseBeforeDevice()
     GPUError("Invalid value for nTPCClustererLanes: %d", mProcessingSettings.nTPCClustererLanes);
     mProcessingSettings.nTPCClustererLanes = GPUCA_NSLICES;
   }
-#endif
 
   if (mProcessingSettings.doublePipeline && (mChains.size() != 1 || mChains[0]->SupportsDoublePipeline() == false || !IsGPU() || mProcessingSettings.memoryAllocationStrategy != GPUMemoryResource::ALLOCATION_GLOBAL)) {
     GPUError("Must use double pipeline mode only with exactly one chain that must support it");

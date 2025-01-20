@@ -20,9 +20,7 @@
 #include "GPUParamRTC.h"
 #include "GPUDefMacros.h"
 #include <unistd.h>
-#ifdef GPUCA_HAVE_O2HEADERS
 #include "Framework/SHA1.h"
-#endif
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <filesystem>
@@ -55,7 +53,6 @@ int32_t GPUReconstructionCUDA::genRTC(std::string& filename, uint32_t& nCompile)
   baseCommand += (getenv("O2_GPU_RTC_OVERRIDE_CMD") ? std::string(getenv("O2_GPU_RTC_OVERRIDE_CMD")) : std::string(_binary_GPUReconstructionCUDArtc_command_start, _binary_GPUReconstructionCUDArtc_command_len));
   baseCommand += std::string(" ") + (mProcessingSettings.RTCoverrideArchitecture != "" ? mProcessingSettings.RTCoverrideArchitecture : std::string(_binary_GPUReconstructionCUDArtc_command_arch_start, _binary_GPUReconstructionCUDArtc_command_arch_len));
 
-#ifdef GPUCA_HAVE_O2HEADERS
   char shasource[21], shaparam[21], shacmd[21], shakernels[21];
   if (mProcessingSettings.rtc.cacheOutput) {
     o2::framework::internal::SHA1(shasource, _binary_GPUReconstructionCUDArtc_src_start, _binary_GPUReconstructionCUDArtc_src_len);
@@ -63,7 +60,6 @@ int32_t GPUReconstructionCUDA::genRTC(std::string& filename, uint32_t& nCompile)
     o2::framework::internal::SHA1(shacmd, baseCommand.c_str(), baseCommand.size());
     o2::framework::internal::SHA1(shakernels, kernelsall.c_str(), kernelsall.size());
   }
-#endif
 
   nCompile = mProcessingSettings.rtc.compilePerKernel ? kernels.size() : 1;
   bool cacheLoaded = false;
@@ -72,9 +68,6 @@ int32_t GPUReconstructionCUDA::genRTC(std::string& filename, uint32_t& nCompile)
     if (mProcessingSettings.RTCcacheFolder != ".") {
       std::filesystem::create_directories(mProcessingSettings.RTCcacheFolder);
     }
-#ifndef GPUCA_HAVE_O2HEADERS
-    throw std::runtime_error("Cannot use RTC cache without O2 headers");
-#else
     if (mProcessingSettings.rtc.cacheMutex) {
       mode_t mask = S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH;
       fd = open((mProcessingSettings.RTCcacheFolder + "/cache.lock").c_str(), O_RDWR | O_CREAT | O_CLOEXEC, mask);
@@ -153,7 +146,6 @@ int32_t GPUReconstructionCUDA::genRTC(std::string& filename, uint32_t& nCompile)
       };
       fclose(fp);
     }
-#endif
   }
   if (!cacheLoaded) {
     if (mProcessingSettings.debugLevel >= 0) {
@@ -203,7 +195,6 @@ int32_t GPUReconstructionCUDA::genRTC(std::string& filename, uint32_t& nCompile)
     if (mProcessingSettings.debugLevel >= 0) {
       GPUInfo("RTC Compilation finished (%f seconds)", rtcTimer.GetCurrentElapsedTime());
     }
-#ifdef GPUCA_HAVE_O2HEADERS
     if (mProcessingSettings.rtc.cacheOutput) {
       FILE* fp = fopen((mProcessingSettings.RTCcacheFolder + "/rtc.cuda.cache").c_str(), "w+b");
       if (fp == nullptr) {
@@ -241,7 +232,6 @@ int32_t GPUReconstructionCUDA::genRTC(std::string& filename, uint32_t& nCompile)
       }
       fclose(fp);
     }
-#endif
   }
   if (mProcessingSettings.rtc.cacheOutput && mProcessingSettings.rtc.cacheMutex) {
     if (lockf(fd, F_ULOCK, 0)) {

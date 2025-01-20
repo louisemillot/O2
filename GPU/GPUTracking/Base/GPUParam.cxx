@@ -20,14 +20,12 @@
 #include "GPUTPCGMPolynomialFieldManager.h"
 #include "GPUDataTypes.h"
 #include "GPUConstantMem.h"
+#include "DetectorsBase/Propagator.h"
 
 using namespace o2::gpu;
 
 #include <cstring>
 #include <tuple>
-#ifdef GPUCA_HAVE_O2HEADERS
-#include "DetectorsBase/Propagator.h"
-#endif
 
 #include "utils/qconfigrtc.h"
 

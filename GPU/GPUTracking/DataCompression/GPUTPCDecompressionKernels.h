@@ -19,16 +19,7 @@
 #include "GPUO2DataTypes.h"
 #include "GPUParam.h"
 #include "GPUConstantMem.h"
-
-#ifdef GPUCA_HAVE_O2HEADERS
 #include "DataFormatsTPC/CompressedClusters.h"
-#else
-namespace o2::tpc
-{
-struct CompressedClusters {
-};
-} // namespace o2::tpc
-#endif
 
 namespace o2::gpu
 {

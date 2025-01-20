@@ -1112,11 +1112,7 @@ namespace o2
 {
 namespace gpu
 {
-// instantiate version for AliExternalTrackParam / o2::TrackParCov data types
-#if defined(GPUCA_HAVE_O2HEADERS)
 template class GPUTRDTracker_t<GPUTRDTrack, GPUTRDPropagator>;
-#endif
-// always instantiate version for GPU Track Model
 template class GPUTRDTracker_t<GPUTRDTrackGPU, GPUTRDPropagatorGPU>;
 } // namespace gpu
 } // namespace o2

@@ -29,10 +29,6 @@ namespace o2::gpu
 class GPUTPCClusterStatistics
 {
  public:
-#ifndef GPUCA_HAVE_O2HEADERS
-  void RunStatistics(const o2::tpc::ClusterNativeAccess* clustersNative, const o2::tpc::CompressedClusters* clustersCompressed, const GPUParam& param){};
-  void Finish(){};
-#else
   static constexpr uint32_t NSLICES = GPUCA_NSLICES;
   void RunStatistics(const o2::tpc::ClusterNativeAccess* clustersNative, const o2::tpc::CompressedClusters* clustersCompressed, const GPUParam& param);
   void Finish();
@@ -87,7 +83,6 @@ class GPUTPCClusterStatistics
   double mEntropy = 0;
   double mHuffman = 0;
   size_t mNTotalClusters = 0;
-#endif
 };
 } // namespace o2::gpu
 

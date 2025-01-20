@@ -38,13 +38,11 @@ class GPUTPCCFStreamCompaction : public GPUKernelTemplate
   struct GPUSharedMemory : public GPUKernelTemplate::GPUSharedMemoryScan64<int32_t, GPUCA_THREAD_COUNT_SCAN> {
   };
 
-#ifdef GPUCA_HAVE_O2HEADERS
   typedef GPUTPCClusterFinder processorType;
   GPUhdi() static processorType* Processor(GPUConstantMem& processors)
   {
     return processors.tpcClusterer;
   }
-#endif
 
   GPUhdi() constexpr static GPUDataTypes::RecoStep GetRecoStep()
   {

@@ -39,7 +39,6 @@ GPUd() void GPUTRDTrack_t<T>::initialize()
   }
 }
 
-#if defined(GPUCA_HAVE_O2HEADERS)
 #include "ReconstructionDataFormats/TrackTPCITS.h"
 #include "DataFormatsTPC/TrackTPC.h"
 
@@ -54,8 +53,6 @@ GPUd() GPUTRDTrack_t<T>::GPUTRDTrack_t(const o2::tpc::TrackTPC& t) : T(t)
 {
   initialize();
 }
-
-#endif
 
 template <typename T>
 GPUd() GPUTRDTrack_t<T>::GPUTRDTrack_t(const GPUTRDTrack_t<T>& t)

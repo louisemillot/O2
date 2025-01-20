@@ -36,9 +36,7 @@ class GlobalTrackID;
 } // namespace o2
 
 //_____________________________________________________________________________
-#if (!defined(GPUCA_STANDALONE)) || defined(GPUCA_HAVE_O2HEADERS)
 #include "GPUTRDInterfaceO2Track.h"
-#endif
 
 namespace o2
 {
