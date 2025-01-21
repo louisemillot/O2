@@ -20,10 +20,12 @@
 #include "GPUROOTDumpCore.h"
 #include <TTree.h>
 #include <TNtuple.h>
-#include <memory>
-#include <stdexcept>
 #else
 class TNtuple;
+#endif
+#ifndef GPUCA_GPUCODE
+#include <memory>
+#include <stdexcept>
 #endif
 
 namespace o2
