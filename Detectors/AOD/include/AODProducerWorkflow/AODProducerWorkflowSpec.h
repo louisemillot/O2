@@ -482,8 +482,6 @@ class AODProducerWorkflowDPL : public Task
   // using -1 as dummies for AOD
   struct MCLabels {
     uint32_t labelID = -1;
-    uint32_t labelITS = -1;
-    uint32_t labelTPC = -1;
     uint16_t labelMask = 0;
     uint8_t fwdLabelMask = 0;
   };

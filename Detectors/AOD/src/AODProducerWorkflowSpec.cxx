@@ -109,6 +109,7 @@ using PVertex = o2::dataformats::PrimaryVertex;
 using GIndex = o2::dataformats::VtxTrackIndex;
 using DataRequest = o2::globaltracking::DataRequest;
 using GID = o2::dataformats::GlobalTrackID;
+using DetID = o2::detectors::DetID;
 using SMatrix55Sym = ROOT::Math::SMatrix<double, 5, 5, ROOT::Math::MatRepSym<double, 5>>;
 
 namespace o2::aodproducer
@@ -1058,9 +1059,9 @@ void AODProducerWorkflowDPL::fillMCTrackLabelsTable(MCTrackLabelCursorType& mcTr
                                                     int vertexId)
 {
   // labelMask (temporary) usage:
-  //   bit 13 -- ITS/TPC or TPC/TOF labels are not equal
+  //   bit 13 -- ITS/TPC with ITS label (track of AB tracklet) different from TPC
   //   bit 14 -- isNoise() == true
-  //   bit 15 -- isFake() == true
+  //   bit 15 -- isFake() == true (defined by the fakeness of the top level global track, i.e. if TOF is present, fake means that the track of the TPC label does not contribute to TOF cluster)
   // labelID = -1 -- label is not set
 
   for (int src = GIndex::NSources; src--;) {
@@ -1084,7 +1085,7 @@ void AODProducerWorkflowDPL::fillMCTrackLabelsTable(MCTrackLabelCursorType& mcTr
 
       if (GIndex::includesSource(src, mInputSources)) {
         auto mcTruth = data.getTrackMCLabel(trackIndex);
-        MCLabels labelHolder;
+        MCLabels labelHolder{};
         if ((src == GIndex::Source::MFT) || (src == GIndex::Source::MFTMCH) || (src == GIndex::Source::MCH) || (src == GIndex::Source::MCHMID)) { // treating mft and fwd labels separately
           if (!needToStore(src == GIndex::Source::MFT ? mGIDToTableMFTID : mGIDToTableFwdID)) {
             continue;
@@ -1110,51 +1111,22 @@ void AODProducerWorkflowDPL::fillMCTrackLabelsTable(MCTrackLabelCursorType& mcTr
             continue;
           }
           if (mcTruth.isValid()) { // if not set, -1 will be stored
-            labelHolder.labelID = (mToStore[mcTruth.getSourceID()][mcTruth.getEventID()])[mcTruth.getTrackID()];
-          }
-          // treating possible mismatches and fakes for global tracks
-          auto contributorsGID = data.getSingleDetectorRefs(trackIndex);
-          bool isSetTPC = contributorsGID[GIndex::Source::TPC].isIndexSet();
-          bool isSetITS = contributorsGID[GIndex::Source::ITS].isIndexSet();
-          bool isSetTOF = contributorsGID[GIndex::Source::TOF].isIndexSet();
-          bool isTOFFake = true;
-          if (isSetTPC && (isSetITS || isSetTOF)) {
-            auto mcTruthTPC = data.getTrackMCLabel(contributorsGID[GIndex::Source::TPC]);
-            if (mcTruthTPC.isValid()) {
-              labelHolder.labelTPC = (mToStore[mcTruthTPC.getSourceID()][mcTruthTPC.getEventID()])[mcTruthTPC.getTrackID()];
-              labelHolder.labelID = labelHolder.labelTPC;
+            labelHolder.labelID = (mToStore[mcTruth.getSourceID()][mcTruth.getEventID()])[mcTruth.getTrackID()]; // defined by TPC if it contributes, otherwise: by ITS
+            if (mcTruth.isFake()) {
+              labelHolder.labelMask |= (0x1 << 15);
             }
-            if (isSetITS) {
-              auto mcTruthITS = data.getTrackMCLabel(contributorsGID[GIndex::Source::ITS]);
-              if (mcTruthITS.isValid()) {
-                labelHolder.labelITS = (mToStore[mcTruthITS.getSourceID()][mcTruthITS.getEventID()])[mcTruthITS.getTrackID()];
-              }
-              if (labelHolder.labelITS != labelHolder.labelTPC) {
-                LOG(debug) << "ITS-TPC MCTruth: labelIDs do not match at " << trackIndex.getIndex() << ", src = " << src;
-                labelHolder.labelMask |= (0x1 << 13);
-              }
-            }
-            if (isSetTOF) {
-              const auto& labelsTOF = data.getTOFClustersMCLabels()->getLabels(contributorsGID[GIndex::Source::TOF]);
-              for (auto& mcLabel : labelsTOF) {
-                if (!mcLabel.isValid()) {
-                  continue;
-                }
-                if (mcLabel == labelHolder.labelTPC) {
-                  isTOFFake = false;
-                  break;
+            if (trackIndex.includesDet(DetID::TPC) && trackIndex.getSource() != GIndex::Source::TPC) { // this is global track
+              auto contributorsGID = data.getSingleDetectorRefs(trackIndex);
+              if (contributorsGID[GIndex::Source::ITSTPC].isIndexSet()) { // there is a match to ITS tracks or ITSAB tracklet!
+                if (data.getTrackMCLabel(contributorsGID[GIndex::Source::ITSTPC]).isFake()) {
+                  labelHolder.labelMask |= (0x1 << 13);
                 }
               }
             }
-          }
-          if (mcTruth.isFake() || (isSetTOF && isTOFFake)) {
-            labelHolder.labelMask |= (0x1 << 15);
-          }
-          if (mcTruth.isNoise()) {
+          } else if (mcTruth.isNoise()) {
             labelHolder.labelMask |= (0x1 << 14);
           }
-          mcTrackLabelCursor(labelHolder.labelID,
-                             labelHolder.labelMask);
+          mcTrackLabelCursor(labelHolder.labelID, labelHolder.labelMask);
         }
       }
     }
