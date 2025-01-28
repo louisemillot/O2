@@ -83,6 +83,9 @@ struct Configurable : IP {
 template <typename T, ConfigParamKind K = ConfigParamKind::kGeneric>
 using MutableConfigurable = Configurable<T, K, ConfigurablePolicyMutable<T, K>>;
 
+template <typename T>
+concept is_configurable = requires(T& t) { &T::operator typename T::type; };
+
 using ConfigurableAxis = Configurable<std::vector<double>, ConfigParamKind::kAxisSpec, ConfigurablePolicyConst<std::vector<double>, ConfigParamKind::kAxisSpec>>;
 
 template <typename R, typename T, typename... As>
@@ -97,7 +100,7 @@ struct ProcessConfigurable : Configurable<bool, ConfigParamKind::kProcessFlag> {
 };
 
 template <typename T>
-concept is_process_configurable = base_of_template<ProcessConfigurable, T>;
+concept is_process_configurable = is_configurable<T> && requires(T& t) { t.process; };
 
 #define PROCESS_SWITCH(_Class_, _Name_, _Help_, _Default_) \
   decltype(ProcessConfigurable{&_Class_ ::_Name_, #_Name_, _Default_, _Help_}) do##_Name_ = ProcessConfigurable{&_Class_ ::_Name_, #_Name_, _Default_, _Help_};
