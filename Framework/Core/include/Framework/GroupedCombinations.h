@@ -34,30 +34,14 @@ auto interleaveTuples(std::tuple<T1s...>& t1, std::tuple<T2s...>& t2)
   return interleaveTuplesImpl(t1, t2, std::index_sequence_for<T1s...>());
 }
 
-template <soa::is_index_column T, typename G>
-  requires(!soa::is_self_index_column<T>)
-consteval auto isIndexTo()
-{
-  if constexpr (o2::soa::is_binding_compatible_v<G, typename T::binding_t>()) {
-    return std::true_type{};
-  } else {
-    return std::false_type{};
-  }
-}
-
 template <typename T, typename G>
-consteval auto isIndexTo()
-{
-  return std::false_type{};
-}
-
-template <typename T, typename G>
-using is_index_to_g_t = decltype(isIndexTo<T, G>());
+using is_index_to_g_t = typename std::conditional<o2::soa::is_binding_compatible_v<G, typename T::binding_t>(), std::true_type, std::false_type>::type;
 
 template <typename G, typename A>
 expressions::BindingNode getMatchingIndexNode()
 {
-  using selected_indices_t = selected_pack_multicondition<is_index_to_g_t, pack<G>, typename A::columns_t>;
+  using external_index_columns_pack = typename A::external_index_columns_t;
+  using selected_indices_t = selected_pack_multicondition<is_index_to_g_t, pack<G>, external_index_columns_pack>;
   static_assert(pack_size(selected_indices_t{}) == 1, "No matching index column from associated to grouping");
   using index_column_t = pack_head_t<selected_indices_t>;
   return expressions::BindingNode{index_column_t::mLabel, o2::framework::TypeIdHelpers::uniqueId<typename index_column_t::column_t>(), expressions::selectArrowType<typename index_column_t::type>()};
