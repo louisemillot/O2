@@ -408,7 +408,7 @@ bool GeneratorHybrid::importParticles()
 
   mseqCounter++;
   mEventCounter++;
-  if (mEventCounter == mNEvents) {
+  if (mEventCounter == getTotalNEvents()) {
     LOG(info) << "HybridGen: Stopping TBB task pool";
     mStopFlag = true;
   }
