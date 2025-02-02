@@ -30,11 +30,8 @@ int32_t GPUChainTracking::GlobalTracking(uint32_t iSlice, int32_t threadId, bool
     GPUInfo("GPU Tracker running Global Tracking for slice %u on thread %d\n", iSlice, threadId);
   }
 
-  GPUReconstruction::krnlDeviceType deviceType = GetProcessingSettings().fullMergerOnGPU ? GPUReconstruction::krnlDeviceType::Auto : GPUReconstruction::krnlDeviceType::CPU;
-  runKernel<GPUTPCGlobalTracking>({GetGridBlk(256, iSlice % mRec->NStreams(), deviceType), {iSlice}});
-  if (GetProcessingSettings().fullMergerOnGPU) {
-    TransferMemoryResourceLinkToHost(RecoStep::TPCSliceTracking, processors()->tpcTrackers[iSlice].MemoryResCommon(), iSlice % mRec->NStreams());
-  }
+  runKernel<GPUTPCGlobalTracking>({GetGridBlk(256, iSlice % mRec->NStreams()), {iSlice}});
+  TransferMemoryResourceLinkToHost(RecoStep::TPCSliceTracking, processors()->tpcTrackers[iSlice].MemoryResCommon(), iSlice % mRec->NStreams());
   if (synchronizeOutput) {
     SynchronizeStream(iSlice % mRec->NStreams());
   }
@@ -450,7 +447,7 @@ int32_t GPUChainTracking::RunTPCTrackingSlices_internal()
             blocking[tmpSlice * mRec->NStreams() + sliceRight % mRec->NStreams()] = true;
           }
         }
-        GlobalTracking(tmpSlice, 0, !GetProcessingSettings().fullMergerOnGPU);
+        GlobalTracking(tmpSlice, 0, false);
       }
     }
     for (uint32_t iSlice = 0; iSlice < NSLICES; iSlice++) {

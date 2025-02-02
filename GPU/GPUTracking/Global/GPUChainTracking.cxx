@@ -185,12 +185,8 @@ bool GPUChainTracking::ValidateSteps()
     GPUError("Invalid input, TPC Clusterizer needs TPC raw input");
     return false;
   }
-  if (param().rec.tpc.mergerReadFromTrackerDirectly && (GetRecoSteps() & GPUDataTypes::RecoStep::TPCMerging) && ((GetRecoStepsInputs() & GPUDataTypes::InOutType::TPCSectorTracks) || (GetRecoStepsOutputs() & GPUDataTypes::InOutType::TPCSectorTracks) || !(GetRecoSteps() & GPUDataTypes::RecoStep::TPCConversion))) {
-    GPUError("Invalid input / output / step, mergerReadFromTrackerDirectly cannot read/store sectors tracks and needs TPC conversion");
-    return false;
-  }
-  if (!GetProcessingSettings().fullMergerOnGPU && (param().rec.tpc.mergerReadFromTrackerDirectly || GetProcessingSettings().createO2Output) && (GetRecoStepsGPU() & GPUDataTypes::RecoStep::TPCMerging)) {
-    GPUError("createO2Output and mergerReadFromTrackerDirectly works only in combination with fullMergerOnGPU if the merger is to run on GPU");
+  if ((GetRecoSteps() & GPUDataTypes::RecoStep::TPCMerging) && ((GetRecoStepsInputs() & GPUDataTypes::InOutType::TPCSectorTracks) || (GetRecoStepsOutputs() & GPUDataTypes::InOutType::TPCSectorTracks) || !(GetRecoSteps() & GPUDataTypes::RecoStep::TPCConversion))) {
+    GPUError("Invalid input / output / step, merger cannot read/store sectors tracks and needs TPC conversion");
     return false;
   }
   bool tpcClustersAvail = (GetRecoStepsInputs() & GPUDataTypes::InOutType::TPCClusters) || (GetRecoSteps() & GPUDataTypes::RecoStep::TPCClusterFinding) || (GetRecoSteps() & GPUDataTypes::RecoStep::TPCDecompression);
@@ -263,14 +259,6 @@ bool GPUChainTracking::ValidateSettings()
   }
   if (param().rec.tpc.mergerInterpolateErrors && param().rec.tpc.nWays == 1) {
     GPUError("Cannot do error interpolation with NWays = 1!");
-    return false;
-  }
-  if ((param().rec.tpc.mergerReadFromTrackerDirectly || !param().par.earlyTpcTransform) && param().rec.nonConsecutiveIDs) {
-    GPUError("incompatible settings for non consecutive ids");
-    return false;
-  }
-  if (!param().rec.tpc.mergerReadFromTrackerDirectly && GetProcessingSettings().ompKernels) {
-    GPUError("OMP Kernels require mergerReadFromTrackerDirectly");
     return false;
   }
   if (param().continuousMaxTimeBin > (int32_t)GPUSettings::TPC_MAX_TF_TIME_BIN) {
@@ -743,10 +731,6 @@ int32_t GPUChainTracking::RunChain()
     return 1;
   }
 
-  for (uint32_t i = 0; i < NSLICES; i++) {
-    // GPUInfo("slice %d clusters %d tracks %d", i, mClusterData[i].NumberOfClusters(), processors()->tpcTrackers[i].Output()->NTracks());
-    processors()->tpcMerger.SetSliceData(i, param().rec.tpc.mergerReadFromTrackerDirectly ? nullptr : processors()->tpcTrackers[i].Output());
-  }
   if (runRecoStep(RecoStep::TPCMerging, &GPUChainTracking::RunTPCTrackingMerger, false)) {
     return 1;
   }

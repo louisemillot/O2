@@ -164,7 +164,7 @@ int32_t ReadConfiguration(int argc, char** argv)
   }
 #endif
 #ifndef GPUCA_TPC_GEOMETRY_O2
-  configStandalone.rec.tpc.mergerReadFromTrackerDirectly = 0;
+#error Why was configStandalone.rec.tpc.mergerReadFromTrackerDirectly = 0 needed?
   configStandalone.proc.ompKernels = false;
   configStandalone.proc.createO2Output = 0;
   if (configStandalone.rundEdx == -1) {
@@ -412,7 +412,7 @@ int32_t SetupReconstruction()
   }
 
   steps.outputs.clear();
-  steps.outputs.setBits(GPUDataTypes::InOutType::TPCSectorTracks, steps.steps.isSet(GPUDataTypes::RecoStep::TPCSliceTracking) && !recSet.tpc.mergerReadFromTrackerDirectly);
+  steps.outputs.setBits(GPUDataTypes::InOutType::TPCSectorTracks, false);
   steps.outputs.setBits(GPUDataTypes::InOutType::TPCMergedTracks, steps.steps.isSet(GPUDataTypes::RecoStep::TPCMerging));
   steps.outputs.setBits(GPUDataTypes::InOutType::TPCCompressedClusters, steps.steps.isSet(GPUDataTypes::RecoStep::TPCCompression));
   steps.outputs.setBits(GPUDataTypes::InOutType::TRDTracks, steps.steps.isSet(GPUDataTypes::RecoStep::TRDTracking));

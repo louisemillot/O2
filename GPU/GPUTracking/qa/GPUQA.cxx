@@ -909,11 +909,6 @@ void GPUQA::RunQA(bool matchOnly, const std::vector<o2::tpc::TrackTPC>* tracksEx
 
   bool mcAvail = mcPresent() || tracksExtMC;
 
-  if (mcAvail && !tracksExtMC && mTracking->GetParam().rec.nonConsecutiveIDs) {
-    GPUError("QA incompatible to non-consecutive MC labels");
-    return;
-  }
-
   if (mcAvail) {
     // Assign Track MC Labels
     timer.Start();

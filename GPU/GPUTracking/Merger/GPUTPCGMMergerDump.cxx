@@ -67,7 +67,7 @@ void GPUTPCGMMerger::DumpMergeRanges(std::ostream& out, int32_t withinSlice, int
     GPUTPCGMBorderTrack *b1, *b2;
     int32_t jSlice;
     MergeBorderTracksSetup(n1, n2, b1, b2, jSlice, i, withinSlice, mergeMode);
-    const int32_t nTrk = Param().rec.tpc.mergerReadFromTrackerDirectly ? *mRec->GetConstantMem().tpcTrackers[jSlice].NTracks() : mkSlices[jSlice]->NTracks();
+    const int32_t nTrk = *mRec->GetConstantMem().tpcTrackers[jSlice].NTracks();
     const gputpcgmmergertypes::GPUTPCGMBorderRange* range1 = BorderRange(i);
     const gputpcgmmergertypes::GPUTPCGMBorderRange* range2 = BorderRange(jSlice) + nTrk;
     out << "\nBorder Tracks : i " << i << " withinSlice " << withinSlice << " mergeMode " << mergeMode << "\n";
@@ -174,7 +174,7 @@ void GPUTPCGMMerger::DumpFitPrepare(std::ostream& out) const
     }
     out << "\n";
   }
-  uint32_t maxId = Param().rec.nonConsecutiveIDs ? mMemory->nOutputTrackClusters : mNMaxClusters;
+  uint32_t maxId = mNMaxClusters;
   uint32_t j = 0;
   for (uint32_t i = 0; i < maxId; i++) {
     if ((mClusterAttachment[i] & attachFlagMask) != 0) {
@@ -225,7 +225,7 @@ void GPUTPCGMMerger::DumpFinal(std::ostream& out) const
     }
     out << "\n";
   }
-  uint32_t maxId = Param().rec.nonConsecutiveIDs ? mMemory->nOutputTrackClusters : mNMaxClusters;
+  uint32_t maxId = mNMaxClusters;
   uint32_t j = 0;
   for (uint32_t i = 0; i < maxId; i++) {
     if ((mClusterAttachment[i] & attachFlagMask) != 0) {
