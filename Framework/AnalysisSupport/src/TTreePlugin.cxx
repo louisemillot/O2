@@ -15,6 +15,7 @@
 #include "Framework/Endian.h"
 #include <arrow/dataset/file_base.h>
 #include <arrow/extension_type.h>
+#include <arrow/status.h>
 #include <arrow/type.h>
 #include <arrow/util/key_value_metadata.h>
 #include <arrow/array/array_nested.h>
@@ -26,7 +27,6 @@
 #include <TFile.h>
 #include <TLeaf.h>
 #include <memory>
-#include <iostream>
 
 O2_DECLARE_DYNAMIC_LOG(root_arrow_fs);
 
@@ -48,71 +48,11 @@ class TTreeFileSystem : public VirtualRootFileSystemBase
  public:
   ~TTreeFileSystem() override;
 
-  std::shared_ptr<VirtualRootFileSystemBase> GetSubFilesystem(arrow::dataset::FileSource source) override
-  {
-    return std::dynamic_pointer_cast<VirtualRootFileSystemBase>(shared_from_this());
-  };
-
   arrow::Result<std::shared_ptr<arrow::io::OutputStream>> OpenOutputStream(
     const std::string& path,
     const std::shared_ptr<const arrow::KeyValueMetadata>& metadata) override;
 
   virtual std::unique_ptr<TTree>& GetTree(arrow::dataset::FileSource source) = 0;
-};
-
-class SingleTreeFileSystem : public TTreeFileSystem
-{
- public:
-  SingleTreeFileSystem(TTree* tree)
-    : TTreeFileSystem(),
-      mTree(tree)
-  {
-  }
-
-  arrow::Result<arrow::fs::FileInfo> GetFileInfo(std::string const& path) override;
-
-  std::string type_name() const override
-  {
-    return "ttree";
-  }
-
-  std::unique_ptr<TTree>& GetTree(arrow::dataset::FileSource) override
-  {
-    // Simply return the only TTree we have
-    return mTree;
-  }
-
- private:
-  std::unique_ptr<TTree> mTree;
-};
-
-arrow::Result<arrow::fs::FileInfo> SingleTreeFileSystem::GetFileInfo(std::string const& path)
-{
-  arrow::dataset::FileSource source(path, shared_from_this());
-  arrow::fs::FileInfo result;
-  result.set_path(path);
-  result.set_type(arrow::fs::FileType::File);
-  return result;
-}
-
-// A fragment which holds a tree
-class TTreeFileFragment : public arrow::dataset::FileFragment
-{
- public:
-  TTreeFileFragment(arrow::dataset::FileSource source,
-                    std::shared_ptr<arrow::dataset::FileFormat> format,
-                    arrow::compute::Expression partition_expression,
-                    std::shared_ptr<arrow::Schema> physical_schema)
-    : FileFragment(std::move(source), std::move(format), std::move(partition_expression), std::move(physical_schema))
-  {
-  }
-
-  std::unique_ptr<TTree>& GetTree()
-  {
-    auto topFs = std::dynamic_pointer_cast<VirtualRootFileSystemBase>(source().filesystem());
-    auto treeFs = std::dynamic_pointer_cast<TTreeFileSystem>(topFs->GetSubFilesystem(source()));
-    return treeFs->GetTree(source());
-  }
 };
 
 class TTreeFileFormat : public arrow::dataset::FileFormat
@@ -143,11 +83,10 @@ class TTreeFileFormat : public arrow::dataset::FileFormat
   arrow::Result<bool> IsSupported(const arrow::dataset::FileSource& source) const override
   {
     auto fs = std::dynamic_pointer_cast<VirtualRootFileSystemBase>(source.filesystem());
-    auto subFs = fs->GetSubFilesystem(source);
-    if (std::dynamic_pointer_cast<TTreeFileSystem>(subFs)) {
-      return true;
+    if (!fs) {
+      return false;
     }
-    return false;
+    return fs->CheckSupport(source);
   }
 
   arrow::Result<std::shared_ptr<arrow::Schema>> Inspect(const arrow::dataset::FileSource& source) const override;
@@ -163,6 +102,80 @@ class TTreeFileFormat : public arrow::dataset::FileFormat
   arrow::Result<arrow::RecordBatchGenerator> ScanBatchesAsync(
     const std::shared_ptr<arrow::dataset::ScanOptions>& options,
     const std::shared_ptr<arrow::dataset::FileFragment>& fragment) const override;
+};
+
+class SingleTreeFileSystem : public TTreeFileSystem
+{
+ public:
+  SingleTreeFileSystem(TTree* tree)
+    : TTreeFileSystem(),
+      mTree(tree)
+  {
+  }
+
+  arrow::Result<arrow::fs::FileInfo> GetFileInfo(std::string const& path) override;
+
+  std::string type_name() const override
+  {
+    return "ttree";
+  }
+
+  std::shared_ptr<RootObjectHandler> GetObjectHandler(arrow::dataset::FileSource source) override
+  {
+    return std::make_shared<RootObjectHandler>((void*)mTree.get(), std::make_shared<TTreeFileFormat>(mTotCompressedSize, mTotUncompressedSize));
+  }
+
+  std::unique_ptr<TTree>& GetTree(arrow::dataset::FileSource) override
+  {
+    // Simply return the only TTree we have
+    return mTree;
+  }
+
+ private:
+  size_t mTotUncompressedSize;
+  size_t mTotCompressedSize;
+  std::unique_ptr<TTree> mTree;
+};
+
+arrow::Result<arrow::fs::FileInfo> SingleTreeFileSystem::GetFileInfo(std::string const& path)
+{
+  arrow::dataset::FileSource source(path, shared_from_this());
+  arrow::fs::FileInfo result;
+  result.set_path(path);
+  result.set_type(arrow::fs::FileType::File);
+  return result;
+}
+
+// A fragment which holds a tree
+class TTreeFileFragment : public arrow::dataset::FileFragment
+{
+ public:
+  TTreeFileFragment(arrow::dataset::FileSource source,
+                    std::shared_ptr<arrow::dataset::FileFormat> format,
+                    arrow::compute::Expression partition_expression,
+                    std::shared_ptr<arrow::Schema> physical_schema)
+    : FileFragment(source, format, std::move(partition_expression), physical_schema)
+  {
+    auto rootFS = std::dynamic_pointer_cast<VirtualRootFileSystemBase>(this->source().filesystem());
+    if (rootFS.get() == nullptr) {
+      throw runtime_error_f("Unknown filesystem %s when reading %s.",
+                            source.filesystem()->type_name().c_str(), source.path().c_str());
+    }
+    auto objectHandler = rootFS->GetObjectHandler(source);
+    if (!objectHandler->format->Equals(*format)) {
+      throw runtime_error_f("Cannot read source %s with format %s to pupulate a TTreeFileFragment.",
+                            source.path().c_str(), objectHandler->format->type_name().c_str());
+    };
+    mTree = objectHandler->GetObjectAsOwner<TTree>();
+  }
+
+  TTree* GetTree()
+  {
+    return mTree.get();
+  }
+
+ private:
+  std::unique_ptr<TTree> mTree;
 };
 
 // An arrow outputstream which allows to write to a TTree. Eventually
@@ -250,9 +263,6 @@ struct TTreeObjectReadingImplementation : public RootArrowFactoryPlugin {
     return new RootArrowFactory{
       .options = [context]() { return context->format->DefaultWriteOptions(); },
       .format = [context]() { return context->format; },
-      .getSubFilesystem = [](void* handle) {
-        auto tree = (TTree*)handle;
-        return std::shared_ptr<VirtualRootFileSystemBase>(new SingleTreeFileSystem(tree)); },
     };
   }
 };
@@ -269,16 +279,16 @@ arrow::Result<arrow::RecordBatchGenerator> TTreeFileFormat::ScanBatchesAsync(
 {
   // This is the schema we want to read
   auto dataset_schema = options->dataset_schema;
+  auto treeFragment = std::dynamic_pointer_cast<TTreeFileFragment>(fragment);
+  if (treeFragment.get() == nullptr) {
+    return {arrow::Status::NotImplemented("Not a ttree fragment")};
+  }
 
-  auto generator = [pool = options->pool, fragment, dataset_schema, &totalCompressedSize = mTotCompressedSize,
+  auto generator = [pool = options->pool, treeFragment, dataset_schema, &totalCompressedSize = mTotCompressedSize,
                     &totalUncompressedSize = mTotUncompressedSize]() -> arrow::Future<std::shared_ptr<arrow::RecordBatch>> {
     std::vector<std::shared_ptr<arrow::Array>> columns;
     std::vector<std::shared_ptr<arrow::Field>> fields = dataset_schema->fields();
-    auto physical_schema = *fragment->ReadPhysicalSchema();
-
-    auto fs = std::dynamic_pointer_cast<VirtualRootFileSystemBase>(fragment->source().filesystem());
-    // Actually get the TTree from the ROOT file.
-    auto treeFs = std::dynamic_pointer_cast<TTreeFileSystem>(fs->GetSubFilesystem(fragment->source()));
+    auto physical_schema = *treeFragment->ReadPhysicalSchema();
 
     if (dataset_schema->num_fields() > physical_schema->num_fields()) {
       throw runtime_error_f("One TTree must have all the fields requested in a table");
@@ -301,7 +311,7 @@ arrow::Result<arrow::RecordBatchGenerator> TTreeFileFormat::ScanBatchesAsync(
       }
     }
 
-    auto& tree = treeFs->GetTree(fragment->source());
+    auto* tree = treeFragment->GetTree();
     tree->SetCacheSize(25000000);
     auto branches = tree->GetListOfBranches();
     for (auto& mapping : mappings) {
@@ -586,12 +596,19 @@ struct RootTransientIndexType : arrow::ExtensionType {
 arrow::Result<std::shared_ptr<arrow::Schema>> TTreeFileFormat::Inspect(const arrow::dataset::FileSource& source) const
 {
   auto fs = std::dynamic_pointer_cast<VirtualRootFileSystemBase>(source.filesystem());
-  // Actually get the TTree from the ROOT file.
-  auto treeFs = std::dynamic_pointer_cast<TTreeFileSystem>(fs->GetSubFilesystem(source));
-  if (!treeFs.get()) {
+
+  if (!fs.get()) {
     throw runtime_error_f("Unknown filesystem %s\n", source.filesystem()->type_name().c_str());
   }
-  auto& tree = treeFs->GetTree(source);
+  auto objectHandler = fs->GetObjectHandler(source);
+
+  if (!objectHandler->format->Equals(*this)) {
+    throw runtime_error_f("Unknown filesystem %s\n", source.filesystem()->type_name().c_str());
+  }
+
+  // Notice that we abuse of the API here and do not release the TTree,
+  // so that it's still managed by ROOT.
+  auto tree = objectHandler->GetObjectAsOwner<TTree>().release();
 
   auto branches = tree->GetListOfBranches();
   auto n = branches->GetEntries();
@@ -636,10 +653,9 @@ arrow::Result<std::shared_ptr<arrow::dataset::FileFragment>> TTreeFileFormat::Ma
   std::shared_ptr<arrow::Schema> physical_schema)
 {
 
-  auto fragment = std::make_shared<TTreeFileFragment>(std::move(source), std::dynamic_pointer_cast<arrow::dataset::FileFormat>(shared_from_this()),
-                                                      std::move(partition_expression),
-                                                      std::move(physical_schema));
-  return std::dynamic_pointer_cast<arrow::dataset::FileFragment>(fragment);
+  return std::make_shared<TTreeFileFragment>(source, std::dynamic_pointer_cast<arrow::dataset::FileFormat>(shared_from_this()),
+                                             std::move(partition_expression),
+                                             physical_schema);
 }
 
 class TTreeFileWriter : public arrow::dataset::FileWriter

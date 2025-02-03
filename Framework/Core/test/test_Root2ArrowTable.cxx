@@ -565,12 +565,23 @@ TEST_CASE("RootTree2Dataset")
   {
     REQUIRE(success.ok());
     // Let's read it back...
+    auto tfileFs = std::dynamic_pointer_cast<TFileFileSystem>(outFs);
+    REQUIRE(tfileFs.get());
+    REQUIRE(tfileFs->GetFile());
+    REQUIRE(tfileFs->GetFile()->GetObjectChecked("/DF_3", TClass::GetClass("TTree")));
     arrow::dataset::FileSource source2("/DF_3", outFs);
-    auto newTreeFS = outFs->GetSubFilesystem(source2);
 
-    REQUIRE(format->IsSupported(source) == true);
+    REQUIRE(format->IsSupported(source2) == true);
+    tfileFs = std::dynamic_pointer_cast<TFileFileSystem>(source2.filesystem());
+    REQUIRE(tfileFs.get());
+    REQUIRE(tfileFs->GetFile());
+    REQUIRE(tfileFs->GetFile()->GetObjectChecked("/DF_3", TClass::GetClass("TTree")));
 
-    auto schemaOptWritten = format->Inspect(source);
+    auto schemaOptWritten = format->Inspect(source2);
+    tfileFs = std::dynamic_pointer_cast<TFileFileSystem>(source2.filesystem());
+    REQUIRE(tfileFs.get());
+    REQUIRE(tfileFs->GetFile());
+    REQUIRE(tfileFs->GetFile()->GetObjectChecked("/DF_3", TClass::GetClass("TTree")));
     REQUIRE(schemaOptWritten.ok());
     auto schemaWritten = *schemaOptWritten;
 
@@ -585,7 +596,7 @@ TEST_CASE("RootTree2Dataset")
     std::shared_ptr<arrow::Schema> schema = std::make_shared<arrow::Schema>(fields);
     REQUIRE(validateSchema(schema));
 
-    auto fragmentWritten = format->MakeFragment(source, {}, *physicalSchema);
+    auto fragmentWritten = format->MakeFragment(source2, {}, *physicalSchema);
     REQUIRE(fragmentWritten.ok());
     auto optionsWritten = std::make_shared<arrow::dataset::ScanOptions>();
     options->dataset_schema = schema;
@@ -610,7 +621,6 @@ TEST_CASE("RootTree2Dataset")
 
   // And now we can read back the RNTuple into a RecordBatch
   arrow::dataset::FileSource writtenRntupleSource("/rntuple", outFs);
-  auto newRNTupleFS = outFs->GetSubFilesystem(writtenRntupleSource);
 
   REQUIRE(rNtupleFormat->IsSupported(writtenRntupleSource) == true);
 
