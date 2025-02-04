@@ -104,7 +104,6 @@ set(HDRS_INSTALL
     Base/GPUConstantMem.h
     Base/GPUParam.inc
     Base/GPUParamRTC.h
-    Base/GPUReconstructionHelpers.h
     Base/GPUReconstructionIncludes.h
     Base/GPUReconstructionIncludesITS.h
     Base/GPUReconstructionKernelMacros.h

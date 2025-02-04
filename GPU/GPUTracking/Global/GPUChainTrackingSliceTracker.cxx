@@ -55,9 +55,6 @@ int32_t GPUChainTracking::RunTPCTrackingSlices()
   if (retVal) {
     SynchronizeGPU();
   }
-  if (retVal >= 2) {
-    ResetHelperThreads(retVal >= 3);
-  }
   return (retVal != 0);
 }
 
@@ -114,9 +111,6 @@ int32_t GPUChainTracking::RunTPCTrackingSlices_internal()
       processorsShadow()->tpcTrackers[iSlice].SetGPUTextureBase(mRec->DeviceMemoryBase());
     }
 
-    if (!doSliceDataOnGPU) {
-      RunHelperThreads(&GPUChainTracking::HelperReadEvent, this, NSLICES);
-    }
     if (PrepareTextures()) {
       return (2);
     }
@@ -183,19 +177,9 @@ int32_t GPUChainTracking::RunTPCTrackingSlices_internal()
       TransferMemoryResourcesToGPU(RecoStep::TPCSliceTracking, &trk, useStream);
       runKernel<GPUTPCCreateSliceData>({GetGridBlk(GPUCA_ROW_COUNT, useStream), {iSlice}, {nullptr, streamInit[useStream] ? nullptr : &mEvents->init}});
       streamInit[useStream] = true;
-    } else if (!doGPU || iSlice % (GetProcessingSettings().nDeviceHelperThreads + 1) == 0) {
+    } else {
       if (ReadEvent(iSlice, 0)) {
         GPUError("Error reading event");
-        error = 1;
-        continue;
-      }
-    } else {
-      if (GetProcessingSettings().debugLevel >= 3) {
-        GPUInfo("Waiting for helper thread %d", iSlice % (GetProcessingSettings().nDeviceHelperThreads + 1) - 1);
-      }
-      while (HelperDone(iSlice % (GetProcessingSettings().nDeviceHelperThreads + 1) - 1) < (int32_t)iSlice) {
-      }
-      if (HelperError(iSlice % (GetProcessingSettings().nDeviceHelperThreads + 1) - 1)) {
         error = 1;
         continue;
       }
@@ -297,9 +281,6 @@ int32_t GPUChainTracking::RunTPCTrackingSlices_internal()
     if (doGPU) {
       ReleaseEvent(mEvents->init);
     }
-    if (!doSliceDataOnGPU) {
-      WaitForHelperThreads();
-    }
 
     if (!GetProcessingSettings().trackletSelectorInPipeline) {
       if (GetProcessingSettings().trackletConstructorInPipeline) {
@@ -359,7 +340,6 @@ int32_t GPUChainTracking::RunTPCTrackingSlices_internal()
       if (param().rec.tpc.globalTracking) {
         mWriteOutputDone.fill(0);
       }
-      RunHelperThreads(&GPUChainTracking::HelperOutput, this, NSLICES);
 
       uint32_t tmpSlice = 0;
       for (uint32_t iSlice = 0; iSlice < NSLICES; iSlice++) {
@@ -402,12 +382,12 @@ int32_t GPUChainTracking::RunTPCTrackingSlices_internal()
         }
 
         if (GetProcessingSettings().debugLevel >= 3) {
-          GPUInfo("Data ready for slice %d, helper thread %d", iSlice, iSlice % (GetProcessingSettings().nDeviceHelperThreads + 1));
+          GPUInfo("Data ready for slice %d", iSlice);
         }
         mSliceSelectorReady = iSlice;
 
         if (param().rec.tpc.globalTracking) {
-          for (uint32_t tmpSlice2a = 0; tmpSlice2a <= iSlice; tmpSlice2a += GetProcessingSettings().nDeviceHelperThreads + 1) {
+          for (uint32_t tmpSlice2a = 0; tmpSlice2a <= iSlice; tmpSlice2a++) {
             uint32_t tmpSlice2 = GPUTPCGlobalTracking::GlobalTrackingSliceOrder(tmpSlice2a);
             uint32_t sliceLeft, sliceRight;
             GPUTPCGlobalTracking::GlobalTrackingSliceLeftRight(tmpSlice2, sliceLeft, sliceRight);
@@ -419,12 +399,9 @@ int32_t GPUChainTracking::RunTPCTrackingSlices_internal()
             }
           }
         } else {
-          if (iSlice % (GetProcessingSettings().nDeviceHelperThreads + 1) == 0) {
-            WriteOutput(iSlice, 0);
-          }
+          WriteOutput(iSlice, 0);
         }
       }
-      WaitForHelperThreads();
     }
     if (!(GetRecoStepsOutputs() & GPUDataTypes::InOutType::TPCSectorTracks) && param().rec.tpc.globalTracking) {
       std::vector<bool> blocking(NSLICES * mRec->NStreams());
@@ -518,43 +495,9 @@ void GPUChainTracking::WriteOutput(int32_t iSlice, int32_t threadId)
   if (GetProcessingSettings().debugLevel >= 5) {
     GPUInfo("Running WriteOutput for slice %d on thread %d\n", iSlice, threadId);
   }
-  if (GetProcessingSettings().nDeviceHelperThreads) {
-    while (mLockAtomicOutputBuffer.test_and_set(std::memory_order_acquire)) {
-    }
-  }
   processors()->tpcTrackers[iSlice].WriteOutputPrepare();
-  if (GetProcessingSettings().nDeviceHelperThreads) {
-    mLockAtomicOutputBuffer.clear();
-  }
   processors()->tpcTrackers[iSlice].WriteOutput();
   if (GetProcessingSettings().debugLevel >= 5) {
     GPUInfo("Finished WriteOutput for slice %d on thread %d\n", iSlice, threadId);
   }
-}
-
-int32_t GPUChainTracking::HelperReadEvent(int32_t iSlice, int32_t threadId, GPUReconstructionHelpers::helperParam* par) { return ReadEvent(iSlice, threadId); }
-
-int32_t GPUChainTracking::HelperOutput(int32_t iSlice, int32_t threadId, GPUReconstructionHelpers::helperParam* par)
-{
-  if (param().rec.tpc.globalTracking) {
-    uint32_t tmpSlice = GPUTPCGlobalTracking::GlobalTrackingSliceOrder(iSlice);
-    uint32_t sliceLeft, sliceRight;
-    GPUTPCGlobalTracking::GlobalTrackingSliceLeftRight(tmpSlice, sliceLeft, sliceRight);
-
-    while (mSliceSelectorReady < (int32_t)tmpSlice || mSliceSelectorReady < (int32_t)sliceLeft || mSliceSelectorReady < (int32_t)sliceRight) {
-      if (par->reset) {
-        return 1;
-      }
-    }
-    GlobalTracking(tmpSlice, 0);
-    WriteOutput(tmpSlice, 0);
-  } else {
-    while (mSliceSelectorReady < iSlice) {
-      if (par->reset) {
-        return 1;
-      }
-    }
-    WriteOutput(iSlice, threadId);
-  }
-  return 0;
 }

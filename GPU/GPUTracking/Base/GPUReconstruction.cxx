@@ -278,9 +278,6 @@ int32_t GPUReconstruction::InitPhaseBeforeDevice()
   if (!(mRecoSteps.stepsGPUMask & GPUDataTypes::RecoStep::TPCMerging)) {
     mProcessingSettings.mergerSortTracks = false;
   }
-  if (!IsGPU()) {
-    mProcessingSettings.nDeviceHelperThreads = 0;
-  }
 
   if (mProcessingSettings.debugLevel > 3 || !IsGPU() || mProcessingSettings.deterministicGPUReconstruction) {
     mProcessingSettings.delayedOutput = false;

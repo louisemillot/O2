@@ -16,7 +16,6 @@
 #define GPUCHAIN_H
 
 #include "GPUReconstructionCPU.h"
-#include "GPUReconstructionHelpers.h"
 
 namespace o2
 {
@@ -111,12 +110,6 @@ class GPUChain
     }
   }
   inline void StreamWaitForEvents(int32_t stream, deviceEvent* evList, int32_t nEvents = 1) { mRec->StreamWaitForEvents(stream, evList, nEvents); }
-  template <class T>
-  void RunHelperThreads(T function, GPUReconstructionHelpers::helperDelegateBase* functionCls, int32_t count);
-  inline void WaitForHelperThreads() { mRec->WaitForHelperThreads(); }
-  inline int32_t HelperError(int32_t iThread) const { return mRec->HelperError(iThread); }
-  inline int32_t HelperDone(int32_t iThread) const { return mRec->HelperDone(iThread); }
-  inline void ResetHelperThreads(int32_t helpers) { mRec->ResetHelperThreads(helpers); }
   inline int32_t GPUDebug(const char* state = "UNKNOWN", int32_t stream = -1) { return mRec->GPUDebug(state, stream); }
   // nEvents is forced to 0 if evList ==  nullptr
   inline void TransferMemoryResourceToGPU(RecoStep step, GPUMemoryResource* res, int32_t stream = -1, deviceEvent* ev = nullptr, deviceEvent* evList = nullptr, int32_t nEvents = 1) { timeCpy(step, true, &GPUReconstructionCPU::TransferMemoryResourceToGPU, res, stream, ev, evList, nEvents); }
@@ -241,12 +234,6 @@ class GPUChain
   template <bool Always = false, class T, class S, typename... Args>
   void timeCpy(RecoStep step, int32_t toGPU, S T::*func, Args... args);
 };
-
-template <class T>
-inline void GPUChain::RunHelperThreads(T function, GPUReconstructionHelpers::helperDelegateBase* functionCls, int32_t count)
-{
-  mRec->RunHelperThreads((int32_t(GPUReconstructionHelpers::helperDelegateBase::*)(int32_t, int32_t, GPUReconstructionHelpers::helperParam*))function, functionCls, count);
-}
 
 template <bool Always, class T, class S, typename... Args>
 inline void GPUChain::timeCpy(RecoStep step, int32_t toGPU, S T::*func, Args... args)
