@@ -38,8 +38,7 @@ class GPUTPCSliceData
   void InitializeRows(const GPUParam& p);
   void SetMaxData();
   void SetClusterData(const GPUTPCClusterData* data, int32_t nClusters, int32_t clusterIdOffset);
-  void* SetPointersInput(void* mem, bool idsOnGPU, bool sliceDataOnGPU);
-  void* SetPointersScratch(void* mem, bool idsOnGPU, bool sliceDataOnGPU);
+  void* SetPointersScratch(void* mem, bool idsOnGPU);
   void* SetPointersLinks(void* mem);
   void* SetPointersWeights(void* mem);
   void* SetPointersClusterIds(void* mem, bool idsOnGPU);

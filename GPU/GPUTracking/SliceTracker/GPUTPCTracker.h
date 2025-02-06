@@ -114,8 +114,6 @@ class GPUTPCTracker : public GPUProcessor
   }
 
   void SetupCommonMemory();
-  bool SliceDataOnGPU();
-  void* SetPointersDataInput(void* mem);
   void* SetPointersDataLinks(void* mem);
   void* SetPointersDataWeights(void* mem);
   void* SetPointersDataScratch(void* mem);
@@ -133,7 +131,6 @@ class GPUTPCTracker : public GPUProcessor
   int16_t MemoryResTracklets() const { return mMemoryResTracklets; }
   int16_t MemoryResOutput() const { return mMemoryResOutput; }
   int16_t MemoryResSliceScratch() const { return mMemoryResSliceScratch; }
-  int16_t MemoryResSliceInput() const { return mMemoryResSliceInput; }
 
   void SetMaxData(const GPUTrackingInOutPointers& io);
   void UpdateMaxData();
@@ -257,7 +254,6 @@ class GPUTPCTracker : public GPUProcessor
   int16_t mMemoryResTracklets;
   int16_t mMemoryResOutput;
   int16_t mMemoryResSliceScratch;
-  int16_t mMemoryResSliceInput;
 
   // GPU Temp Arrays
   GPUglobalref() int32_t* mRowStartHitCountOffset;   // Offset, length and new offset of start hits in row

@@ -58,20 +58,6 @@ void GPUTPCSliceData::SetMaxData()
   mNumberOfHitsPlusAlign = GPUProcessor::nextMultipleOf<(kVectorAlignment > GPUCA_ROWALIGNMENT ? kVectorAlignment : GPUCA_ROWALIGNMENT) / sizeof(int32_t)>(hitMemCount);
 }
 
-void* GPUTPCSliceData::SetPointersInput(void* mem, bool idsOnGPU, bool sliceDataOnGPU)
-{
-  if (sliceDataOnGPU) {
-    return mem;
-  }
-  const int32_t firstHitInBinSize = GetGridSize(mNumberOfHits, GPUCA_ROW_COUNT) + GPUCA_ROW_COUNT * GPUCA_ROWALIGNMENT / sizeof(int32_t);
-  GPUProcessor::computePointerWithAlignment(mem, mHitData, mNumberOfHitsPlusAlign);
-  GPUProcessor::computePointerWithAlignment(mem, mFirstHitInBin, firstHitInBinSize);
-  if (idsOnGPU) {
-    mem = SetPointersClusterIds(mem, false); // Hijack the allocation from SetPointersClusterIds
-  }
-  return mem;
-}
-
 void* GPUTPCSliceData::SetPointersLinks(void* mem)
 {
   GPUProcessor::computePointerWithAlignment(mem, mLinkUpData, mNumberOfHitsPlusAlign);
@@ -85,10 +71,13 @@ void* GPUTPCSliceData::SetPointersWeights(void* mem)
   return mem;
 }
 
-void* GPUTPCSliceData::SetPointersScratch(void* mem, bool idsOnGPU, bool sliceDataOnGPU)
+void* GPUTPCSliceData::SetPointersScratch(void* mem, bool idsOnGPU)
 {
-  if (sliceDataOnGPU) {
-    mem = SetPointersInput(mem, idsOnGPU, false);
+  const int32_t firstHitInBinSize = GetGridSize(mNumberOfHits, GPUCA_ROW_COUNT) + GPUCA_ROW_COUNT * GPUCA_ROWALIGNMENT / sizeof(int32_t);
+  GPUProcessor::computePointerWithAlignment(mem, mHitData, mNumberOfHitsPlusAlign);
+  GPUProcessor::computePointerWithAlignment(mem, mFirstHitInBin, firstHitInBinSize);
+  if (idsOnGPU) {
+    mem = SetPointersClusterIds(mem, false); // Hijack the allocation from SetPointersClusterIds
   }
   return mem;
 }
