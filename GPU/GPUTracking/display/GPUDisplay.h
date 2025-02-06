@@ -96,7 +96,7 @@ class GPUDisplay : public GPUDisplayInterface
                     tSEED = 3,
                     tTRACKLET = 4,
                     tSLICETRACK = 5,
-                    tGLOBALTRACK = 6,
+                    tEXTRAPOLATEDTRACK = 6,
                     tFINALTRACK = 7,
                     tMARKED = 8,
                     tTRDCLUSTER = 9,
@@ -188,7 +188,7 @@ class GPUDisplay : public GPUDisplayInterface
   void SetColorSeeds();
   void SetColorTracklets();
   void SetColorTracks();
-  void SetColorGlobalTracks();
+  void SetColorExtrapolatedTracks();
   void SetColorFinal();
   void SetColorGrid();
   void SetColorGridTRD();

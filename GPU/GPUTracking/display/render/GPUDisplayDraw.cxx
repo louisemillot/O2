@@ -414,7 +414,7 @@ void GPUDisplay::DrawFinal(int32_t iSlice, int32_t /*iCol*/, GPUTPCGMPropagator*
       }
 
       // Print TPC part of track
-      int32_t separateGlobalTracksLimit = (mCfgH.separateGlobalTracks ? tGLOBALTRACK : TRACK_TYPE_ID_LIMIT);
+      int32_t separateExtrapolatedTracksLimit = (mCfgH.separateExtrapolatedTracks ? tEXTRAPOLATEDTRACK : TRACK_TYPE_ID_LIMIT);
       uint32_t lastSide = -1;
       for (int32_t k = 0; k < nClusters; k++) {
         if constexpr (std::is_same_v<T, GPUTPCGMMergedTrack>) {
@@ -435,10 +435,10 @@ void GPUDisplay::DrawFinal(int32_t iSlice, int32_t /*iCol*/, GPUTPCGMPropagator*
             drawing = false;
             lastCluster = -1;
           } else {
-            drawPointLinestrip(iSlice, cid, tFINALTRACK, separateGlobalTracksLimit);
+            drawPointLinestrip(iSlice, cid, tFINALTRACK, separateExtrapolatedTracksLimit);
           }
         }
-        if (w == separateGlobalTracksLimit) {
+        if (w == separateExtrapolatedTracksLimit) {
           if (drawing) {
             insertVertexList(vBuf[0], startCountInner, mVertexBuffer[iSlice].size());
           }
@@ -453,9 +453,9 @@ void GPUDisplay::DrawFinal(int32_t iSlice, int32_t /*iCol*/, GPUTPCGMPropagator*
               } else {
                 lastcid = &track->getCluster(mIOPtrs->outputClusRefsTPCO2, lastCluster, *mIOPtrs->clustersNative) - mIOPtrs->clustersNative->clustersLinear;
               }
-              drawPointLinestrip(iSlice, lastcid, tFINALTRACK, separateGlobalTracksLimit);
+              drawPointLinestrip(iSlice, lastcid, tFINALTRACK, separateExtrapolatedTracksLimit);
             }
-            drawPointLinestrip(iSlice, cid, tFINALTRACK, separateGlobalTracksLimit);
+            drawPointLinestrip(iSlice, cid, tFINALTRACK, separateExtrapolatedTracksLimit);
           }
           drawing = true;
         }
@@ -812,7 +812,7 @@ size_t GPUDisplay::DrawGLScene_updateVertexList()
       GPUCA_OPENMP(for)
       for (int32_t iSlice = 0; iSlice < NSLICES; iSlice++) {
         const GPUTPCTracker& tracker = sliceTracker(iSlice);
-        mGlDLLines[iSlice][tGLOBALTRACK] = DrawTracks(tracker, 1);
+        mGlDLLines[iSlice][tEXTRAPOLATEDTRACK] = DrawTracks(tracker, 1);
       }
       GPUCA_OPENMP(barrier)
     }

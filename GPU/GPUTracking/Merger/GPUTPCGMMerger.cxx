@@ -502,7 +502,7 @@ GPUd() void GPUTPCGMMerger::UnpackSliceGlobal(int32_t nBlocks, int32_t nThreads,
 {
   const GPUTPCTracker& trk = GetConstantMem()->tpcTrackers[iSlice];
   float alpha = Param().Alpha(iSlice);
-  const GPUTPCTrack* sliceTr = mMemory->firstGlobalTracks[iSlice];
+  const GPUTPCTrack* sliceTr = mMemory->firstExtrapolatedTracks[iSlice];
   uint32_t nLocalTracks = trk.CommonMemory()->nLocalTracks;
   uint32_t nTracks = *trk.NTracks();
   for (uint32_t itr = nLocalTracks + iBlock * nThreads + iThread; itr < nTracks; itr += nBlocks * nThreads) {
@@ -567,21 +567,21 @@ GPUd() void GPUTPCGMMerger::RefitSliceTracks(int32_t nBlocks, int32_t nThreads, 
     track.SetNextNeighbour(-1);
     track.SetNextSegmentNeighbour(-1);
     track.SetPrevSegmentNeighbour(-1);
-    track.SetGlobalTrackId(0, -1);
-    track.SetGlobalTrackId(1, -1);
+    track.SetExtrapolatedTrackId(0, -1);
+    track.SetExtrapolatedTrackId(1, -1);
     uint32_t myTrack = CAMath::AtomicAdd(&mMemory->nUnpackedTracks, 1u);
     mTrackIDs[iSlice * mNMaxSingleSliceTracks + sliceTr->LocalTrackId()] = myTrack;
     mSliceTrackInfos[myTrack] = track;
   }
 }
 
-GPUd() void GPUTPCGMMerger::LinkGlobalTracks(int32_t nBlocks, int32_t nThreads, int32_t iBlock, int32_t iThread)
+GPUd() void GPUTPCGMMerger::LinkExtrapolatedTracks(int32_t nBlocks, int32_t nThreads, int32_t iBlock, int32_t iThread)
 {
   for (int32_t itr = SliceTrackInfoGlobalFirst(0) + iBlock * nThreads + iThread; itr < SliceTrackInfoGlobalLast(NSLICES - 1); itr += nThreads * nBlocks) {
-    GPUTPCGMSliceTrack& globalTrack = mSliceTrackInfos[itr];
-    GPUTPCGMSliceTrack& localTrack = mSliceTrackInfos[globalTrack.LocalTrackId()];
-    if (localTrack.GlobalTrackId(0) != -1 || !CAMath::AtomicCAS(&localTrack.GlobalTrackIds()[0], -1, itr)) {
-      localTrack.SetGlobalTrackId(1, itr);
+    GPUTPCGMSliceTrack& extrapolatedTrack = mSliceTrackInfos[itr];
+    GPUTPCGMSliceTrack& localTrack = mSliceTrackInfos[extrapolatedTrack.LocalTrackId()];
+    if (localTrack.ExtrapolatedTrackId(0) != -1 || !CAMath::AtomicCAS(&localTrack.ExtrapolatedTrackIds()[0], -1, itr)) {
+      localTrack.SetExtrapolatedTrackId(1, itr);
     }
   }
 }
@@ -1521,16 +1521,16 @@ GPUd() void GPUTPCGMMerger::CollectMergedTracks(int32_t nBlocks, int32_t nThread
       tr->SetLeg(leg);
       trackParts[nParts++] = tr;
       for (int32_t i = 0; i < 2; i++) {
-        if (tr->GlobalTrackId(i) != -1) {
+        if (tr->ExtrapolatedTrackId(i) != -1) {
           if (nParts >= kMaxParts) {
             break;
           }
-          if (nHits + mSliceTrackInfos[tr->GlobalTrackId(i)].NClusters() > kMaxClusters) {
+          if (nHits + mSliceTrackInfos[tr->ExtrapolatedTrackId(i)].NClusters() > kMaxClusters) {
             break;
           }
-          trackParts[nParts] = &mSliceTrackInfos[tr->GlobalTrackId(i)];
+          trackParts[nParts] = &mSliceTrackInfos[tr->ExtrapolatedTrackId(i)];
           trackParts[nParts++]->SetLeg(leg);
-          nHits += mSliceTrackInfos[tr->GlobalTrackId(i)].NClusters();
+          nHits += mSliceTrackInfos[tr->ExtrapolatedTrackId(i)].NClusters();
         }
       }
       int32_t jtr = tr->NextSegmentNeighbour();

@@ -96,7 +96,7 @@ class GPUTPCTrackletConstructor
 #endif // GPUCA_GPUCODE
 
   template <class T>
-  GPUd() static int32_t GPUTPCTrackletConstructorGlobalTracking(GPUconstantref() GPUTPCTracker& tracker, GPUsharedref() T& sMem, GPUTPCTrackParam& tParam, int32_t startrow, int32_t increment, int32_t iTracklet, calink* rowHits);
+  GPUd() static int32_t GPUTPCTrackletConstructorExtrapolationTracking(GPUconstantref() GPUTPCTracker& tracker, GPUsharedref() T& sMem, GPUTPCTrackParam& tParam, int32_t startrow, int32_t increment, int32_t iTracklet, calink* rowHits);
 
   typedef GPUconstantref() GPUTPCTracker processorType;
   GPUhdi() constexpr static GPUDataTypes::RecoStep GetRecoStep() { return GPUCA_RECO_STEP::TPCSliceTracking; }

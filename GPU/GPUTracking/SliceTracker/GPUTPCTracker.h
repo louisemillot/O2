@@ -79,7 +79,7 @@ class GPUTPCTracker : public GPUProcessor
     GPUAtomic(uint32_t) nTracklets;     // number of tracklets
     GPUAtomic(uint32_t) nRowHits;       // number of tracklet hits
     GPUAtomic(uint32_t) nTracks;        // number of reconstructed tracks
-    int32_t nLocalTracks;               // number of reconstructed tracks before global tracking
+    int32_t nLocalTracks;               // number of reconstructed tracks before extrapolation tracking
     GPUAtomic(uint32_t) nTrackHits;     // number of track hits
     int32_t nLocalTrackHits;            // see above
     StructGPUParameters gpuParameters;  // GPU parameters

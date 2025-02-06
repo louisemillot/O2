@@ -137,9 +137,9 @@ GPUdii() void GPUTPCGMMergerMergeCE::Thread<0>(int32_t nBlocks, int32_t nThreads
 }
 
 template <>
-GPUdii() void GPUTPCGMMergerLinkGlobalTracks::Thread<0>(int32_t nBlocks, int32_t nThreads, int32_t iBlock, int32_t iThread, GPUsharedref() GPUSharedMemory& smem, processorType& GPUrestrict() merger)
+GPUdii() void GPUTPCGMMergerLinkExtrapolatedTracks::Thread<0>(int32_t nBlocks, int32_t nThreads, int32_t iBlock, int32_t iThread, GPUsharedref() GPUSharedMemory& smem, processorType& GPUrestrict() merger)
 {
-  merger.LinkGlobalTracks(nBlocks, nThreads, iBlock, iThread);
+  merger.LinkExtrapolatedTracks(nBlocks, nThreads, iBlock, iThread);
 }
 
 template <>

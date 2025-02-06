@@ -9,11 +9,11 @@
 // granted to it by virtue of its status as an Intergovernmental Organization
 // or submit itself to any jurisdiction.
 
-/// \file GPUTPCGlobalTracking.h
+/// \file GPUTPCExtrapolationTracking.h
 /// \author David Rohr
 
-#ifndef GPUTPCGLOBALTRACKING_H
-#define GPUTPCGLOBALTRACKING_H
+#ifndef GPUTPCEXTRAPOLATIONTRACKING_H
+#define GPUTPCEXTRAPOLATIONTRACKING_H
 
 #include "GPUGeneralKernels.h"
 #include "GPUConstantMem.h"
@@ -24,7 +24,7 @@ namespace gpu
 {
 class GPUTPCTracker;
 
-class GPUTPCGlobalTracking : public GPUKernelTemplate
+class GPUTPCExtrapolationTracking : public GPUKernelTemplate
 {
  public:
   struct GPUSharedMemory {
@@ -40,15 +40,15 @@ class GPUTPCGlobalTracking : public GPUKernelTemplate
   template <int32_t iKernel = GPUKernelTemplate::defaultKernel>
   GPUd() static void Thread(int32_t nBlocks, int32_t nThreads, int32_t iBlock, int32_t iThread, GPUsharedref() GPUSharedMemory& smem, processorType& tracker);
 
-  GPUd() static int32_t GlobalTrackingSliceOrder(int32_t iSlice);
-  GPUd() static void GlobalTrackingSliceLeftRight(uint32_t iSlice, uint32_t& left, uint32_t& right);
+  GPUd() static int32_t ExtrapolationTrackingSliceOrder(int32_t iSlice);
+  GPUd() static void ExtrapolationTrackingSliceLeftRight(uint32_t iSlice, uint32_t& left, uint32_t& right);
 
  private:
-  GPUd() static int32_t PerformGlobalTrackingRun(GPUTPCTracker& tracker, GPUsharedref() GPUSharedMemory& smem, const GPUTPCTracker& sliceSource, int32_t iTrack, int32_t rowIndex, float angle, int32_t direction);
-  GPUd() static void PerformGlobalTracking(int32_t nBlocks, int32_t nThreads, int32_t iBlock, int32_t iThread, const GPUTPCTracker& tracker, GPUsharedref() GPUSharedMemory& smem, GPUTPCTracker& sliceTarget, bool right);
+  GPUd() static int32_t PerformExtrapolationTrackingRun(GPUTPCTracker& tracker, GPUsharedref() GPUSharedMemory& smem, const GPUTPCTracker& sliceSource, int32_t iTrack, int32_t rowIndex, float angle, int32_t direction);
+  GPUd() static void PerformExtrapolationTracking(int32_t nBlocks, int32_t nThreads, int32_t iBlock, int32_t iThread, const GPUTPCTracker& tracker, GPUsharedref() GPUSharedMemory& smem, GPUTPCTracker& sliceTarget, bool right);
 };
 
-class GPUTPCGlobalTrackingCopyNumbers : public GPUKernelTemplate
+class GPUTPCExtrapolationTrackingCopyNumbers : public GPUKernelTemplate
 {
  public:
   typedef GPUconstantref() GPUTPCTracker processorType;

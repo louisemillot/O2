@@ -516,17 +516,17 @@ void GPUDisplay::DrawGLScene_drawCommands()
       LOOP_SLICE LOOP_COLLISION_COL(drawVertices(mGlDLPoints[iSlice][tSLICETRACK][iCol], GPUDisplayBackend::POINTS));
 
     skip2:;
-      if (mCfgL.drawGlobalTracks) {
+      if (mCfgL.drawExtrapolatedTracks) {
         if (mCfgL.excludeClusters) {
           goto skip3;
         }
         if (mCfgL.colorClusters) {
-          SetColorGlobalTracks();
+          SetColorExtrapolatedTracks();
         }
       } else {
         SetColorClusters();
       }
-      LOOP_SLICE LOOP_COLLISION_COL(drawVertices(mGlDLPoints[iSlice][tGLOBALTRACK][iCol], GPUDisplayBackend::POINTS));
+      LOOP_SLICE LOOP_COLLISION_COL(drawVertices(mGlDLPoints[iSlice][tEXTRAPOLATEDTRACK][iCol], GPUDisplayBackend::POINTS));
       SetColorClusters();
 
       if (mCfgL.drawFinal && mCfgL.propagateTracks < 2) {
@@ -564,9 +564,9 @@ void GPUDisplay::DrawGLScene_drawCommands()
         SetColorTracks();
         LOOP_SLICE drawVertices(mGlDLLines[iSlice][tSLICETRACK], GPUDisplayBackend::LINE_STRIP);
       }
-      if (mCfgL.drawGlobalTracks) {
-        SetColorGlobalTracks();
-        LOOP_SLICE drawVertices(mGlDLLines[iSlice][tGLOBALTRACK], GPUDisplayBackend::LINE_STRIP);
+      if (mCfgL.drawExtrapolatedTracks) {
+        SetColorExtrapolatedTracks();
+        LOOP_SLICE drawVertices(mGlDLLines[iSlice][tEXTRAPOLATEDTRACK], GPUDisplayBackend::LINE_STRIP);
       }
     }
     if (mCfgL.drawFinal) {
@@ -670,7 +670,7 @@ void GPUDisplay::DrawGLScene_internal(float animateTime, bool renderToMixBuffer)
     snprintf(info, 1024,
              "FPS: %6.2f (Slice: %d, 1:Clusters %d, 2:Prelinks %d, 3:Links %d, 4:Seeds %d, 5:Tracklets %d, 6:Tracks %d, 7:GTracks %d, 8:Merger %d) (%d frames, %d draw calls) "
              "(X %1.2f Y %1.2f Z %1.2f / R %1.2f Phi %1.1f Theta %1.1f) / Yaw %1.1f Pitch %1.1f Roll %1.1f)",
-             fps, mCfgL.drawSlice, mCfgL.drawClusters, mCfgL.drawInitLinks, mCfgL.drawLinks, mCfgL.drawSeeds, mCfgL.drawTracklets, mCfgL.drawTracks, mCfgL.drawGlobalTracks, mCfgL.drawFinal, mFramesDone, mNDrawCalls, mXYZ[0], mXYZ[1], mXYZ[2], mRPhiTheta[0], mRPhiTheta[1] * 180 / CAMath::Pi(),
+             fps, mCfgL.drawSlice, mCfgL.drawClusters, mCfgL.drawInitLinks, mCfgL.drawLinks, mCfgL.drawSeeds, mCfgL.drawTracklets, mCfgL.drawTracks, mCfgL.drawExtrapolatedTracks, mCfgL.drawFinal, mFramesDone, mNDrawCalls, mXYZ[0], mXYZ[1], mXYZ[2], mRPhiTheta[0], mRPhiTheta[1] * 180 / CAMath::Pi(),
              mRPhiTheta[2] * 180 / CAMath::Pi(), mAngle[1] * 180 / CAMath::Pi(), mAngle[0] * 180 / CAMath::Pi(), mAngle[2] * 180 / CAMath::Pi());
     if (fpstime > 1.) {
       if (mPrintInfoText & 2) {

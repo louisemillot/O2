@@ -233,7 +233,7 @@ class GPUChainTracking : public GPUChain
 
   int32_t ReadEvent(uint32_t iSlice, int32_t threadId);
   void WriteOutput(int32_t iSlice, int32_t threadId);
-  int32_t GlobalTracking(uint32_t iSlice, int32_t threadId, bool synchronizeOutput = true);
+  int32_t ExtrapolationTracking(uint32_t iSlice, int32_t threadId, bool synchronizeOutput = true);
 
   int32_t PrepareProfile();
   int32_t DoProfile();

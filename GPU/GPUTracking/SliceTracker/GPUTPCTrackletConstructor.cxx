@@ -21,7 +21,7 @@
 #include "GPUTPCTracker.h"
 #include "GPUTPCTracklet.h"
 #include "GPUTPCTrackletConstructor.h"
-#include "GPUTPCGlobalTracking.h"
+#include "GPUTPCExtrapolationTracking.h"
 #include "CorrectionMapsHelper.h"
 #include "CalibdEdxContainer.h"
 #include "GPUParam.inc"
@@ -565,7 +565,7 @@ GPUd() int32_t GPUTPCTrackletConstructor::FetchTracklet(GPUconstantref() GPUTPCT
 #endif // GPUCA_GPUCODE
 
 template <> // FIXME: GPUgeneric() needed to make the clang spirv output link correctly
-GPUd() int32_t GPUTPCTrackletConstructor::GPUTPCTrackletConstructorGlobalTracking<GPUgeneric() GPUTPCGlobalTracking::GPUSharedMemory>(GPUconstantref() GPUTPCTracker& GPUrestrict() tracker, GPUsharedref() GPUTPCGlobalTracking::GPUSharedMemory& sMem, GPUTPCTrackParam& GPUrestrict() tParam, int32_t row, int32_t increment, int32_t iTracklet, calink* rowHits)
+GPUd() int32_t GPUTPCTrackletConstructor::GPUTPCTrackletConstructorExtrapolationTracking<GPUgeneric() GPUTPCExtrapolationTracking::GPUSharedMemory>(GPUconstantref() GPUTPCTracker& GPUrestrict() tracker, GPUsharedref() GPUTPCExtrapolationTracking::GPUSharedMemory& sMem, GPUTPCTrackParam& GPUrestrict() tParam, int32_t row, int32_t increment, int32_t iTracklet, calink* rowHits)
 {
   GPUTPCThreadMemory rMem;
   rMem.mISH = iTracklet;

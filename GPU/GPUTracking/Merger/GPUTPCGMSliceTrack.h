@@ -61,9 +61,9 @@ class GPUTPCGMSliceTrack
 
   GPUd() int32_t LocalTrackId() const { return mLocalTrackId; }
   GPUd() void SetLocalTrackId(int32_t v) { mLocalTrackId = v; }
-  GPUd() int32_t GlobalTrackId(int32_t n) const { return mGlobalTrackIds[n]; }
-  GPUd() void SetGlobalTrackId(int32_t n, int32_t v) { mGlobalTrackIds[n] = v; }
-  GPUd() int32_t* GlobalTrackIds() { return mGlobalTrackIds; }
+  GPUd() int32_t ExtrapolatedTrackId(int32_t n) const { return mExtrapolatedTrackIds[n]; }
+  GPUd() void SetExtrapolatedTrackId(int32_t n, int32_t v) { mExtrapolatedTrackIds[n] = v; }
+  GPUd() int32_t* ExtrapolatedTrackIds() { return mExtrapolatedTrackIds; }
 
   GPUd() float MaxClusterZT() const { return CAMath::Max(mClusterZT[0], mClusterZT[1]); }
   GPUd() float MinClusterZT() const { return CAMath::Min(mClusterZT[0], mClusterZT[1]); }
@@ -126,19 +126,19 @@ class GPUTPCGMSliceTrack
   };
 
  private:
-  const GPUTPCTrack* mOrigTrack; // pointer to original slice track
-  sliceTrackParam mParam;        // Track parameters
-  sliceTrackParam mParam2;       // Parameters at other side
-  float mTZOffset;               // Z offset with early transform, T offset otherwise
-  float mAlpha;                  // alpha angle
-  float mClusterZT[2];           // Minimum maximum cluster Z / T
-  int32_t mNClusters;            // N clusters
-  int32_t mNeighbour[2];         //
-  int32_t mSegmentNeighbour[2];  //
-  int32_t mLocalTrackId;         // Corrected local track id in terms of GMSliceTracks array for global tracks, UNDEFINED for local tracks!
-  int32_t mGlobalTrackIds[2];    // IDs of associated global tracks
-  uint8_t mSlice;                // slice of this track segment
-  uint8_t mLeg;                  // Leg of this track segment
+  const GPUTPCTrack* mOrigTrack;    // pointer to original slice track
+  sliceTrackParam mParam;           // Track parameters
+  sliceTrackParam mParam2;          // Parameters at other side
+  float mTZOffset;                  // Z offset with early transform, T offset otherwise
+  float mAlpha;                     // alpha angle
+  float mClusterZT[2];              // Minimum maximum cluster Z / T
+  int32_t mNClusters;               // N clusters
+  int32_t mNeighbour[2];            //
+  int32_t mSegmentNeighbour[2];     //
+  int32_t mLocalTrackId;            // Corrected local track id in terms of GMSliceTracks array for extrapolated tracks, UNDEFINED for local tracks!
+  int32_t mExtrapolatedTrackIds[2]; // IDs of associated extrapolated tracks
+  uint8_t mSlice;                   // slice of this track segment
+  uint8_t mLeg;                     // Leg of this track segment
 
   ClassDefNV(GPUTPCGMSliceTrack, 1);
 };

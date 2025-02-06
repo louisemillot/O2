@@ -39,7 +39,7 @@
   #define GPUCA_LB_GPUTPCTrackletSelector 192, 3
   #define GPUCA_LB_GPUTPCNeighboursFinder 1024, 1
   #define GPUCA_LB_GPUTPCNeighboursCleaner 896
-  #define GPUCA_LB_GPUTPCGlobalTracking 256
+  #define GPUCA_LB_GPUTPCExtrapolationTracking 256
   #define GPUCA_LB_GPUTPCCFDecodeZS 64, 4
   #define GPUCA_LB_GPUTPCCFDecodeZSLink GPUCA_WARP_SIZE
   #define GPUCA_LB_GPUTPCCFDecodeZSDenseLink GPUCA_WARP_SIZE
@@ -60,7 +60,7 @@
   #define GPUCA_LB_GPUTPCGMMergerMergeBorders_step0 512
   #define GPUCA_LB_GPUTPCGMMergerMergeBorders_step2 512
   #define GPUCA_LB_GPUTPCGMMergerMergeCE 512
-  #define GPUCA_LB_GPUTPCGMMergerLinkGlobalTracks 256
+  #define GPUCA_LB_GPUTPCGMMergerLinkExtrapolatedTracks 256
   #define GPUCA_LB_GPUTPCGMMergerCollect 512
   #define GPUCA_LB_GPUTPCGMMergerSortTracksPrepare 256
   #define GPUCA_LB_GPUTPCGMMergerPrepareClusters_step0 256
@@ -105,7 +105,7 @@
   #define GPUCA_LB_GPUTPCTrackletSelector 256, 8
   #define GPUCA_LB_GPUTPCNeighboursFinder 1024, 1
   #define GPUCA_LB_GPUTPCNeighboursCleaner 896
-  #define GPUCA_LB_GPUTPCGlobalTracking 256
+  #define GPUCA_LB_GPUTPCExtrapolationTracking 256
   #define GPUCA_LB_GPUTPCCFDecodeZS 64, 4
   #define GPUCA_LB_GPUTPCCFDecodeZSLink GPUCA_WARP_SIZE
   #define GPUCA_LB_GPUTPCCFDecodeZSDenseLink GPUCA_WARP_SIZE
@@ -126,7 +126,7 @@
   #define GPUCA_LB_GPUTPCGMMergerMergeBorders_step0 256
   #define GPUCA_LB_GPUTPCGMMergerMergeBorders_step2 256
   #define GPUCA_LB_GPUTPCGMMergerMergeCE 256
-  #define GPUCA_LB_GPUTPCGMMergerLinkGlobalTracks 256
+  #define GPUCA_LB_GPUTPCGMMergerLinkExtrapolatedTracks 256
   #define GPUCA_LB_GPUTPCGMMergerCollect 512
   #define GPUCA_LB_GPUTPCGMMergerSortTracksPrepare 256
   #define GPUCA_LB_GPUTPCGMMergerPrepareClusters_step0 256
@@ -171,7 +171,7 @@
   #define GPUCA_LB_GPUTPCTrackletSelector 192, 3    // best single-kernel: 128, 4
   #define GPUCA_LB_GPUTPCNeighboursFinder 640, 1    // best single-kernel: 768, 1
   #define GPUCA_LB_GPUTPCNeighboursCleaner 512
-  #define GPUCA_LB_GPUTPCGlobalTracking 128, 4
+  #define GPUCA_LB_GPUTPCExtrapolationTracking 128, 4
   #define GPUCA_LB_GPUTPCCFDecodeZS 64, 10
   #define GPUCA_LB_GPUTPCCFDecodeZSLink GPUCA_WARP_SIZE
   #define GPUCA_LB_GPUTPCCFDecodeZSDenseLink GPUCA_WARP_SIZE
@@ -192,7 +192,7 @@
   #define GPUCA_LB_GPUTPCGMMergerMergeBorders_step0 192
   #define GPUCA_LB_GPUTPCGMMergerMergeBorders_step2 64, 2
   #define GPUCA_LB_GPUTPCGMMergerMergeCE 256
-  #define GPUCA_LB_GPUTPCGMMergerLinkGlobalTracks 256
+  #define GPUCA_LB_GPUTPCGMMergerLinkExtrapolatedTracks 256
   #define GPUCA_LB_GPUTPCGMMergerCollect 256, 2
   #define GPUCA_LB_GPUTPCGMMergerSortTracksPrepare 256
   #define GPUCA_LB_GPUTPCGMMergerPrepareClusters_step0 256
@@ -237,7 +237,7 @@
   #define GPUCA_LB_GPUTPCTrackletSelector 192, 3
   #define GPUCA_LB_GPUTPCNeighboursFinder 640, 1
   #define GPUCA_LB_GPUTPCNeighboursCleaner 512
-  #define GPUCA_LB_GPUTPCGlobalTracking 192, 2
+  #define GPUCA_LB_GPUTPCExtrapolationTracking 192, 2
   #define GPUCA_LB_GPUTPCCFDecodeZS 64, 8
   #define GPUCA_LB_GPUTPCCFDecodeZSLink GPUCA_WARP_SIZE
   #define GPUCA_LB_GPUTPCCFDecodeZSDenseLink GPUCA_WARP_SIZE
@@ -258,7 +258,7 @@
   #define GPUCA_LB_GPUTPCGMMergerMergeBorders_step0 192
   #define GPUCA_LB_GPUTPCGMMergerMergeBorders_step2 256
   #define GPUCA_LB_GPUTPCGMMergerMergeCE 256
-  #define GPUCA_LB_GPUTPCGMMergerLinkGlobalTracks 256
+  #define GPUCA_LB_GPUTPCGMMergerLinkExtrapolatedTracks 256
   #define GPUCA_LB_GPUTPCGMMergerCollect 128, 2
   #define GPUCA_LB_GPUTPCGMMergerSortTracksPrepare 256
   #define GPUCA_LB_GPUTPCGMMergerPrepareClusters_step0 256
@@ -312,8 +312,8 @@
   #ifndef GPUCA_LB_GPUTPCNeighboursCleaner
     #define GPUCA_LB_GPUTPCNeighboursCleaner 256
   #endif
-  #ifndef GPUCA_LB_GPUTPCGlobalTracking
-    #define GPUCA_LB_GPUTPCGlobalTracking 256
+  #ifndef GPUCA_LB_GPUTPCExtrapolationTracking
+    #define GPUCA_LB_GPUTPCExtrapolationTracking 256
   #endif
   #ifndef GPUCA_LB_GPUTRDTrackerKernels_gpuVersion
     #define GPUCA_LB_GPUTRDTrackerKernels_gpuVersion 512
@@ -414,8 +414,8 @@
   #ifndef GPUCA_LB_GPUTPCGMMergerMergeCE
     #define GPUCA_LB_GPUTPCGMMergerMergeCE 256
   #endif
-  #ifndef GPUCA_LB_GPUTPCGMMergerLinkGlobalTracks
-    #define GPUCA_LB_GPUTPCGMMergerLinkGlobalTracks 256
+  #ifndef GPUCA_LB_GPUTPCGMMergerLinkExtrapolatedTracks
+    #define GPUCA_LB_GPUTPCGMMergerLinkExtrapolatedTracks 256
   #endif
   #ifndef GPUCA_LB_GPUTPCGMMergerCollect
     #define GPUCA_LB_GPUTPCGMMergerCollect 256

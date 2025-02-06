@@ -161,11 +161,11 @@ int32_t GPUChainTracking::RunTPCTrackingMerger(bool synchronizeOutput)
 
   runKernel<GPUMemClean16>({{1, -WarpSize(), 0, deviceType, RecoStep::TPCMerging}}, MergerShadowAll.TmpCounter(), 2 * NSLICES * sizeof(*MergerShadowAll.TmpCounter()));
 
-  runKernel<GPUTPCGMMergerLinkGlobalTracks>(GetGridAuto(0, deviceType));
+  runKernel<GPUTPCGMMergerLinkExtrapolatedTracks>(GetGridAuto(0, deviceType));
   runKernel<GPUTPCGMMergerCollect>(GetGridAuto(0, deviceType));
   if (GetProcessingSettings().deterministicGPUReconstruction) {
-    runKernel<GPUTPCGlobalDebugSortKernels, GPUTPCGlobalDebugSortKernels::globalTracks1>({{1, -WarpSize(), 0, deviceType}}, 1);
-    runKernel<GPUTPCGlobalDebugSortKernels, GPUTPCGlobalDebugSortKernels::globalTracks2>({{1, -WarpSize(), 0, deviceType}}, 1);
+    runKernel<GPUTPCGlobalDebugSortKernels, GPUTPCGlobalDebugSortKernels::extrapolatedTracks1>({{1, -WarpSize(), 0, deviceType}}, 1);
+    runKernel<GPUTPCGlobalDebugSortKernels, GPUTPCGlobalDebugSortKernels::extrapolatedTracks2>({{1, -WarpSize(), 0, deviceType}}, 1);
   }
   DoDebugAndDump(RecoStep::TPCMerging, 2048, doGPU, Merger, &GPUTPCGMMerger::DumpCollected, *mDebugFile);
 

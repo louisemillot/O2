@@ -52,7 +52,7 @@ void GPUDisplay::disableUnsupportedOptions()
     mCfgH.markFakeClusters = 0;
   }
   if (!mChain) {
-    mCfgL.excludeClusters = mCfgL.drawInitLinks = mCfgL.drawLinks = mCfgL.drawSeeds = mCfgL.drawTracklets = mCfgL.drawTracks = mCfgL.drawGlobalTracks = 0;
+    mCfgL.excludeClusters = mCfgL.drawInitLinks = mCfgL.drawLinks = mCfgL.drawSeeds = mCfgL.drawTracklets = mCfgL.drawTracks = mCfgL.drawExtrapolatedTracks = 0;
   }
   if (mConfig.showTPCTracksFromO2Format && mParam->par.earlyTpcTransform) {
     throw std::runtime_error("Cannot run GPU display with early Transform when input is O2 tracks");
