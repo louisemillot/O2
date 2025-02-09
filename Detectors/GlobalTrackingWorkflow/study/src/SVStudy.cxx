@@ -226,6 +226,7 @@ o2::dataformats::V0Ext SVStudySpec::processV0(int iv, o2::globaltracking::RecoCo
     v0ext.v0 = v0sel;
   }
   v0ext.v0ID = v0id;
+  const auto clRefs = recoData.getTPCTracksClusterRefs();
   o2::MCCompLabel lb[2];
   const o2::MCTrack* mcTrks[2];
   for (int ip = 0; ip < 2; ip++) {
@@ -244,6 +245,18 @@ o2::dataformats::V0Ext SVStudySpec::processV0(int iv, o2::globaltracking::RecoCo
       lb[ip] = recoData.getTrackMCLabel(gidset[GTrackID::TPC]);
       if (lb[ip].isValid()) {
         prInfo.corrTPC = !lb[ip].isFake();
+      }
+      if (mParam && mUseTPCCl) {
+        uint8_t clSect = 0, clRow = 0;
+        uint32_t clIdx = 0;
+        tpcTr.getClusterReference(clRefs, tpcTr.getNClusterReferences() - 1, clSect, clRow, clIdx);
+        const auto& clus = recoData.getTPCClusters().clusters[clSect][clRow][clIdx];
+        prInfo.lowestRow = clRow;
+        int npads = mParam->tpcGeometry.NPads(clRow);
+        prInfo.padFromEdge = uint8_t(clus.getPad());
+        if (prInfo.padFromEdge > npads / 2) {
+          prInfo.padFromEdge = npads - 1 - prInfo.padFromEdge;
+        }
       }
     }
     // get ITS tracks, if any
