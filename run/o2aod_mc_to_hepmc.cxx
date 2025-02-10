@@ -53,21 +53,21 @@ struct AodToHepmc {
     /** Option for dumping HepMC event structures to disk.  Takes one
      * argument - the name of the file to write to. */
     o2::framework::Configurable<std::string> dump{"hepmc-dump", "",
-                                              "Dump HepMC event to output"};
+                                                  "Dump HepMC event to output"};
     /** Option for only storing particles from the event generator.
      * Note, if a particle is stored down, then its mothers will also
      * be stored. */
     o2::framework::Configurable<bool> onlyGen{"hepmc-only-generated", false,
-                                          "Only export generated"};
+                                              "Only export generated"};
     /** Use HepMC's tree parsing for building event structure */
     o2::framework::Configurable<bool> useTree{"hepmc-use-tree", false,
-                                          "Export as tree"};
+                                              "Export as tree"};
     /** Floating point precision used when writing to disk */
     o2::framework::Configurable<int> precision{"hepmc-precision", 8,
-                                           "Export precision in dump"};
+                                               "Export precision in dump"};
     /** Recenter event at IP=(0,0,0,0). */
     o2::framework::Configurable<bool> recenter{"hepmc-recenter", false,
-                                           "Recenter the events at (0,0,0,0)"};
+                                               "Recenter the events at (0,0,0,0)"};
   } configs;
 
   /** Our converter */

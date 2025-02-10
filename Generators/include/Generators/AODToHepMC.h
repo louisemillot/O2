@@ -592,7 +592,8 @@ struct AODToHepMCPostRun {
   {
   }
 
-  void endOfStream() {
+  void endOfStream()
+  {
     if (ptr != nullptr) {
       ptr->postRun();
     }
