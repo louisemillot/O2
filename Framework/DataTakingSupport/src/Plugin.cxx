@@ -72,6 +72,10 @@ auto createInfoLoggerSinkHelper(InfoLogger* logger, InfoLoggerContext* ctx)
         severity = InfoLogger::Severity::Fatal;
         level = 1;
         break;
+      case fair::Severity::critical:
+        severity = InfoLogger::Severity::Error;
+        level = 1;
+        break;
       case fair::Severity::error:
         severity = InfoLogger::Severity::Error;
         level = 2;
@@ -132,8 +136,8 @@ auto createInfoLoggerSinkHelper(InfoLogger* logger, InfoLoggerContext* ctx)
       severity,
       level,
       InfoLogger::undefinedMessageOption.errorCode,
-      metadata.file.data(),
-      atoi(metadata.line.data())};
+      metadata.file,
+      atoi(std::string(metadata.line.data(), metadata.line.size()).c_str())};
 
     if (logger) {
       logger->log(opt, *ctx, "%s", content.c_str());
