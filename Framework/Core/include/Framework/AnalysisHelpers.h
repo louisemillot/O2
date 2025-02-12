@@ -652,8 +652,8 @@ struct Partition {
     return mFiltered->sliceByCachedUnsorted(node, value, cache);
   }
 
-  template <typename T1, bool OPT, bool SORTED>
-  [[nodiscard]] auto sliceBy(o2::framework::PresliceBase<T1, OPT, SORTED> const& container, int value) const
+  template <typename T1, typename Policy, bool OPT>
+  [[nodiscard]] auto sliceBy(o2::framework::PresliceBase<T1, Policy, OPT> const& container, int value) const
   {
     return mFiltered->sliceBy(container, value);
   }

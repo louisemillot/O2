@@ -645,44 +645,60 @@ struct PresliceManager {
   }
 };
 
-template <typename T, bool OPT, bool SORTED>
-struct PresliceManager<PresliceBase<T, OPT, SORTED>> {
-  static bool registerCache(PresliceBase<T, OPT, SORTED>& container, std::vector<StringPair>& bsks, std::vector<StringPair>& bsksU)
+template <typename T, typename Policy, bool OPT>
+struct PresliceManager<PresliceBase<T, Policy, OPT>> {
+  static bool registerCache(PresliceBase<T, Policy, OPT>& container, std::vector<StringPair>& bsks, std::vector<StringPair>&)
+    requires std::same_as<Policy, framework::PreslicePolicySorted>
   {
     if constexpr (OPT) {
       if (container.binding == "[MISSING]") {
         return true;
       }
     }
-    if constexpr (SORTED) {
-      auto locate = std::find_if(bsks.begin(), bsks.end(), [&](auto const& entry) { return (entry.first == container.bindingKey.first) && (entry.second == container.bindingKey.second); });
-      if (locate == bsks.end()) {
-        bsks.emplace_back(container.getBindingKey());
-      }
-      return true;
-    } else {
-      auto locate = std::find_if(bsksU.begin(), bsksU.end(), [&](auto const& entry) { return (entry.first == container.bindingKey.first) && (entry.second == container.bindingKey.second); });
-      if (locate == bsksU.end()) {
-        bsksU.emplace_back(container.getBindingKey());
-      }
-      return true;
+    auto locate = std::find_if(bsks.begin(), bsks.end(), [&](auto const& entry) { return (entry.first == container.bindingKey.first) && (entry.second == container.bindingKey.second); });
+    if (locate == bsks.end()) {
+      bsks.emplace_back(container.getBindingKey());
     }
+    return true;
   }
 
-  static bool updateSliceInfo(PresliceBase<T, OPT, SORTED>& container, ArrowTableSlicingCache& cache)
+  static bool registerCache(PresliceBase<T, Policy, OPT>& container, std::vector<StringPair>&, std::vector<StringPair>& bsksU)
+    requires std::same_as<Policy, framework::PreslicePolicyGeneral>
   {
     if constexpr (OPT) {
       if (container.binding == "[MISSING]") {
         return true;
       }
     }
-    if constexpr (SORTED) {
-      container.updateSliceInfo(cache.getCacheFor(container.getBindingKey()));
-      return true;
-    } else {
-      container.updateSliceInfo(cache.getCacheUnsortedFor(container.getBindingKey()));
-      return true;
+    auto locate = std::find_if(bsksU.begin(), bsksU.end(), [&](auto const& entry) { return (entry.first == container.bindingKey.first) && (entry.second == container.bindingKey.second); });
+    if (locate == bsksU.end()) {
+      bsksU.emplace_back(container.getBindingKey());
     }
+    return true;
+  }
+
+  static bool updateSliceInfo(PresliceBase<T, Policy, OPT>& container, ArrowTableSlicingCache& cache)
+    requires std::same_as<Policy, framework::PreslicePolicySorted>
+  {
+    if constexpr (OPT) {
+      if (container.binding == "[MISSING]") {
+        return true;
+      }
+    }
+    container.updateSliceInfo(cache.getCacheFor(container.getBindingKey()));
+    return true;
+  }
+
+  static bool updateSliceInfo(PresliceBase<T, Policy, OPT>& container, ArrowTableSlicingCache& cache)
+    requires std::same_as<Policy, framework::PreslicePolicyGeneral>
+  {
+    if constexpr (OPT) {
+      if (container.binding == "[MISSING]") {
+        return true;
+      }
+    }
+    container.updateSliceInfo(cache.getCacheUnsortedFor(container.getBindingKey()));
+    return true;
   }
 };
 } // namespace o2::framework
