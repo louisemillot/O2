@@ -17,6 +17,7 @@
 
 #include "GPUCommonDef.h"
 #include "GPUDataTypes.h"
+#include "GPUTPCGMMergedTrackHit.h"
 #ifndef GPUCA_GPUCODE_DEVICE
 #include <vector>
 #include <string>

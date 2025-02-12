@@ -366,7 +366,7 @@ GPUd() bool GPUTPCGMTrackParam::Fit(GPUTPCGMMerger* GPUrestrict() merger, int32_
           CADEBUG(printf("Reinit linearization\n"));
           prop.SetTrack(this, prop.GetAlpha());
         }
-        if (param.par.dodEdx && param.dodEdxDownscaled && iWay == nWays - 1 && cluster.leg == clusters[maxN - 1].leg && !(clusterState & GPUTPCGMMergedTrackHit::flagEdge)) { // TODO: Costimize flag to remove, and option to remove double-clusters
+        if (param.par.dodEdx && param.dodEdxDownscaled && iWay == nWays - 1 && cluster.leg == clusters[maxN - 1].leg && (clusterState & param.rec.tpc.dEdxClusterRejectionFlagMask) == 0) { // TODO: Costimize flag to remove, and option to remove double-clusters
           float qtot = 0, qmax = 0, pad = 0, relTime = 0;
           const int32_t clusterCount = (ihit - ihitMergeFirst) * wayDirection + 1;
           for (int32_t iTmp = ihitMergeFirst; iTmp != ihit + wayDirection; iTmp += wayDirection) {

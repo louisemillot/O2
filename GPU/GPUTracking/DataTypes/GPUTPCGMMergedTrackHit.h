@@ -26,6 +26,7 @@ struct GPUTPCGMMergedTrackHit {
   uint8_t slice, row, leg, state;
 
   // NOTE: the lower states must match those from ClusterNative!
+  // TODO: take them directly from clusterNative header.
   enum hitState { flagSplitPad = 0x1,
                   flagSplitTime = 0x2,
                   flagSplit = 0x3,
