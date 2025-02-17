@@ -46,6 +46,7 @@ class GPUReconstructionCPUBackend : public GPUReconstruction
   uint32_t mNestedLoopOmpFactor = 1;
   static int32_t getOMPThreadNum();
   static int32_t getOMPMaxThreads();
+  int32_t getNOMPThreads();
 };
 
 class GPUReconstructionCPU : public GPUReconstructionKernels<GPUReconstructionCPUBackend>

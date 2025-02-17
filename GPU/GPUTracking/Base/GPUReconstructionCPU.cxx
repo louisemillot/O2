@@ -60,6 +60,21 @@ GPUReconstructionCPU::~GPUReconstructionCPU()
   Exit(); // Needs to be identical to GPU backend bahavior in order to avoid calling abstract methods later in the destructor
 }
 
+int32_t GPUReconstructionCPUBackend::getNOMPThreads()
+{
+  int32_t ompThreads = 0;
+  if (mProcessingSettings.ompKernels == 2) {
+    ompThreads = mProcessingSettings.ompThreads / mNestedLoopOmpFactor;
+    if ((uint32_t)getOMPThreadNum() < mProcessingSettings.ompThreads % mNestedLoopOmpFactor) {
+      ompThreads++;
+    }
+    ompThreads = std::max(1, ompThreads);
+  } else {
+    ompThreads = mProcessingSettings.ompKernels ? mProcessingSettings.ompThreads : 1;
+  }
+  return ompThreads;
+}
+
 template <class T, int32_t I, typename... Args>
 inline int32_t GPUReconstructionCPUBackend::runKernelBackendInternal(const krnlSetupTime& _xyz, const Args&... args)
 {
@@ -73,16 +88,7 @@ inline int32_t GPUReconstructionCPUBackend::runKernelBackendInternal(const krnlS
   }
   uint32_t num = y.num == 0 || y.num == -1 ? 1 : y.num;
   for (uint32_t k = 0; k < num; k++) {
-    int32_t ompThreads = 0;
-    if (mProcessingSettings.ompKernels == 2) {
-      ompThreads = mProcessingSettings.ompThreads / mNestedLoopOmpFactor;
-      if ((uint32_t)getOMPThreadNum() < mProcessingSettings.ompThreads % mNestedLoopOmpFactor) {
-        ompThreads++;
-      }
-      ompThreads = std::max(1, ompThreads);
-    } else {
-      ompThreads = mProcessingSettings.ompKernels ? mProcessingSettings.ompThreads : 1;
-    }
+    int32_t ompThreads = getNOMPThreads();
     if (ompThreads > 1) {
       if (mProcessingSettings.debugLevel >= 5) {
         printf("Running %d ompThreads\n", ompThreads);
@@ -105,7 +111,12 @@ inline int32_t GPUReconstructionCPUBackend::runKernelBackendInternal(const krnlS
 template <>
 inline int32_t GPUReconstructionCPUBackend::runKernelBackendInternal<GPUMemClean16, 0>(const krnlSetupTime& _xyz, void* const& ptr, uint64_t const& size)
 {
-  memset(ptr, 0, size);
+  int32_t ompThreads = std::max<int32_t>(1, std::min<int32_t>(size / (16 * 1024 * 1024), getNOMPThreads()));
+  if (ompThreads > 1) {
+    memset(ptr, 0, size);
+  } else {
+    memset(ptr, 0, size);
+  }
   return 0;
 }
 
