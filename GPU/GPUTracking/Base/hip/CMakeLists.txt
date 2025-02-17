@@ -217,7 +217,7 @@ elseif(GPUCA_HIP_COMPILE_MODE STREQUAL "perkernel")
   add_custom_command(
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/GPUTrackingHIPKernelModules.o
     COMMAND cp -u $<TARGET_OBJECTS:GPUTrackingHIPKernels> ${CMAKE_CURRENT_BINARY_DIR}/hip_kernel_module_fatbin/
-    COMMAND ${CMAKE_LINKER} --relocatable --format binary --output ${CMAKE_CURRENT_BINARY_DIR}/GPUTrackingHIPKernelModules.o $<PATH:RELATIVE_PATH,$<LIST:TRANSFORM,$<PATH:GET_FILENAME,$<TARGET_OBJECTS:GPUTrackingHIPKernels>>,PREPEND,${CMAKE_CURRENT_BINARY_DIR}/hip_kernel_module_fatbin/>,${CMAKE_CURRENT_BINARY_DIR}>
+    COMMAND ${CMAKE_LINKER} -z noexecstack --relocatable --format binary --output ${CMAKE_CURRENT_BINARY_DIR}/GPUTrackingHIPKernelModules.o $<PATH:RELATIVE_PATH,$<LIST:TRANSFORM,$<PATH:GET_FILENAME,$<TARGET_OBJECTS:GPUTrackingHIPKernels>>,PREPEND,${CMAKE_CURRENT_BINARY_DIR}/hip_kernel_module_fatbin/>,${CMAKE_CURRENT_BINARY_DIR}>
     DEPENDS GPUTrackingHIPKernels $<TARGET_OBJECTS:GPUTrackingHIPKernels>
     COMMENT "Compiling fatbin kernels ${CMAKE_CURRENT_BINARY_DIR}/GPUTrackingHIPKernelModules.o"
     VERBATIM

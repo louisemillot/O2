@@ -160,7 +160,7 @@ elseif(GPUCA_CUDA_COMPILE_MODE STREQUAL "perkernel")
   add_custom_command(
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/GPUTrackingCUDAKernelModules.o
     COMMAND cp -u $<TARGET_OBJECTS:GPUTrackingCUDAKernels> ${CMAKE_CURRENT_BINARY_DIR}/cuda_kernel_module_fatbin/
-    COMMAND ${CMAKE_LINKER} --relocatable --format binary --output ${CMAKE_CURRENT_BINARY_DIR}/GPUTrackingCUDAKernelModules.o $<PATH:RELATIVE_PATH,$<LIST:TRANSFORM,$<PATH:GET_FILENAME,$<TARGET_OBJECTS:GPUTrackingCUDAKernels>>,PREPEND,${CMAKE_CURRENT_BINARY_DIR}/cuda_kernel_module_fatbin/>,${CMAKE_CURRENT_BINARY_DIR}>
+    COMMAND ${CMAKE_LINKER} -z noexecstack --relocatable --format binary --output ${CMAKE_CURRENT_BINARY_DIR}/GPUTrackingCUDAKernelModules.o $<PATH:RELATIVE_PATH,$<LIST:TRANSFORM,$<PATH:GET_FILENAME,$<TARGET_OBJECTS:GPUTrackingCUDAKernels>>,PREPEND,${CMAKE_CURRENT_BINARY_DIR}/cuda_kernel_module_fatbin/>,${CMAKE_CURRENT_BINARY_DIR}>
     DEPENDS GPUTrackingCUDAKernels $<TARGET_OBJECTS:GPUTrackingCUDAKernels>
     COMMENT "Compiling fatbin kernels ${CMAKE_CURRENT_BINARY_DIR}/GPUTrackingCUDAKernelModules.o"
     VERBATIM
