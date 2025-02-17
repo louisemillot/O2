@@ -156,16 +156,19 @@ void on_data_processing_expired(uv_timer_t* handle)
 {
   auto* ref = (ServiceRegistryRef*)handle->data;
   auto& state = ref->get<DeviceState>();
+  auto& spec = ref->get<DeviceSpec const>();
   state.loopReason |= DeviceState::TIMER_EXPIRED;
 
   // Check if this is a source device
   O2_SIGNPOST_ID_FROM_POINTER(cid, device, handle);
 
-  // Source devices should never end up in this callback, since the exitTransitionTimeout should
-  // be reset to the dataProcessingTimeout and the timers cohalesced.
-  assert(hasOnlyGenerated(ref->get<DeviceSpec const>()) == false);
-  O2_SIGNPOST_EVENT_EMIT_INFO(calibration, cid, "callback", "Grace period for data processing expired. Only calibrations from this point onwards.");
-  state.allowedProcessing = DeviceState::CalibrationOnly;
+  if (hasOnlyGenerated(spec)) {
+    O2_SIGNPOST_EVENT_EMIT_INFO(calibration, cid, "callback", "Grace period for data processing expired. Switching to EndOfStreaming.");
+    switchState(*ref, StreamingState::EndOfStreaming);
+  } else {
+    O2_SIGNPOST_EVENT_EMIT_INFO(calibration, cid, "callback", "Grace period for data processing expired. Only calibrations from this point onwards.");
+    state.allowedProcessing = DeviceState::CalibrationOnly;
+  }
 }
 
 void on_communication_requested(uv_async_t* s)
@@ -1377,13 +1380,6 @@ void DataProcessingDevice::Run()
         auto& spec = ref.get<DeviceSpec const>();
         if (hasOnlyTimers(spec)) {
           switchState(ref, StreamingState::EndOfStreaming);
-        }
-
-        // If this is a source device, exitTransitionTimeout and dataProcessingTimeout are effectively
-        // the same (because source devices are not allowed to produce any calibration).
-        // should be the same.
-        if (hasOnlyGenerated(spec) && deviceContext.dataProcessingTimeout > 0) {
-          deviceContext.exitTransitionTimeout = deviceContext.dataProcessingTimeout;
         }
 
         // We do not do anything in particular if the data processing timeout would go past the exitTransitionTimeout
