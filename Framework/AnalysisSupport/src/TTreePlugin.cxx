@@ -633,6 +633,10 @@ arrow::Result<arrow::RecordBatchGenerator> TTreeFileFormat::ScanBatchesAsync(
         mappings.push_back({physicalFieldIdx, physicalFieldIdx - 1, fi});
         opsCount += 2;
       } else {
+        if (physicalFieldIdx > 1) {
+          O2_SIGNPOST_EVENT_EMIT(root_arrow_fs, tid, "Generator", "Field %{public}s previous field is %{public}s.", dataset_field->name().c_str(),
+                                 physical_schema->field(physicalFieldIdx - 1)->name().c_str());
+        }
         mappings.push_back({physicalFieldIdx, -1, fi});
         opsCount++;
       }
