@@ -399,6 +399,7 @@ bool DataInputDescriptor::readTree(DataAllocator& outputs, header::DataHeader dh
   }
   // FIXME: Ugly. We should detect the format from the treename, good enough for now.
   std::shared_ptr<arrow::dataset::FileFormat> format;
+  FragmentToBatch::StreamerCreator creator = nullptr;
 
   auto fullpath = arrow::dataset::FileSource{folder.path() + "/" + treename, folder.filesystem()};
 
@@ -407,6 +408,7 @@ bool DataInputDescriptor::readTree(DataAllocator& outputs, header::DataHeader dh
     void* handle = capability.getHandle(rootFS, objectPath);
     if (handle) {
       format = capability.factory().format();
+      creator = capability.factory().deferredOutputStreamer;
       break;
     }
   }
@@ -449,13 +451,12 @@ bool DataInputDescriptor::readTree(DataAllocator& outputs, header::DataHeader dh
 
   // FIXME: This should allow me to create a memory pool
   // which I can then use to scan the dataset.
-  //
-  auto f2b = outputs.make<FragmentToBatch>(o);
+  auto f2b = outputs.make<FragmentToBatch>(o, creator, *fragment);
 
   //// add branches to read
   //// fill the table
   f2b->setLabel(treename.c_str());
-  f2b->fill(*fragment, datasetSchema, format);
+  f2b->fill(datasetSchema, format);
 
   mIOTime += (uv_hrtime() - ioStart);
 
