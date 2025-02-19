@@ -287,6 +287,7 @@ struct OutputManager<HistogramRegistry> {
     auto& deviceSpec = context.services().get<o2::framework::DeviceSpec const>();
     context.outputs().snapshot(what.ref(deviceSpec.inputTimesliceId, deviceSpec.maxInputTimeslices), *(what.getListOfHistograms()));
     what.clean();
+    sleep(deviceSpec.inputTimesliceId);
     return true;
   }
 };
@@ -314,6 +315,7 @@ struct OutputManager<OutputObj<T>> {
   {
     auto& deviceSpec = context.services().get<o2::framework::DeviceSpec const>();
     context.outputs().snapshot(what.ref(deviceSpec.inputTimesliceId, deviceSpec.maxInputTimeslices), *what);
+    sleep(deviceSpec.inputTimesliceId);
     return true;
   }
 };
