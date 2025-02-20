@@ -132,15 +132,13 @@ auto createInfoLoggerSinkHelper(InfoLogger* logger, InfoLoggerContext* ctx)
         return;
     }
 
-    InfoLogger::InfoLoggerMessageOption opt = {
-      severity,
-      level,
-      InfoLogger::undefinedMessageOption.errorCode,
-      metadata.file,
-      atoi(std::string(metadata.line.data(), metadata.line.size()).c_str())};
-
     if (logger) {
-      logger->log(opt, *ctx, "%s", content.c_str());
+      logger->log({severity,
+                   level,
+                   InfoLogger::undefinedMessageOption.errorCode,
+                   std::string(metadata.file).c_str(),
+                   atoi(std::string(metadata.line).c_str())},
+                  *ctx, "%s", content.c_str());
     }
   };
 };
