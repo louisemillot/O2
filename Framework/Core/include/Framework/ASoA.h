@@ -1416,6 +1416,7 @@ template <typename T, typename Policy, bool OPT = false>
 struct PresliceBase : public Policy {
   constexpr static bool optional = OPT;
   using target_t = T;
+  using policy_t = Policy;
   const std::string binding;
 
   PresliceBase(expressions::BindingNode index_)
@@ -1452,6 +1453,15 @@ template <typename T>
 using Preslice = PresliceBase<T, PreslicePolicySorted, false>;
 template <typename T>
 using PresliceOptional = PresliceBase<T, PreslicePolicySorted, true>;
+
+template <typename T>
+concept is_preslice = requires(T t) {
+  requires std::same_as<decltype(t.binding), std::string>;
+  requires std::same_as<decltype(t.bindingKey), StringPair>;
+  &T::isMising;
+  &T::updateSliceInfo;
+  &T::getSliceFor;
+};
 
 } // namespace o2::framework
 
