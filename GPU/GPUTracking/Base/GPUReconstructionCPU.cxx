@@ -111,10 +111,24 @@ inline int32_t GPUReconstructionCPUBackend::runKernelBackendInternal(const krnlS
 template <>
 inline int32_t GPUReconstructionCPUBackend::runKernelBackendInternal<GPUMemClean16, 0>(const krnlSetupTime& _xyz, void* const& ptr, uint64_t const& size)
 {
-  int32_t ompThreads = std::max<int32_t>(1, std::min<int32_t>(size / (16 * 1024 * 1024), getNOMPThreads()));
-  if (ompThreads > 1) {
-    memset(ptr, 0, size);
-  } else {
+#ifdef WITH_OPENMP
+  int32_t nOMPThreads = std::max<int32_t>(1, std::min<int32_t>(size / (16 * 1024 * 1024), getNOMPThreads()));
+  if (nOMPThreads > 1) {
+    GPUCA_OPENMP(parallel num_threads(nOMPThreads))
+    {
+      size_t threadSize = size / omp_get_num_threads();
+      if (threadSize % 4096) {
+        threadSize += 4096 - threadSize % 4096;
+      }
+      size_t offset = threadSize * omp_get_thread_num();
+      size_t mySize = std::min<size_t>(threadSize, size - offset);
+      if (mySize) {
+        memset((char*)ptr + offset, 0, mySize);
+      }
+    }
+  } else
+#endif
+  {
     memset(ptr, 0, size);
   }
   return 0;

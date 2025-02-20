@@ -246,7 +246,7 @@ int32_t GPUReconstruction::InitPhaseBeforeDevice()
   }
   if (mProcessingSettings.deterministicGPUReconstruction) {
 #ifndef GPUCA_NO_FAST_MATH
-    GPUError("Warning, deterministicGPUReconstruction needs GPUCA_NO_FAST_MATH, otherwise results will never be deterministic!");
+    GPUError("Warning, deterministicGPUReconstruction needs GPUCA_NO_FAST_MATH for being fully deterministic, without only most indeterminism by concurrency is removed, but floating point effects remain!");
 #endif
     mProcessingSettings.overrideClusterizerFragmentLen = TPC_MAX_FRAGMENT_LEN_GPU;
     param().rec.tpc.nWaysOuter = true;
