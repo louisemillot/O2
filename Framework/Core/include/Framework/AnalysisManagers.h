@@ -511,6 +511,7 @@ static void setGroupedCombination(C& comb, TG& grouping, std::tuple<Ts...>& asso
 
 /// Preslice handling
 template <typename T>
+  requires(!is_preslice<T>)
 bool registerCache(T&, std::vector<StringPair>&, std::vector<StringPair>&)
 {
   return false;
@@ -549,6 +550,7 @@ bool registerCache(T& preslice, std::vector<StringPair>&, std::vector<StringPair
 }
 
 template <typename T>
+  requires(!is_preslice<T>)
 bool updateSliceInfo(T&, ArrowTableSlicingCache&)
 {
   return false;

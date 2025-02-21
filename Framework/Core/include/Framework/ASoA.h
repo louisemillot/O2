@@ -1455,13 +1455,7 @@ template <typename T>
 using PresliceOptional = PresliceBase<T, PreslicePolicySorted, true>;
 
 template <typename T>
-concept is_preslice = requires(T t) {
-  requires std::same_as<decltype(t.binding), std::string>;
-  requires std::same_as<decltype(t.bindingKey), StringPair>;
-  &T::isMising;
-  &T::updateSliceInfo;
-  &T::getSliceFor;
-};
+concept is_preslice = std::derived_from<T, PreslicePolicyBase>;
 
 } // namespace o2::framework
 
