@@ -69,7 +69,7 @@ INode* BuildTree(const double* frequencies, uint32_t UniqueSymbols)
 {
   std::priority_queue<INode*, std::vector<INode*>, NodeCmp> trees;
 
-  for (uint32_t i = 0; i < UniqueSymbols; ++i) {
+  for (uint32_t i = 0; i < UniqueSymbols; i++) {
     if (frequencies[i] != 0) {
       trees.push(new LeafNode(frequencies[i], i));
     }
@@ -256,7 +256,7 @@ float GPUTPCClusterStatistics::Analyze(std::vector<int32_t>& p, const char* name
     GenerateCodes(root, HuffCode(), codes);
     delete root;
 
-    for (HuffCodeMap::const_iterator it = codes.begin(); it != codes.end(); ++it) {
+    for (HuffCodeMap::const_iterator it = codes.begin(); it != codes.end(); it++) {
       huffmanSize += it->second.size() * prob[it->first];
     }
 

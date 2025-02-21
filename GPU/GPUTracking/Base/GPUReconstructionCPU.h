@@ -43,10 +43,8 @@ class GPUReconstructionCPUBackend : public GPUReconstruction
   int32_t runKernelBackendInternal(const gpu_reconstruction_kernels::krnlSetupTime& _xyz, const Args&... args);
   template <class T, int32_t I>
   gpu_reconstruction_kernels::krnlProperties getKernelPropertiesBackend();
-  uint32_t mNestedLoopOmpFactor = 1;
-  static int32_t getOMPThreadNum();
-  static int32_t getOMPMaxThreads();
-  int32_t getNOMPThreads();
+  uint32_t mNActiveThreadsOuterLoop = 1;
+  int32_t getNKernelHostThreads(bool splitCores);
 };
 
 class GPUReconstructionCPU : public GPUReconstructionKernels<GPUReconstructionCPUBackend>
@@ -81,8 +79,8 @@ class GPUReconstructionCPU : public GPUReconstructionKernels<GPUReconstructionCP
   HighResTimer& getRecoStepTimer(RecoStep step) { return mTimersRecoSteps[getRecoStepNum(step)].timerTotal; }
   HighResTimer& getGeneralStepTimer(GeneralStep step) { return mTimersGeneralSteps[getGeneralStepNum(step)]; }
 
-  void SetNestedLoopOmpFactor(uint32_t f) { mNestedLoopOmpFactor = f; }
-  uint32_t SetAndGetNestedLoopOmpFactor(bool condition, uint32_t max);
+  void SetNActiveThreadsOuterLoop(uint32_t f) { mNActiveThreadsOuterLoop = f; }
+  uint32_t SetAndGetNActiveThreadsOuterLoop(bool condition, uint32_t max);
 
   void UpdateParamOccupancyMap(const uint32_t* mapHost, const uint32_t* mapGPU, uint32_t occupancyTotal, int32_t stream = -1);
 
@@ -220,8 +218,8 @@ inline int32_t GPUReconstructionCPU::runKernel(krnlSetup&& setup, Args&&... args
     return 0;
   }
   if (mProcessingSettings.debugLevel >= 1) {
-    t = &getKernelTimer<S, I>(myStep, !IsGPU() || cpuFallback ? getOMPThreadNum() : stream);
-    if ((!mProcessingSettings.deviceTimers || !IsGPU() || cpuFallback) && (mNestedLoopOmpFactor < 2 || getOMPThreadNum() == 0)) {
+    t = &getKernelTimer<S, I>(myStep, !IsGPU() || cpuFallback ? getHostThreadIndex() : stream);
+    if ((!mProcessingSettings.deviceTimers || !IsGPU() || cpuFallback) && (mNActiveThreadsOuterLoop < 2 || getHostThreadIndex() == 0)) {
       t->Start();
     }
   }
@@ -287,11 +285,11 @@ HighResTimer& GPUReconstructionCPU::getTimer(const char* name, int32_t num)
   static int32_t id = getNextTimerId();
   timerMeta* timer = getTimerById(id);
   if (timer == nullptr) {
-    int32_t max = std::max<int32_t>({getOMPMaxThreads(), mProcessingSettings.nStreams});
+    int32_t max = std::max<int32_t>({mMaxHostThreads, mProcessingSettings.nStreams});
     timer = insertTimer(id, name, J, max, 1, RecoStep::NoRecoStep);
   }
   if (num == -1) {
-    num = getOMPThreadNum();
+    num = getHostThreadIndex();
   }
   if (num < 0 || num >= timer->num) {
     throw std::runtime_error("Invalid timer requested");

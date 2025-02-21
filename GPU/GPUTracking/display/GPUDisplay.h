@@ -207,7 +207,7 @@ class GPUDisplay : public GPUDisplayInterface
   void DrawTrackITS(int32_t trackId, int32_t iSlice);
   GPUDisplay::vboList DrawFinalITS();
   template <class T>
-  void DrawFinal(int32_t iSlice, int32_t /*iCol*/, GPUTPCGMPropagator* prop, std::array<vecpod<int32_t>, 2>& trackList, threadVertexBuffer& threadBuffer);
+  void DrawFinal(int32_t iSlice, int32_t /*iCol*/, const GPUTPCGMPropagator* prop, std::array<vecpod<int32_t>, 2>& trackList, threadVertexBuffer& threadBuffer);
   vboList DrawGrid(const GPUTPCTracker& tracker);
   vboList DrawGridTRD(int32_t sector);
   void DoScreenshot(const char* filename, std::vector<char>& pixels, float animateTime = -1.f);

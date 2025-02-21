@@ -22,6 +22,8 @@
 #include "utils/strtag.h"
 #include <fstream>
 
+#include <oneapi/tbb.h>
+
 using namespace o2::gpu;
 
 int32_t GPUChainTracking::ExtrapolationTracking(uint32_t iSlice, int32_t threadId, bool synchronizeOutput)
@@ -154,110 +156,110 @@ int32_t GPUChainTracking::RunTPCTrackingSlices_internal()
   int32_t streamMap[NSLICES];
 
   bool error = false;
-  GPUCA_OPENMP(parallel for if(!doGPU && GetProcessingSettings().ompKernels != 1) num_threads(mRec->SetAndGetNestedLoopOmpFactor(!doGPU, NSLICES)))
-  for (uint32_t iSlice = 0; iSlice < NSLICES; iSlice++) {
-    GPUTPCTracker& trk = processors()->tpcTrackers[iSlice];
-    GPUTPCTracker& trkShadow = doGPU ? processorsShadow()->tpcTrackers[iSlice] : trk;
-    int32_t useStream = (iSlice % mRec->NStreams());
+  tbb::task_arena(mRec->SetAndGetNActiveThreadsOuterLoop(!doGPU, NSLICES)).execute([&] {
+    tbb::parallel_for<uint32_t>(0, NSLICES, [&](auto iSlice) {
+      GPUTPCTracker& trk = processors()->tpcTrackers[iSlice];
+      GPUTPCTracker& trkShadow = doGPU ? processorsShadow()->tpcTrackers[iSlice] : trk;
+      int32_t useStream = (iSlice % mRec->NStreams());
 
-    if (GetProcessingSettings().debugLevel >= 3) {
-      GPUInfo("Creating Slice Data (Slice %d)", iSlice);
-    }
-    if (doGPU) {
-      TransferMemoryResourcesToGPU(RecoStep::TPCSliceTracking, &trk, useStream);
-      runKernel<GPUTPCCreateSliceData>({GetGridBlk(GPUCA_ROW_COUNT, useStream), {iSlice}, {nullptr, streamInit[useStream] ? nullptr : &mEvents->init}});
-      streamInit[useStream] = true;
-    } else {
-      if (ReadEvent(iSlice, 0)) {
-        GPUError("Error reading event");
-        error = 1;
-        continue;
-      }
-    }
-    if (GetProcessingSettings().deterministicGPUReconstruction) {
-      runKernel<GPUTPCSectorDebugSortKernels, GPUTPCSectorDebugSortKernels::hitData>({GetGridBlk(GPUCA_ROW_COUNT, useStream), {iSlice}});
-    }
-    if (!doGPU && trk.CheckEmptySlice() && GetProcessingSettings().debugLevel == 0) {
-      continue;
-    }
-
-    if (GetProcessingSettings().debugLevel >= 6) {
-      *mDebugFile << "\n\nReconstruction: Slice " << iSlice << "/" << NSLICES << std::endl;
-      if (GetProcessingSettings().debugMask & 1) {
-        if (doGPU) {
-          TransferMemoryResourcesToHost(RecoStep::TPCSliceTracking, &trk, -1, true);
-        }
-        trk.DumpSliceData(*mDebugFile);
-      }
-    }
-
-    // Initialize temporary memory where needed
-    if (GetProcessingSettings().debugLevel >= 3) {
-      GPUInfo("Copying Slice Data to GPU and initializing temporary memory");
-    }
-    runKernel<GPUMemClean16>(GetGridAutoStep(useStream, RecoStep::TPCSliceTracking), trkShadow.Data().HitWeights(), trkShadow.Data().NumberOfHitsPlusAlign() * sizeof(*trkShadow.Data().HitWeights()));
-
-    if (!doGPU) {
-      TransferMemoryResourcesToGPU(RecoStep::TPCSliceTracking, &trk, useStream); // Copy Data to GPU Global Memory
-    }
-    if (GPUDebug("Initialization (3)", useStream)) {
-      throw std::runtime_error("memcpy failure");
-    }
-
-    runKernel<GPUTPCNeighboursFinder>({GetGridBlk(GPUCA_ROW_COUNT, useStream), {iSlice}, {nullptr, streamInit[useStream] ? nullptr : &mEvents->init}});
-    streamInit[useStream] = true;
-
-    if (GetProcessingSettings().keepDisplayMemory) {
-      TransferMemoryResourcesToHost(RecoStep::TPCSliceTracking, &trk, -1, true);
-      memcpy(trk.LinkTmpMemory(), mRec->Res(trk.MemoryResLinks()).Ptr(), mRec->Res(trk.MemoryResLinks()).Size());
-      if (GetProcessingSettings().debugMask & 2) {
-        trk.DumpLinks(*mDebugFile, 0);
-      }
-    }
-
-    runKernel<GPUTPCNeighboursCleaner>({GetGridBlk(GPUCA_ROW_COUNT - 2, useStream), {iSlice}});
-    DoDebugAndDump(RecoStep::TPCSliceTracking, 4, trk, &GPUTPCTracker::DumpLinks, *mDebugFile, 1);
-
-    runKernel<GPUTPCStartHitsFinder>({GetGridBlk(GPUCA_ROW_COUNT - 6, useStream), {iSlice}});
-#ifdef GPUCA_SORT_STARTHITS_GPU
-    if (doGPU) {
-      runKernel<GPUTPCStartHitsSorter>({GetGridAuto(useStream), {iSlice}});
-    }
-#endif
-    if (GetProcessingSettings().deterministicGPUReconstruction) {
-      runKernel<GPUTPCSectorDebugSortKernels, GPUTPCSectorDebugSortKernels::startHits>({GetGrid(1, 1, useStream), {iSlice}});
-    }
-    DoDebugAndDump(RecoStep::TPCSliceTracking, 32, trk, &GPUTPCTracker::DumpStartHits, *mDebugFile);
-
-    if (GetProcessingSettings().memoryAllocationStrategy == GPUMemoryResource::ALLOCATION_INDIVIDUAL) {
-      trk.UpdateMaxData();
-      AllocateRegisteredMemory(trk.MemoryResTracklets());
-      AllocateRegisteredMemory(trk.MemoryResOutput());
-    }
-
-    if (!(doGPU || GetProcessingSettings().debugLevel >= 1) || GetProcessingSettings().trackletConstructorInPipeline) {
-      runKernel<GPUTPCTrackletConstructor>({GetGridAuto(useStream), {iSlice}});
-      DoDebugAndDump(RecoStep::TPCSliceTracking, 128, trk, &GPUTPCTracker::DumpTrackletHits, *mDebugFile);
-      if (GetProcessingSettings().debugMask & 256 && GetProcessingSettings().deterministicGPUReconstruction < 2) {
-        trk.DumpHitWeights(*mDebugFile);
-      }
-    }
-
-    if (!(doGPU || GetProcessingSettings().debugLevel >= 1) || GetProcessingSettings().trackletSelectorInPipeline) {
-      runKernel<GPUTPCTrackletSelector>({GetGridAuto(useStream), {iSlice}});
-      runKernel<GPUTPCExtrapolationTrackingCopyNumbers>({{1, -ThreadCount(), useStream}, {iSlice}}, 1);
-      if (GetProcessingSettings().deterministicGPUReconstruction) {
-        runKernel<GPUTPCSectorDebugSortKernels, GPUTPCSectorDebugSortKernels::sliceTracks>({GetGrid(1, 1, useStream), {iSlice}});
-      }
-      TransferMemoryResourceLinkToHost(RecoStep::TPCSliceTracking, trk.MemoryResCommon(), useStream, &mEvents->slice[iSlice]);
-      streamMap[iSlice] = useStream;
       if (GetProcessingSettings().debugLevel >= 3) {
-        GPUInfo("Slice %u, Number of tracks: %d", iSlice, *trk.NTracks());
+        GPUInfo("Creating Slice Data (Slice %d)", iSlice);
       }
-      DoDebugAndDump(RecoStep::TPCSliceTracking, 512, trk, &GPUTPCTracker::DumpTrackHits, *mDebugFile);
-    }
-  }
-  mRec->SetNestedLoopOmpFactor(1);
+      if (doGPU) {
+        TransferMemoryResourcesToGPU(RecoStep::TPCSliceTracking, &trk, useStream);
+        runKernel<GPUTPCCreateSliceData>({GetGridBlk(GPUCA_ROW_COUNT, useStream), {iSlice}, {nullptr, streamInit[useStream] ? nullptr : &mEvents->init}});
+        streamInit[useStream] = true;
+      } else {
+        if (ReadEvent(iSlice, 0)) {
+          GPUError("Error reading event");
+          error = 1;
+          return;
+        }
+      }
+      if (GetProcessingSettings().deterministicGPUReconstruction) {
+        runKernel<GPUTPCSectorDebugSortKernels, GPUTPCSectorDebugSortKernels::hitData>({GetGridBlk(GPUCA_ROW_COUNT, useStream), {iSlice}});
+      }
+      if (!doGPU && trk.CheckEmptySlice() && GetProcessingSettings().debugLevel == 0) {
+        return;
+      }
+
+      if (GetProcessingSettings().debugLevel >= 6) {
+        *mDebugFile << "\n\nReconstruction: Slice " << iSlice << "/" << NSLICES << std::endl;
+        if (GetProcessingSettings().debugMask & 1) {
+          if (doGPU) {
+            TransferMemoryResourcesToHost(RecoStep::TPCSliceTracking, &trk, -1, true);
+          }
+          trk.DumpSliceData(*mDebugFile);
+        }
+      }
+
+      // Initialize temporary memory where needed
+      if (GetProcessingSettings().debugLevel >= 3) {
+        GPUInfo("Copying Slice Data to GPU and initializing temporary memory");
+      }
+      runKernel<GPUMemClean16>(GetGridAutoStep(useStream, RecoStep::TPCSliceTracking), trkShadow.Data().HitWeights(), trkShadow.Data().NumberOfHitsPlusAlign() * sizeof(*trkShadow.Data().HitWeights()));
+
+      if (!doGPU) {
+        TransferMemoryResourcesToGPU(RecoStep::TPCSliceTracking, &trk, useStream); // Copy Data to GPU Global Memory
+      }
+      if (GPUDebug("Initialization (3)", useStream)) {
+        throw std::runtime_error("memcpy failure");
+      }
+
+      runKernel<GPUTPCNeighboursFinder>({GetGridBlk(GPUCA_ROW_COUNT, useStream), {iSlice}, {nullptr, streamInit[useStream] ? nullptr : &mEvents->init}});
+      streamInit[useStream] = true;
+
+      if (GetProcessingSettings().keepDisplayMemory) {
+        TransferMemoryResourcesToHost(RecoStep::TPCSliceTracking, &trk, -1, true);
+        memcpy(trk.LinkTmpMemory(), mRec->Res(trk.MemoryResLinks()).Ptr(), mRec->Res(trk.MemoryResLinks()).Size());
+        if (GetProcessingSettings().debugMask & 2) {
+          trk.DumpLinks(*mDebugFile, 0);
+        }
+      }
+
+      runKernel<GPUTPCNeighboursCleaner>({GetGridBlk(GPUCA_ROW_COUNT - 2, useStream), {iSlice}});
+      DoDebugAndDump(RecoStep::TPCSliceTracking, 4, trk, &GPUTPCTracker::DumpLinks, *mDebugFile, 1);
+
+      runKernel<GPUTPCStartHitsFinder>({GetGridBlk(GPUCA_ROW_COUNT - 6, useStream), {iSlice}});
+#ifdef GPUCA_SORT_STARTHITS_GPU
+      if (doGPU) {
+        runKernel<GPUTPCStartHitsSorter>({GetGridAuto(useStream), {iSlice}});
+      }
+#endif
+      if (GetProcessingSettings().deterministicGPUReconstruction) {
+        runKernel<GPUTPCSectorDebugSortKernels, GPUTPCSectorDebugSortKernels::startHits>({GetGrid(1, 1, useStream), {iSlice}});
+      }
+      DoDebugAndDump(RecoStep::TPCSliceTracking, 32, trk, &GPUTPCTracker::DumpStartHits, *mDebugFile);
+
+      if (GetProcessingSettings().memoryAllocationStrategy == GPUMemoryResource::ALLOCATION_INDIVIDUAL) {
+        trk.UpdateMaxData();
+        AllocateRegisteredMemory(trk.MemoryResTracklets());
+        AllocateRegisteredMemory(trk.MemoryResOutput());
+      }
+
+      if (!(doGPU || GetProcessingSettings().debugLevel >= 1) || GetProcessingSettings().trackletConstructorInPipeline) {
+        runKernel<GPUTPCTrackletConstructor>({GetGridAuto(useStream), {iSlice}});
+        DoDebugAndDump(RecoStep::TPCSliceTracking, 128, trk, &GPUTPCTracker::DumpTrackletHits, *mDebugFile);
+        if (GetProcessingSettings().debugMask & 256 && GetProcessingSettings().deterministicGPUReconstruction < 2) {
+          trk.DumpHitWeights(*mDebugFile);
+        }
+      }
+
+      if (!(doGPU || GetProcessingSettings().debugLevel >= 1) || GetProcessingSettings().trackletSelectorInPipeline) {
+        runKernel<GPUTPCTrackletSelector>({GetGridAuto(useStream), {iSlice}});
+        runKernel<GPUTPCExtrapolationTrackingCopyNumbers>({{1, -ThreadCount(), useStream}, {iSlice}}, 1);
+        if (GetProcessingSettings().deterministicGPUReconstruction) {
+          runKernel<GPUTPCSectorDebugSortKernels, GPUTPCSectorDebugSortKernels::sliceTracks>({GetGrid(1, 1, useStream), {iSlice}});
+        }
+        TransferMemoryResourceLinkToHost(RecoStep::TPCSliceTracking, trk.MemoryResCommon(), useStream, &mEvents->slice[iSlice]);
+        streamMap[iSlice] = useStream;
+        if (GetProcessingSettings().debugLevel >= 3) {
+          GPUInfo("Slice %u, Number of tracks: %d", iSlice, *trk.NTracks());
+        }
+        DoDebugAndDump(RecoStep::TPCSliceTracking, 512, trk, &GPUTPCTracker::DumpTrackHits, *mDebugFile);
+      } }, tbb::simple_partitioner());
+  });
+  mRec->SetNActiveThreadsOuterLoop(1);
   if (error) {
     return (3);
   }
@@ -419,16 +421,16 @@ int32_t GPUChainTracking::RunTPCTrackingSlices_internal()
     }
   } else {
     mSliceSelectorReady = NSLICES;
-    GPUCA_OPENMP(parallel for if(!doGPU && GetProcessingSettings().ompKernels != 1) num_threads(mRec->SetAndGetNestedLoopOmpFactor(!doGPU, NSLICES)))
-    for (uint32_t iSlice = 0; iSlice < NSLICES; iSlice++) {
-      if (param().rec.tpc.extrapolationTracking) {
-        ExtrapolationTracking(iSlice, 0);
-      }
-      if (GetRecoStepsOutputs() & GPUDataTypes::InOutType::TPCSectorTracks) {
-        WriteOutput(iSlice, 0);
-      }
-    }
-    mRec->SetNestedLoopOmpFactor(1);
+    tbb::task_arena(mRec->SetAndGetNActiveThreadsOuterLoop(!doGPU, NSLICES)).execute([&] {
+      tbb::parallel_for<uint32_t>(0, NSLICES, [&](auto iSlice) {
+        if (param().rec.tpc.extrapolationTracking) {
+          ExtrapolationTracking(iSlice, 0);
+        }
+        if (GetRecoStepsOutputs() & GPUDataTypes::InOutType::TPCSectorTracks) {
+          WriteOutput(iSlice, 0);
+        } }, tbb::simple_partitioner());
+    });
+    mRec->SetNActiveThreadsOuterLoop(1);
   }
 
   if (param().rec.tpc.extrapolationTracking && GetProcessingSettings().debugLevel >= 3) {

@@ -51,6 +51,7 @@ namespace gpu
 class GPUChain;
 struct GPUMemorySizeScalers;
 struct GPUReconstructionPipelineContext;
+struct GPUReconstructionThreading;
 class GPUROOTDumpCore;
 
 namespace gpu_reconstruction_kernels
@@ -206,8 +207,8 @@ class GPUReconstruction
   void SetOutputControl(void* ptr, size_t size);
   void SetInputControl(void* ptr, size_t size);
   GPUOutputControl& OutputControl() { return mOutputControl; }
-  int32_t GetMaxThreads() const { return mMaxThreads; }
-  int32_t SetNOMPThreads(int32_t n);
+  int32_t GetMaxBackendThreads() const { return mMaxBackendThreads; }
+  void SetNActiveThreads(int32_t n);
   int32_t NStreams() const { return mNStreams; }
   const void* DeviceMemoryBase() const { return mDeviceMemoryBase; }
 
@@ -233,6 +234,9 @@ class GPUReconstruction
   virtual void PrintKernelOccupancies() {}
   double GetStatKernelTime() { return mStatKernelTime; }
   double GetStatWallTime() { return mStatWallTime; }
+
+  std::shared_ptr<GPUReconstructionThreading> mThreading;
+  static int32_t getHostThreadIndex();
 
  protected:
   void AllocateRegisteredMemoryInternal(GPUMemoryResource* res, GPUOutputControl* control, GPUReconstruction* recPool);
@@ -343,11 +347,12 @@ class GPUReconstruction
   std::shared_ptr<GPUROOTDumpCore> mROOTDump;
   std::vector<std::array<uint32_t, 4>>* mOutputErrorCodes = nullptr;
 
-  int32_t mMaxThreads = 0;    // Maximum number of threads that may be running, on CPU or GPU
-  int32_t mThreadId = -1;     // Thread ID that is valid for the local CUDA context
-  int32_t mGPUStuck = 0;      // Marks that the GPU is stuck, skip future events
-  int32_t mNStreams = 1;      // Number of parallel GPU streams
-  int32_t mMaxOMPThreads = 0; // Maximum number of OMP threads
+  int32_t mMaxBackendThreads = 0;       // Maximum number of threads that may be running, on CPU or GPU
+  int32_t mThreadId = -1;               // Thread ID that is valid for the local CUDA context
+  int32_t mGPUStuck = 0;                // Marks that the GPU is stuck, skip future events
+  int32_t mNStreams = 1;                // Number of parallel GPU streams
+  int32_t mMaxHostThreads = 0;          // Maximum number of OMP threads
+  int32_t mActiveHostKernelThreads = 0; // Number of currently active threads on the host for kernels
 
   // Management for GPUProcessors
   struct ProcessorData {

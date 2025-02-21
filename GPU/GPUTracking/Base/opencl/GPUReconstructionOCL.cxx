@@ -267,7 +267,7 @@ int32_t GPUReconstructionOCLBackend::InitDevice_Runtime()
     mDeviceName += " (OpenCL)";
     mBlockCount = shaders;
     mWarpSize = 32;
-    mMaxThreads = std::max<int32_t>(mMaxThreads, maxWorkGroup * mBlockCount);
+    mMaxBackendThreads = std::max<int32_t>(mMaxBackendThreads, maxWorkGroup * mBlockCount);
 
     mInternals->context = clCreateContext(nullptr, ContextForAllPlatforms() ? count : 1, ContextForAllPlatforms() ? mInternals->devices.get() : &mInternals->device, nullptr, nullptr, &ocl_error);
     if (GPUFailedMsgI(ocl_error)) {
@@ -380,7 +380,7 @@ int32_t GPUReconstructionOCLBackend::InitDevice_Runtime()
     GPUReconstructionOCL* master = dynamic_cast<GPUReconstructionOCL*>(mMaster);
     mBlockCount = master->mBlockCount;
     mWarpSize = master->mWarpSize;
-    mMaxThreads = master->mMaxThreads;
+    mMaxBackendThreads = master->mMaxBackendThreads;
     mDeviceName = master->mDeviceName;
     mDeviceConstantMem = master->mDeviceConstantMem;
     mInternals = master->mInternals;

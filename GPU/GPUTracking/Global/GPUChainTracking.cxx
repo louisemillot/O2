@@ -673,8 +673,8 @@ int32_t GPUChainTracking::RunChain()
   if ((((GetRecoSteps() & RecoStep::TRDTracking) && !GetProcessingSettings().trdTrackModelO2 && !GetProcessingSettings().willProvideO2PropagatorLate) || ((GetRecoSteps() & RecoStep::Refit) && !param().rec.trackingRefitGPUModel)) && processors()->calibObjects.o2Propagator == nullptr) {
     GPUFatal("Cannot run TRD tracking or refit with o2 track model without o2 propagator"); // This check must happen during run, since o2::Propagator cannot be available during init
   }
-  if (GetProcessingSettings().ompAutoNThreads && !mRec->IsGPU()) {
-    mRec->SetNOMPThreads(-1);
+  if (GetProcessingSettings().autoAdjustHostThreads && !mRec->IsGPU()) {
+    mRec->SetNActiveThreads(-1);
   }
   const auto threadContext = GetThreadContext();
   if (GetProcessingSettings().runCompressionStatistics && mCompressionStatistics == nullptr) {
@@ -717,8 +717,8 @@ int32_t GPUChainTracking::RunChain()
     }
   }
 
-  if (GetProcessingSettings().ompAutoNThreads && !mRec->IsGPU() && mIOPtrs.clustersNative) {
-    mRec->SetNOMPThreads(mIOPtrs.clustersNative->nClustersTotal / 5000);
+  if (GetProcessingSettings().autoAdjustHostThreads && !mRec->IsGPU() && mIOPtrs.clustersNative) {
+    mRec->SetNActiveThreads(mIOPtrs.clustersNative->nClustersTotal / 5000);
   }
 
   if (mIOPtrs.clustersNative && runRecoStep(RecoStep::TPCConversion, &GPUChainTracking::ConvertNativeToClusterData)) {
@@ -768,8 +768,8 @@ int32_t GPUChainTracking::RunChain()
     SynchronizeStream(OutputStream());
   }
 
-  if (GetProcessingSettings().ompAutoNThreads && !mRec->IsGPU()) {
-    mRec->SetNOMPThreads(-1);
+  if (GetProcessingSettings().autoAdjustHostThreads && !mRec->IsGPU()) {
+    mRec->SetNActiveThreads(-1);
   }
 
   int32_t retVal = 0;

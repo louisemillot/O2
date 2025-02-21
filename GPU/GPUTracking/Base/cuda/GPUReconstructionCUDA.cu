@@ -265,7 +265,7 @@ int32_t GPUReconstructionCUDA::InitDevice_Runtime()
       throw std::runtime_error("Invalid warp size on GPU");
     }
     mBlockCount = deviceProp.multiProcessorCount;
-    mMaxThreads = std::max<int32_t>(mMaxThreads, deviceProp.maxThreadsPerBlock * mBlockCount);
+    mMaxBackendThreads = std::max<int32_t>(mMaxBackendThreads, deviceProp.maxThreadsPerBlock * mBlockCount);
 #ifndef __HIPCC__ // CUDA
     mWarpSize = 32;
 #else // HIP
@@ -409,7 +409,7 @@ int32_t GPUReconstructionCUDA::InitDevice_Runtime()
     mDeviceId = master->mDeviceId;
     mBlockCount = master->mBlockCount;
     mWarpSize = master->mWarpSize;
-    mMaxThreads = master->mMaxThreads;
+    mMaxBackendThreads = master->mMaxBackendThreads;
     mDeviceName = master->mDeviceName;
     mDeviceConstantMem = master->mDeviceConstantMem;
     mDeviceConstantMemList.resize(master->mDeviceConstantMemList.size());

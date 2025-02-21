@@ -23,12 +23,9 @@
 #include <condition_variable>
 #include <array>
 
-#ifdef WITH_OPENMP
-#include <omp.h>
-#endif
-
 #include "GPUReconstruction.h"
 #include "GPUReconstructionIncludes.h"
+#include "GPUReconstructionThreading.h"
 #include "GPUROOTDumpCore.h"
 #include "GPUConfigDump.h"
 #include "GPUChainTracking.h"
@@ -121,17 +118,18 @@ void GPUReconstruction::GetITSTraits(std::unique_ptr<o2::its::TrackerTraits>* tr
   }
 }
 
-int32_t GPUReconstruction::SetNOMPThreads(int32_t n)
+void GPUReconstruction::SetNActiveThreads(int32_t n)
 {
-#ifdef WITH_OPENMP
-  omp_set_num_threads(mProcessingSettings.ompThreads = std::max(1, n < 0 ? mMaxOMPThreads : std::min(n, mMaxOMPThreads)));
+  mActiveHostKernelThreads = std::max(1, n < 0 ? mMaxHostThreads : std::min(n, mMaxHostThreads));
+  mThreading->activeThreads = std::make_unique<tbb::task_arena>(mActiveHostKernelThreads);
   if (mProcessingSettings.debugLevel >= 3) {
-    GPUInfo("Set number of OpenMP threads to %d (%d requested)", mProcessingSettings.ompThreads, n);
+    GPUInfo("Set number of active parallel kernels threads on host to %d (%d requested)", mActiveHostKernelThreads, n);
   }
-  return n > mMaxOMPThreads;
-#else
-  return 1;
-#endif
+}
+
+int32_t GPUReconstruction::getHostThreadIndex()
+{
+  return std::max<int32_t>(0, tbb::this_task_arena::current_thread_index());
 }
 
 int32_t GPUReconstruction::Init()
@@ -196,6 +194,24 @@ int32_t GPUReconstruction::Init()
   }
   return 0;
 }
+
+namespace o2::gpu::internal
+{
+static uint32_t getDefaultNThreads()
+{
+  const char* tbbEnv = getenv("TBB_NUM_THREADS");
+  uint32_t tbbNum = tbbEnv ? atoi(tbbEnv) : 0;
+  if (tbbNum) {
+    return tbbNum;
+  }
+  const char* ompEnv = getenv("OMP_NUM_THREADS");
+  uint32_t ompNum = ompEnv ? atoi(ompEnv) : 0;
+  if (ompNum) {
+    return tbbNum;
+  }
+  return tbb::info::default_concurrency();
+}
+} // namespace o2::gpu::internal
 
 int32_t GPUReconstruction::InitPhaseBeforeDevice()
 {
@@ -299,32 +315,37 @@ int32_t GPUReconstruction::InitPhaseBeforeDevice()
     mMemoryScalers->rescaleMaxMem(mProcessingSettings.forceMaxMemScalers);
   }
 
-#ifdef WITH_OPENMP
-  if (mProcessingSettings.ompThreads <= 0) {
-    mProcessingSettings.ompThreads = omp_get_max_threads();
+  if (mProcessingSettings.nHostThreads != -1 && mProcessingSettings.ompThreads != -1) {
+    GPUFatal("Must not use both nHostThreads and ompThreads at the same time!");
+  } else if (mProcessingSettings.ompThreads != -1) {
+    mProcessingSettings.nHostThreads = mProcessingSettings.ompThreads;
+    GPUWarning("You are using the deprecated ompThreads option, please switch to nHostThreads!");
+  }
+
+  if (mProcessingSettings.nHostThreads <= 0) {
+    mProcessingSettings.nHostThreads = internal::getDefaultNThreads();
   } else {
-    mProcessingSettings.ompAutoNThreads = false;
-    omp_set_num_threads(mProcessingSettings.ompThreads);
+    mProcessingSettings.autoAdjustHostThreads = false;
   }
-  if (mProcessingSettings.ompKernels) {
-    if (omp_get_max_active_levels() < 2) {
-      omp_set_max_active_levels(2);
-    }
+  mMaxHostThreads = mActiveHostKernelThreads = mProcessingSettings.nHostThreads;
+  if (mMaster == nullptr) {
+    mThreading = std::make_shared<GPUReconstructionThreading>();
+    mThreading->control = std::make_unique<tbb::global_control>(tbb::global_control::max_allowed_parallelism, mMaxHostThreads);
+    mThreading->allThreads = std::make_unique<tbb::task_arena>(mMaxHostThreads);
+    mThreading->activeThreads = std::make_unique<tbb::task_arena>(mActiveHostKernelThreads);
+  } else {
+    mThreading = mMaster->mThreading;
   }
-#else
-  mProcessingSettings.ompThreads = 1;
-#endif
-  mMaxOMPThreads = mProcessingSettings.ompThreads;
-  mMaxThreads = std::max(mMaxThreads, mProcessingSettings.ompThreads);
+  mMaxBackendThreads = std::max(mMaxBackendThreads, mMaxHostThreads);
   if (IsGPU()) {
     mNStreams = std::max<int32_t>(mProcessingSettings.nStreams, 3);
   }
 
   if (mProcessingSettings.nTPCClustererLanes == -1) {
-    mProcessingSettings.nTPCClustererLanes = (GetRecoStepsGPU() & RecoStep::TPCClusterFinding) ? 3 : std::max<int32_t>(1, std::min<int32_t>(GPUCA_NSLICES, mProcessingSettings.ompKernels ? (mProcessingSettings.ompThreads >= 4 ? std::min<int32_t>(mProcessingSettings.ompThreads / 2, mProcessingSettings.ompThreads >= 32 ? GPUCA_NSLICES : 4) : 1) : mProcessingSettings.ompThreads));
+    mProcessingSettings.nTPCClustererLanes = (GetRecoStepsGPU() & RecoStep::TPCClusterFinding) ? 3 : std::max<int32_t>(1, std::min<int32_t>(GPUCA_NSLICES, mProcessingSettings.inKernelParallel ? (mMaxHostThreads >= 4 ? std::min<int32_t>(mMaxHostThreads / 2, mMaxHostThreads >= 32 ? GPUCA_NSLICES : 4) : 1) : mMaxHostThreads));
   }
   if (mProcessingSettings.overrideClusterizerFragmentLen == -1) {
-    mProcessingSettings.overrideClusterizerFragmentLen = ((GetRecoStepsGPU() & RecoStep::TPCClusterFinding) || (mProcessingSettings.ompThreads / mProcessingSettings.nTPCClustererLanes >= 3)) ? TPC_MAX_FRAGMENT_LEN_GPU : TPC_MAX_FRAGMENT_LEN_HOST;
+    mProcessingSettings.overrideClusterizerFragmentLen = ((GetRecoStepsGPU() & RecoStep::TPCClusterFinding) || (mMaxHostThreads / mProcessingSettings.nTPCClustererLanes >= 3)) ? TPC_MAX_FRAGMENT_LEN_GPU : TPC_MAX_FRAGMENT_LEN_HOST;
   }
   if (mProcessingSettings.nTPCClustererLanes > GPUCA_NSLICES) {
     GPUError("Invalid value for nTPCClustererLanes: %d", mProcessingSettings.nTPCClustererLanes);

@@ -14,25 +14,20 @@
 
 #include "GPUDisplay.h"
 
-#ifdef WITH_OPENMP
-#include <omp.h>
-#endif
 #ifndef _WIN32
 #include "bitmapfile.h"
 #endif
+
+#include "oneapi/tbb.h"
 
 using namespace o2::gpu;
 
 int32_t GPUDisplay::getNumThreads()
 {
   if (mChain) {
-    return mChain->GetProcessingSettings().ompThreads;
+    return mChain->GetProcessingSettings().nHostThreads;
   } else {
-#ifdef WITH_OPENMP
-    return omp_get_max_threads();
-#else
-    return 1;
-#endif
+    return tbb::info::default_concurrency();
   }
 }
 

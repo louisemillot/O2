@@ -22,6 +22,8 @@
 #include <atomic>
 #include "TPCClusterDecompressionCore.inc"
 
+#include <oneapi/tbb.h>
+
 using namespace o2::gpu;
 using namespace o2::tpc;
 
@@ -51,23 +53,24 @@ int32_t TPCClusterDecompressor::decompress(const CompressedClusters* clustersCom
   for (uint32_t i = 0; i < NSLICES * GPUCA_ROW_COUNT; i++) {
     (&locks[0][0])[i].clear();
   }
-  uint32_t offset = 0, lasti = 0;
   const uint32_t maxTime = param.continuousMaxTimeBin > 0 ? ((param.continuousMaxTimeBin + 1) * ClusterNative::scaleTimePacked - 1) : TPC_MAX_TIME_BIN_TRIGGERED;
-  GPUCA_OPENMP(parallel for firstprivate(offset, lasti))
-  for (uint32_t i = 0; i < clustersCompressed->nTracks; i++) {
-    if (i < lasti) {
-      offset = lasti = 0; // dynamic OMP scheduling, need to reinitialize offset
+  tbb::parallel_for(tbb::blocked_range<uint32_t>(0, clustersCompressed->nTracks), [&](const tbb::blocked_range<uint32_t>& range) {
+    uint32_t offset = 0, lasti = 0;
+    for (uint32_t i = range.begin(); i < range.end(); i++) {
+      if (i < lasti) {
+        offset = lasti = 0; // dynamic scheduling order, need to reinitialize offset
+      }
+      while (lasti < i) {
+        offset += clustersCompressed->nTrackClusters[lasti++];
+      }
+      lasti++;
+      TPCClusterDecompressionCore::decompressTrack(*clustersCompressed, param, maxTime, i, offset, clusters, locks);
     }
-    while (lasti < i) {
-      offset += clustersCompressed->nTrackClusters[lasti++];
-    }
-    lasti++;
-    TPCClusterDecompressionCore::decompressTrack(*clustersCompressed, param, maxTime, i, offset, clusters, locks);
-  }
+  });
   size_t nTotalClusters = clustersCompressed->nAttachedClusters + clustersCompressed->nUnattachedClusters;
   ClusterNative* clusterBuffer = allocator(nTotalClusters);
   uint32_t offsets[NSLICES][GPUCA_ROW_COUNT];
-  offset = 0;
+  uint32_t offset = 0;
   uint32_t decodedAttachedClusters = 0;
   for (uint32_t i = 0; i < NSLICES; i++) {
     for (uint32_t j = 0; j < GPUCA_ROW_COUNT; j++) {
@@ -82,8 +85,7 @@ int32_t TPCClusterDecompressor::decompress(const CompressedClusters* clustersCom
   }
   clustersNative.clustersLinear = clusterBuffer;
   clustersNative.setOffsetPtrs();
-  GPUCA_OPENMP(parallel for)
-  for (uint32_t i = 0; i < NSLICES; i++) {
+  tbb::parallel_for<uint32_t>(0, NSLICES, [&](auto i) {
     for (uint32_t j = 0; j < GPUCA_ROW_COUNT; j++) {
       ClusterNative* buffer = &clusterBuffer[clustersNative.clusterOffset[i][j]];
       if (clusters[i][j].size()) {
@@ -108,7 +110,7 @@ int32_t TPCClusterDecompressor::decompress(const CompressedClusters* clustersCom
       if (deterministicRec) {
         std::sort(buffer, buffer + clustersNative.nClusters[i][j]);
       }
-    }
-  }
+    } // clang-format off
+  }, tbb::simple_partitioner()); // clang-format on
   return 0;
 }

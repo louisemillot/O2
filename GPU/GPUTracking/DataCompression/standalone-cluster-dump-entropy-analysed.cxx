@@ -166,7 +166,7 @@ INode* BuildTree(const double* frequencies, uint32_t UniqueSymbols)
 {
   std::priority_queue<INode*, std::vector<INode*>, NodeCmp> trees;
 
-  for (int32_t i = 0; i < UniqueSymbols; ++i) {
+  for (int32_t i = 0; i < UniqueSymbols; i++) {
     if (frequencies[i] != 0) {
       trees.push(new LeafNode(frequencies[i], i));
     }
@@ -621,7 +621,7 @@ int32_t main(int argc, char** argv)
           GenerateCodes(root, HuffCode(), codes);
           delete root;
 
-          for (HuffCodeMap::const_iterator it = codes.begin(); it != codes.end(); ++it) {
+          for (HuffCodeMap::const_iterator it = codes.begin(); it != codes.end(); it++) {
             huffmanSize += it->second.size() * probabilities[i][it->first];
           }
         }

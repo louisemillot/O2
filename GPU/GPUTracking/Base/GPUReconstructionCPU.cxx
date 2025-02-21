@@ -14,6 +14,7 @@
 
 #include "GPUReconstructionCPU.h"
 #include "GPUReconstructionIncludes.h"
+#include "GPUReconstructionThreading.h"
 #include "GPUChain.h"
 
 #include "GPUTPCClusterData.h"
@@ -40,13 +41,6 @@
 #include <unistd.h>
 #endif
 
-#if defined(WITH_OPENMP) || defined(_OPENMP)
-#include <omp.h>
-#else
-static inline int32_t omp_get_thread_num() { return 0; }
-static inline int32_t omp_get_max_threads() { return 1; }
-#endif
-
 using namespace o2::gpu;
 using namespace o2::gpu::gpu_reconstruction_kernels;
 
@@ -60,19 +54,21 @@ GPUReconstructionCPU::~GPUReconstructionCPU()
   Exit(); // Needs to be identical to GPU backend bahavior in order to avoid calling abstract methods later in the destructor
 }
 
-int32_t GPUReconstructionCPUBackend::getNOMPThreads()
+int32_t GPUReconstructionCPUBackend::getNKernelHostThreads(bool splitCores)
 {
-  int32_t ompThreads = 0;
-  if (mProcessingSettings.ompKernels == 2) {
-    ompThreads = mProcessingSettings.ompThreads / mNestedLoopOmpFactor;
-    if ((uint32_t)getOMPThreadNum() < mProcessingSettings.ompThreads % mNestedLoopOmpFactor) {
-      ompThreads++;
+  int32_t nThreads = 0;
+  if (mProcessingSettings.inKernelParallel == 2 && mNActiveThreadsOuterLoop) {
+    if (splitCores) {
+      nThreads = mMaxHostThreads / mNActiveThreadsOuterLoop;
+      nThreads += (uint32_t)getHostThreadIndex() < mMaxHostThreads % mNActiveThreadsOuterLoop;
+    } else {
+      nThreads = mMaxHostThreads;
     }
-    ompThreads = std::max(1, ompThreads);
+    nThreads = std::max(1, nThreads);
   } else {
-    ompThreads = mProcessingSettings.ompKernels ? mProcessingSettings.ompThreads : 1;
+    nThreads = mProcessingSettings.inKernelParallel ? mMaxHostThreads : 1;
   }
-  return ompThreads;
+  return nThreads;
 }
 
 template <class T, int32_t I, typename... Args>
@@ -88,16 +84,19 @@ inline int32_t GPUReconstructionCPUBackend::runKernelBackendInternal(const krnlS
   }
   uint32_t num = y.num == 0 || y.num == -1 ? 1 : y.num;
   for (uint32_t k = 0; k < num; k++) {
-    int32_t ompThreads = getNOMPThreads();
-    if (ompThreads > 1) {
+    int32_t nThreads = getNKernelHostThreads(false);
+    if (nThreads > 1) {
       if (mProcessingSettings.debugLevel >= 5) {
-        printf("Running %d ompThreads\n", ompThreads);
+        printf("Running %d Threads\n", nThreads);
       }
-      GPUCA_OPENMP(parallel for num_threads(ompThreads))
-      for (uint32_t iB = 0; iB < x.nBlocks; iB++) {
-        typename T::GPUSharedMemory smem;
-        T::template Thread<I>(x.nBlocks, 1, iB, 0, smem, T::Processor(*mHostConstantMem)[y.start + k], args...);
-      }
+      mThreading->activeThreads->execute([&] {
+        tbb::parallel_for(tbb::blocked_range<uint32_t>(0, x.nBlocks, 1), [&](const tbb::blocked_range<uint32_t>& r) {
+          typename T::GPUSharedMemory smem;
+          for (uint32_t iB = r.begin(); iB < r.end(); iB++) {
+            T::template Thread<I>(x.nBlocks, 1, iB, 0, smem, T::Processor(*mHostConstantMem)[y.start + k], args...);
+          }
+        });
+      });
     } else {
       for (uint32_t iB = 0; iB < x.nBlocks; iB++) {
         typename T::GPUSharedMemory smem;
@@ -111,24 +110,20 @@ inline int32_t GPUReconstructionCPUBackend::runKernelBackendInternal(const krnlS
 template <>
 inline int32_t GPUReconstructionCPUBackend::runKernelBackendInternal<GPUMemClean16, 0>(const krnlSetupTime& _xyz, void* const& ptr, uint64_t const& size)
 {
-#ifdef WITH_OPENMP
-  int32_t nOMPThreads = std::max<int32_t>(1, std::min<int32_t>(size / (16 * 1024 * 1024), getNOMPThreads()));
-  if (nOMPThreads > 1) {
-    GPUCA_OPENMP(parallel num_threads(nOMPThreads))
-    {
-      size_t threadSize = size / omp_get_num_threads();
+  int32_t nnThreads = std::max<int32_t>(1, std::min<int32_t>(size / (16 * 1024 * 1024), getNKernelHostThreads(true)));
+  if (nnThreads > 1) {
+    tbb::parallel_for(0, nnThreads, [&](int iThread) {
+      size_t threadSize = size / nnThreads;
       if (threadSize % 4096) {
         threadSize += 4096 - threadSize % 4096;
       }
-      size_t offset = threadSize * omp_get_thread_num();
+      size_t offset = threadSize * iThread;
       size_t mySize = std::min<size_t>(threadSize, size - offset);
       if (mySize) {
         memset((char*)ptr + offset, 0, mySize);
-      }
-    }
-  } else
-#endif
-  {
+      } // clang-format off
+    }, tbb::static_partitioner()); // clang-format on
+  } else {
     memset(ptr, 0, size);
   }
   return 0;
@@ -213,8 +208,8 @@ int32_t GPUReconstructionCPU::InitDevice()
     mHostMemoryPermanent = mHostMemoryBase;
     ClearAllocatedMemory();
   }
-  if (mProcessingSettings.ompKernels) {
-    mBlockCount = getOMPMaxThreads();
+  if (mProcessingSettings.inKernelParallel) {
+    mBlockCount = mMaxHostThreads;
   }
   mThreadId = GetThread();
   mProcShadow.mProcessorsProc = processors();
@@ -351,16 +346,6 @@ void GPUReconstructionCPU::ResetDeviceProcessorTypes()
   }
 }
 
-int32_t GPUReconstructionCPUBackend::getOMPThreadNum()
-{
-  return omp_get_thread_num();
-}
-
-int32_t GPUReconstructionCPUBackend::getOMPMaxThreads()
-{
-  return omp_get_max_threads();
-}
-
 static std::atomic_flag timerFlag = ATOMIC_FLAG_INIT; // TODO: Should be a class member not global, but cannot be moved to header due to ROOT limitation
 
 GPUReconstructionCPU::timerMeta* GPUReconstructionCPU::insertTimer(uint32_t id, std::string&& name, int32_t J, int32_t num, int32_t type, RecoStep step)
@@ -402,17 +387,17 @@ uint32_t GPUReconstructionCPU::getNextTimerId()
   return id.fetch_add(1);
 }
 
-uint32_t GPUReconstructionCPU::SetAndGetNestedLoopOmpFactor(bool condition, uint32_t max)
+uint32_t GPUReconstructionCPU::SetAndGetNActiveThreadsOuterLoop(bool condition, uint32_t max)
 {
-  if (condition && mProcessingSettings.ompKernels != 1) {
-    mNestedLoopOmpFactor = mProcessingSettings.ompKernels == 2 ? std::min<uint32_t>(max, mProcessingSettings.ompThreads) : mProcessingSettings.ompThreads;
+  if (condition && mProcessingSettings.inKernelParallel != 1) {
+    mNActiveThreadsOuterLoop = mProcessingSettings.inKernelParallel == 2 ? std::min<uint32_t>(max, mMaxHostThreads) : mMaxHostThreads;
   } else {
-    mNestedLoopOmpFactor = 1;
+    mNActiveThreadsOuterLoop = 1;
   }
   if (mProcessingSettings.debugLevel >= 5) {
-    printf("Running %d OMP threads in outer loop\n", mNestedLoopOmpFactor);
+    printf("Running %d threads in outer loop\n", mNActiveThreadsOuterLoop);
   }
-  return mNestedLoopOmpFactor;
+  return mNActiveThreadsOuterLoop;
 }
 
 void GPUReconstructionCPU::UpdateParamOccupancyMap(const uint32_t* mapHost, const uint32_t* mapGPU, uint32_t occupancyTotal, int32_t stream)

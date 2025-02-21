@@ -76,6 +76,8 @@
 #include "utils/qconfig.h"
 #include "utils/timer.h"
 
+#include <oneapi/tbb.h>
+
 using namespace o2::gpu;
 
 #ifdef GPUCA_MERGER_BY_MC_LABEL
@@ -919,49 +921,48 @@ void GPUQA::RunQA(bool matchOnly, const std::vector<o2::tpc::TrackTPC>* tracksEx
       }
 #endif
     } else {
-      auto acc = GPUTPCTrkLbl<true, mcLabelI_t>(GetClusterLabels(), 1.f - mConfig.recThreshold);
-#if QA_DEBUG == 0
-      GPUCA_OPENMP(parallel for firstprivate(acc))
-#endif
-      for (uint32_t i = 0; i < nReconstructedTracks; i++) {
-        acc.reset();
-        int32_t nClusters = 0;
-        const GPUTPCGMMergedTrack& track = mTracking->mIOPtrs.mergedTracks[i];
-        std::vector<mcLabel_t> labels;
-        for (uint32_t k = 0; k < track.NClusters(); k++) {
-          if (mTracking->mIOPtrs.mergedTrackHits[track.FirstClusterRef() + k].state & GPUTPCGMMergedTrackHit::flagReject) {
-            continue;
-          }
-          nClusters++;
-          uint32_t hitId = mTracking->mIOPtrs.mergedTrackHits[track.FirstClusterRef() + k].num;
-          if (hitId >= GetNMCLabels()) {
-            GPUError("Invalid hit id %u > %d (nClusters %d)", hitId, GetNMCLabels(), mTracking->mIOPtrs.clustersNative ? mTracking->mIOPtrs.clustersNative->nClustersTotal : 0);
-            throw std::runtime_error("qa error");
-          }
-          acc.addLabel(hitId);
-          for (int32_t j = 0; j < GetMCLabelNID(hitId); j++) {
-            if (GetMCLabelID(hitId, j) >= (int32_t)GetNMCTracks(GetMCLabelCol(hitId, j))) {
-              GPUError("Invalid label %d > %d (hit %d, label %d, col %d)", GetMCLabelID(hitId, j), GetNMCTracks(GetMCLabelCol(hitId, j)), hitId, j, (int32_t)GetMCLabelCol(hitId, j));
+      tbb::parallel_for(tbb::blocked_range<uint32_t>(0, nReconstructedTracks, (QA_DEBUG == 0) ? 32 : nReconstructedTracks), [&](const tbb::blocked_range<uint32_t>& range) {
+        auto acc = GPUTPCTrkLbl<true, mcLabelI_t>(GetClusterLabels(), 1.f - mConfig.recThreshold);
+        for (auto i = range.begin(); i < range.end(); i++) {
+          acc.reset();
+          int32_t nClusters = 0;
+          const GPUTPCGMMergedTrack& track = mTracking->mIOPtrs.mergedTracks[i];
+          std::vector<mcLabel_t> labels;
+          for (uint32_t k = 0; k < track.NClusters(); k++) {
+            if (mTracking->mIOPtrs.mergedTrackHits[track.FirstClusterRef() + k].state & GPUTPCGMMergedTrackHit::flagReject) {
+              continue;
+            }
+            nClusters++;
+            uint32_t hitId = mTracking->mIOPtrs.mergedTrackHits[track.FirstClusterRef() + k].num;
+            if (hitId >= GetNMCLabels()) {
+              GPUError("Invalid hit id %u > %d (nClusters %d)", hitId, GetNMCLabels(), mTracking->mIOPtrs.clustersNative ? mTracking->mIOPtrs.clustersNative->nClustersTotal : 0);
               throw std::runtime_error("qa error");
             }
-            if (GetMCLabelID(hitId, j) >= 0) {
-              if (QA_DEBUG >= 3 && track.OK()) {
-                GPUInfo("Track %d Cluster %u Label %d: %d (%f)", i, k, j, GetMCLabelID(hitId, j), GetMCLabelWeight(hitId, j));
+            acc.addLabel(hitId);
+            for (int32_t j = 0; j < GetMCLabelNID(hitId); j++) {
+              if (GetMCLabelID(hitId, j) >= (int32_t)GetNMCTracks(GetMCLabelCol(hitId, j))) {
+                GPUError("Invalid label %d > %d (hit %d, label %d, col %d)", GetMCLabelID(hitId, j), GetNMCTracks(GetMCLabelCol(hitId, j)), hitId, j, (int32_t)GetMCLabelCol(hitId, j));
+                throw std::runtime_error("qa error");
+              }
+              if (GetMCLabelID(hitId, j) >= 0) {
+                if (QA_DEBUG >= 3 && track.OK()) {
+                  GPUInfo("Track %d Cluster %u Label %d: %d (%f)", i, k, j, GetMCLabelID(hitId, j), GetMCLabelWeight(hitId, j));
+                }
               }
             }
           }
-        }
 
-        float maxweight, sumweight;
-        int32_t maxcount;
-        auto maxLabel = acc.computeLabel(&maxweight, &sumweight, &maxcount);
-        mTrackMCLabels[i] = maxLabel;
-        if (QA_DEBUG && track.OK() && GetNMCTracks(maxLabel) > (uint32_t)maxLabel.getTrackID()) {
-          const mcInfo_t& mc = GetMCTrack(maxLabel);
-          GPUInfo("Track %d label %d (fake %d) weight %f clusters %d (fitted %d) (%f%% %f%%) Pt %f", i, maxLabel.getTrackID(), (int32_t)(maxLabel.isFake()), maxweight, nClusters, track.NClustersFitted(), 100.f * maxweight / sumweight, 100.f * (float)maxcount / (float)nClusters,
-                  std::sqrt(mc.pX * mc.pX + mc.pY * mc.pY));
+          float maxweight, sumweight;
+          int32_t maxcount;
+          auto maxLabel = acc.computeLabel(&maxweight, &sumweight, &maxcount);
+          mTrackMCLabels[i] = maxLabel;
+          if (QA_DEBUG && track.OK() && GetNMCTracks(maxLabel) > (uint32_t)maxLabel.getTrackID()) {
+            const mcInfo_t& mc = GetMCTrack(maxLabel);
+            GPUInfo("Track %d label %d (fake %d) weight %f clusters %d (fitted %d) (%f%% %f%%) Pt %f", i, maxLabel.getTrackID(), (int32_t)(maxLabel.isFake()), maxweight, nClusters, track.NClustersFitted(), 100.f * maxweight / sumweight, 100.f * (float)maxcount / (float)nClusters,
+                    std::sqrt(mc.pX * mc.pX + mc.pY * mc.pY));
+          }
         }
-      }
+      });
     }
     if (QA_TIMING || (mTracking && mTracking->GetProcessingSettings().debugLevel >= 3)) {
       GPUInfo("QA Time: Assign Track Labels:\t\t%6.0f us", timer.GetCurrentElapsedTime(true) * 1e6);
@@ -1135,8 +1136,7 @@ void GPUQA::RunQA(bool matchOnly, const std::vector<o2::tpc::TrackTPC>* tracksEx
     }
 
     // Compute MC Track Parameters for MC Tracks
-    GPUCA_OPENMP(parallel for)
-    for (uint32_t iCol = 0; iCol < GetNMCCollissions(); iCol++) {
+    tbb::parallel_for<uint32_t>(0, GetNMCCollissions(), [&](auto iCol) {
       for (uint32_t i = 0; i < GetNMCTracks(iCol); i++) {
         const mcInfo_t& info = GetMCTrack(i, iCol);
         additionalMCParameters& mc2 = mMCParam[iCol][i];
@@ -1153,8 +1153,8 @@ void GPUQA::RunQA(bool matchOnly, const std::vector<o2::tpc::TrackTPC>* tracksEx
           std::vector<int32_t>& effBuffer = mcEffBuffer[mNEvents - 1];
           effBuffer[i] = mRecTracks[iCol][i] * 1000 + mFakeTracks[iCol][i];
         }
-      }
-    }
+      } // clang-format off
+    }, tbb::simple_partitioner()); // clang-format on
     if (QA_TIMING || (mTracking && mTracking->GetProcessingSettings().debugLevel >= 3)) {
       GPUInfo("QA Time: Compute track mc parameters:\t%6.0f us", timer.GetCurrentElapsedTime(true) * 1e6);
     }

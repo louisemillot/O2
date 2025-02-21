@@ -35,10 +35,10 @@ using namespace o2::gpu;
 void GPUTPCSliceData::InitializeRows(const GPUParam& p)
 {
   // initialisation of rows
-  for (int32_t i = 0; i < GPUCA_ROW_COUNT + 1; ++i) {
+  for (int32_t i = 0; i < GPUCA_ROW_COUNT + 1; i++) {
     new (&mRows[i]) GPUTPCRow;
   }
-  for (int32_t i = 0; i < GPUCA_ROW_COUNT; ++i) {
+  for (int32_t i = 0; i < GPUCA_ROW_COUNT; i++) {
     mRows[i].mX = p.tpcGeometry.Row2X(i);
     mRows[i].mMaxY = CAMath::Tan(p.par.dAlpha / 2.f) * mRows[i].mX;
   }

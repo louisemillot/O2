@@ -268,7 +268,7 @@ int32_t GPUChainTracking::RunTPCDecompression()
     int32_t nStreams = doGPU ? mRec->NStreams() - 1 : 1;
     if (cmprClsHost.nAttachedClusters != 0) {
       std::exclusive_scan(cmprClsHost.nTrackClusters, cmprClsHost.nTrackClusters + cmprClsHost.nTracks, Decompressor.mAttachedClustersOffsets, 0u); // computing clusters offsets for first kernel
-      for (int32_t iStream = 0; iStream < nStreams; ++iStream) {
+      for (int32_t iStream = 0; iStream < nStreams; iStream++) {
         uint32_t startTrack = cmprClsHost.nTracks / nStreams * iStream;
         uint32_t endTrack = cmprClsHost.nTracks / nStreams * (iStream + 1) + (iStream < nStreams - 1 ? 0 : cmprClsHost.nTracks % nStreams); // index of last track (excluded from computation)
         uint32_t numTracks = endTrack - startTrack;

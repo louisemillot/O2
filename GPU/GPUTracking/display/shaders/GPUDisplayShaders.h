@@ -458,7 +458,7 @@ const float positionScale = 100.0f;
 void main() {
     vec3 position = gl_in[0].gl_Position.xyz;
 
-    for(uint32_t i = 0; i < field_config.StepCount; ++i) {
+    for(uint32_t i = 0; i < field_config.StepCount; i++) {
         gl_Position = um.ModelViewProj * vec4(position/positionScale, 1.0f);
         EmitVertex();
         const vec3 b_vec = Field(position);

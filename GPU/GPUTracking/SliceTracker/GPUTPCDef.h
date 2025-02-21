@@ -47,4 +47,4 @@ struct cahit2 { cahit x, y; };
 #endif
 
 #endif //GPUDTPCEF_H
-// clang format on
+// clang-format on
