@@ -200,6 +200,7 @@ add_executable(o2-test-framework-core
               test/test_CompletionPolicy.cxx
               test/test_ComputingResourceHelpers.cxx
               test/test_ComputingQuotaEvaluator.cxx
+              test/test_Concepts.cxx
               test/test_ControlServiceHelpers.cxx
               test/test_ConfigParamStore.cxx
               test/test_ConfigParamRegistry.cxx
