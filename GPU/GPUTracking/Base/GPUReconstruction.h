@@ -348,7 +348,6 @@ class GPUReconstruction
   std::vector<std::array<uint32_t, 4>>* mOutputErrorCodes = nullptr;
 
   int32_t mMaxBackendThreads = 0;       // Maximum number of threads that may be running, on CPU or GPU
-  int32_t mThreadId = -1;               // Thread ID that is valid for the local CUDA context
   int32_t mGPUStuck = 0;                // Marks that the GPU is stuck, skip future events
   int32_t mNStreams = 1;                // Number of parallel GPU streams
   int32_t mMaxHostThreads = 0;          // Maximum number of OMP threads

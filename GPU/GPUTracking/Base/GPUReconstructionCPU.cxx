@@ -211,7 +211,6 @@ int32_t GPUReconstructionCPU::InitDevice()
   if (mProcessingSettings.inKernelParallel) {
     mBlockCount = mMaxHostThreads;
   }
-  mThreadId = GetThread();
   mProcShadow.mProcessorsProc = processors();
   return 0;
 }
@@ -241,12 +240,6 @@ int32_t GPUReconstructionCPU::RunChains()
       return retVal;
     }
   } else {
-    if (mThreadId != GetThread()) {
-      if (mProcessingSettings.debugLevel >= 2) {
-        GPUInfo("Thread changed, migrating context, Previous Thread: %d, New Thread: %d", mThreadId, GetThread());
-      }
-      mThreadId = GetThread();
-    }
     if (mSlaves.size() || mMaster) {
       WriteConstantParams(); // Reinitialize // TODO: Get this in sync with GPUChainTracking::DoQueuedUpdates, and consider the doublePipeline
     }
