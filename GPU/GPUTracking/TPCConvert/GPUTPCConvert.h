@@ -39,10 +39,10 @@ class GPUTPCConvert : public GPUProcessor
   void* SetPointersMemory(void* mem);
 #endif
 
-  constexpr static uint32_t NSLICES = GPUCA_NSLICES;
+  constexpr static uint32_t NSECTORS = GPUCA_NSECTORS;
 
   struct Memory {
-    GPUTPCClusterData* clusters[NSLICES];
+    GPUTPCClusterData* clusters[NSECTORS];
   };
 
  protected:

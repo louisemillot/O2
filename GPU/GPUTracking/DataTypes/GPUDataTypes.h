@@ -138,7 +138,7 @@ class GPUDataTypes
                                 QA = 2 };
 
   enum ENUM_CLASS RecoStep { TPCConversion = 1,
-                             TPCSliceTracking = 2,
+                             TPCSectorTracking = 2,
                              TPCMerging = 4,
                              TPCCompression = 8,
                              TRDTracking = 16,
@@ -167,7 +167,7 @@ class GPUDataTypes
 #endif
   typedef bitfield<RecoStep, uint32_t> RecoStepField;
   typedef bitfield<InOutType, uint32_t> InOutTypeField;
-  static constexpr uint32_t NSLICES = 36;
+  static constexpr uint32_t NSECTORS = 36;
   static DeviceType GetDeviceType(const char* type);
 };
 
@@ -205,27 +205,27 @@ typedef GPUCalibObjectsTemplate<DefaultPtr> GPUCalibObjects; // NOTE: These 2 mu
 typedef GPUCalibObjectsTemplate<ConstPtr> GPUCalibObjectsConst;
 
 struct GPUTrackingInOutZS {
-  static constexpr uint32_t NSLICES = GPUDataTypes::NSLICES;
+  static constexpr uint32_t NSECTORS = GPUDataTypes::NSECTORS;
   static constexpr uint32_t NENDPOINTS = 20;
-  struct GPUTrackingInOutZSSlice {
+  struct GPUTrackingInOutZSSector {
     const void* const* zsPtr[NENDPOINTS];
     const uint32_t* nZSPtr[NENDPOINTS];
     uint32_t count[NENDPOINTS];
   };
   struct GPUTrackingInOutZSCounts {
-    uint32_t count[NSLICES][NENDPOINTS] = {};
+    uint32_t count[NSECTORS][NENDPOINTS] = {};
   };
   struct GPUTrackingInOutZSMeta {
-    void* ptr[NSLICES][NENDPOINTS];
-    uint32_t n[NSLICES][NENDPOINTS];
+    void* ptr[NSECTORS][NENDPOINTS];
+    uint32_t n[NSECTORS][NENDPOINTS];
   };
-  GPUTrackingInOutZSSlice slice[NSLICES];
+  GPUTrackingInOutZSSector sector[NSECTORS];
 };
 
 struct GPUTrackingInOutDigits {
-  static constexpr uint32_t NSLICES = GPUDataTypes::NSLICES;
-  const o2::tpc::Digit* tpcDigits[NSLICES] = {nullptr};
-  size_t nTPCDigits[NSLICES] = {0};
+  static constexpr uint32_t NSECTORS = GPUDataTypes::NSECTORS;
+  const o2::tpc::Digit* tpcDigits[NSECTORS] = {nullptr};
+  size_t nTPCDigits[NSECTORS] = {0};
   const GPUTPCDigitsMCInput* tpcDigitsMC = nullptr;
 };
 
@@ -233,18 +233,18 @@ struct GPUTrackingInOutPointers {
   GPUTrackingInOutPointers() = default;
 
   // TPC
-  static constexpr uint32_t NSLICES = GPUDataTypes::NSLICES;
+  static constexpr uint32_t NSECTORS = GPUDataTypes::NSECTORS;
   const GPUTrackingInOutZS* tpcZS = nullptr;
   const GPUTrackingInOutDigits* tpcPackedDigits = nullptr;
-  const GPUTPCClusterData* clusterData[NSLICES] = {nullptr};
-  uint32_t nClusterData[NSLICES] = {0};
-  const AliHLTTPCRawCluster* rawClusters[NSLICES] = {nullptr};
-  uint32_t nRawClusters[NSLICES] = {0};
+  const GPUTPCClusterData* clusterData[NSECTORS] = {nullptr};
+  uint32_t nClusterData[NSECTORS] = {0};
+  const AliHLTTPCRawCluster* rawClusters[NSECTORS] = {nullptr};
+  uint32_t nRawClusters[NSECTORS] = {0};
   const o2::tpc::ClusterNativeAccess* clustersNative = nullptr;
-  const GPUTPCTrack* sliceTracks[NSLICES] = {nullptr};
-  uint32_t nSliceTracks[NSLICES] = {0};
-  const GPUTPCHitId* sliceClusters[NSLICES] = {nullptr};
-  uint32_t nSliceClusters[NSLICES] = {0};
+  const GPUTPCTrack* sectorTracks[NSECTORS] = {nullptr};
+  uint32_t nSectorTracks[NSECTORS] = {0};
+  const GPUTPCHitId* sectorClusters[NSECTORS] = {nullptr};
+  uint32_t nSectorClusters[NSECTORS] = {0};
   const AliHLTTPCClusterMCLabel* mcLabelsTPC = nullptr;
   uint32_t nMCLabelsTPC = 0;
   const GPUTPCMCInfo* mcInfosTPC = nullptr;

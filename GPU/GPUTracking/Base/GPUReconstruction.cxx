@@ -90,9 +90,9 @@ GPUReconstruction::GPUReconstruction(const GPUSettingsDeviceBackend& cfg) : mHos
   new (&mGRPSettings) GPUSettingsGRP;
   param().SetDefaults(&mGRPSettings);
   mMemoryScalers.reset(new GPUMemorySizeScalers);
-  for (uint32_t i = 0; i < NSLICES; i++) {
-    processors()->tpcTrackers[i].SetSlice(i); // TODO: Move to a better place
-    processors()->tpcClusterer[i].mISlice = i;
+  for (uint32_t i = 0; i < NSECTORS; i++) {
+    processors()->tpcTrackers[i].SetSector(i); // TODO: Move to a better place
+    processors()->tpcClusterer[i].mISector = i;
   }
 #ifndef GPUCA_NO_ROOT
   mROOTDump = GPUROOTDumpCore::getAndCreate();
@@ -273,8 +273,8 @@ int32_t GPUReconstruction::InitPhaseBeforeDevice()
     if (mProcessingSettings.trackletSelectorInPipeline < 0) {
       mProcessingSettings.trackletSelectorInPipeline = 1;
     }
-    if (mProcessingSettings.trackletSelectorSlices < 0) {
-      mProcessingSettings.trackletSelectorSlices = 1;
+    if (mProcessingSettings.trackletSelectorSectors < 0) {
+      mProcessingSettings.trackletSelectorSectors = 1;
     }
   }
   if (mProcessingSettings.createO2Output > 1 && mProcessingSettings.runQA && mProcessingSettings.qcRunFraction == 100.f) {
@@ -334,14 +334,14 @@ int32_t GPUReconstruction::InitPhaseBeforeDevice()
   }
 
   if (mProcessingSettings.nTPCClustererLanes == -1) {
-    mProcessingSettings.nTPCClustererLanes = (GetRecoStepsGPU() & RecoStep::TPCClusterFinding) ? 3 : std::max<int32_t>(1, std::min<int32_t>(GPUCA_NSLICES, mProcessingSettings.inKernelParallel ? (mMaxHostThreads >= 4 ? std::min<int32_t>(mMaxHostThreads / 2, mMaxHostThreads >= 32 ? GPUCA_NSLICES : 4) : 1) : mMaxHostThreads));
+    mProcessingSettings.nTPCClustererLanes = (GetRecoStepsGPU() & RecoStep::TPCClusterFinding) ? 3 : std::max<int32_t>(1, std::min<int32_t>(GPUCA_NSECTORS, mProcessingSettings.inKernelParallel ? (mMaxHostThreads >= 4 ? std::min<int32_t>(mMaxHostThreads / 2, mMaxHostThreads >= 32 ? GPUCA_NSECTORS : 4) : 1) : mMaxHostThreads));
   }
   if (mProcessingSettings.overrideClusterizerFragmentLen == -1) {
     mProcessingSettings.overrideClusterizerFragmentLen = ((GetRecoStepsGPU() & RecoStep::TPCClusterFinding) || (mMaxHostThreads / mProcessingSettings.nTPCClustererLanes >= 3)) ? TPC_MAX_FRAGMENT_LEN_GPU : TPC_MAX_FRAGMENT_LEN_HOST;
   }
-  if (mProcessingSettings.nTPCClustererLanes > GPUCA_NSLICES) {
+  if (mProcessingSettings.nTPCClustererLanes > GPUCA_NSECTORS) {
     GPUError("Invalid value for nTPCClustererLanes: %d", mProcessingSettings.nTPCClustererLanes);
-    mProcessingSettings.nTPCClustererLanes = GPUCA_NSLICES;
+    mProcessingSettings.nTPCClustererLanes = GPUCA_NSECTORS;
   }
 
   if (mProcessingSettings.doublePipeline && (mChains.size() != 1 || mChains[0]->SupportsDoublePipeline() == false || !IsGPU() || mProcessingSettings.memoryAllocationStrategy != GPUMemoryResource::ALLOCATION_GLOBAL)) {

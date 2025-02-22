@@ -25,7 +25,7 @@ namespace gpu
 /**
  * @class GPUTPCGMBorderTrack
  *
- * The class describes TPC slice tracks at sector borders.
+ * The class describes TPC sector tracks at sector borders.
  * Used in GPUTPCGMMerger
  *
  */

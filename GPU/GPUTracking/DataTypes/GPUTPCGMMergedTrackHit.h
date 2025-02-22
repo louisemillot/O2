@@ -23,7 +23,7 @@ namespace gpu
 {
 struct GPUTPCGMMergedTrackHit {
   uint32_t num;
-  uint8_t slice, row, leg, state;
+  uint8_t sector, row, leg, state;
 
   // NOTE: the lower states must match those from ClusterNative!
   // TODO: take them directly from clusterNative header.

@@ -3952,9 +3952,9 @@ GLAPI void APIENTRY glMaxShaderCompilerThreadsKHR(GLuint count);
 #define GL_KHR_texture_compression_astc_ldr 1
 #endif /* GL_KHR_texture_compression_astc_ldr */
 
-#ifndef GL_KHR_texture_compression_astc_sliced_3d
-#define GL_KHR_texture_compression_astc_sliced_3d 1
-#endif /* GL_KHR_texture_compression_astc_sliced_3d */
+#ifndef GL_KHR_texture_compression_astc_sectord_3d
+#define GL_KHR_texture_compression_astc_sectord_3d 1
+#endif /* GL_KHR_texture_compression_astc_sectord_3d */
 
 #ifndef GL_AMD_framebuffer_multisample_advanced
 #define GL_AMD_framebuffer_multisample_advanced 1

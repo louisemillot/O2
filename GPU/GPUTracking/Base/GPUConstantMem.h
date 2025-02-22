@@ -41,14 +41,14 @@ namespace gpu
 struct GPUConstantMem {
   GPUParam param;
   GPUTPCTracker
-    tpcTrackers[GPUCA_NSLICES];
+    tpcTrackers[GPUCA_NSECTORS];
   GPUTPCConvert tpcConverter;
   GPUTPCCompression tpcCompressor;
   GPUTPCDecompression tpcDecompressor;
   GPUTPCGMMerger tpcMerger;
   GPUTRDTrackerGPU trdTrackerGPU;
   GPUTRDTracker trdTrackerO2;
-  GPUTPCClusterFinder tpcClusterer[GPUCA_NSLICES];
+  GPUTPCClusterFinder tpcClusterer[GPUCA_NSECTORS];
   GPUITSFitter itsFitter;
   GPUTrackingRefitProcessor trackingRefit;
   GPUTrackingInOutPointers ioPtrs;

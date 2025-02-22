@@ -16,7 +16,7 @@
 #include "GPUReconstructionIncludes.h"
 
 #include "GPUTPCTracker.h"
-#include "GPUTPCSliceOutput.h"
+#include "GPUTPCSectorOutput.h"
 
 using namespace o2::gpu;
 

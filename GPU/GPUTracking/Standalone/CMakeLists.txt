@@ -144,7 +144,7 @@ include_directories(${GPU_DIR}/Common
                     ${GPUTRACKING_DIR}/Merger
                     ${GPUTRACKING_DIR}/Refit
                     ${GPUTRACKING_DIR}/qa
-                    ${GPUTRACKING_DIR}/SliceTracker
+                    ${GPUTRACKING_DIR}/SectorTracker
                     ${GPUTRACKING_DIR}/DataCompression
                     ${GPUTRACKING_DIR}/TRDTracking
                     ${GPUTRACKING_DIR}/TPCClusterFinder

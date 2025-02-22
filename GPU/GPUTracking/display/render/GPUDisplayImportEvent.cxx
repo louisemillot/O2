@@ -44,8 +44,8 @@ void GPUDisplay::DrawGLScene_updateEventData()
     mCurrentClusters = mIOPtrs->clustersNative->nClustersTotal;
   } else {
     mCurrentClusters = 0;
-    for (int32_t iSlice = 0; iSlice < NSLICES; iSlice++) {
-      mCurrentClusters += mIOPtrs->nClusterData[iSlice];
+    for (int32_t iSector = 0; iSector < NSECTORS; iSector++) {
+      mCurrentClusters += mIOPtrs->nClusterData[iSector];
     }
   }
   if (mNMaxClusters < mCurrentClusters) {
@@ -128,19 +128,19 @@ void GPUDisplay::DrawGLScene_updateEventData()
   }
   mUpdateTrackFilter = false;
 
-  mMaxClusterZ = tbb::parallel_reduce(tbb::blocked_range<int32_t>(0, NSLICES, 1), float(0.f), [&](const tbb::blocked_range<int32_t>& r, float maxClusterZ) {
-    for (int32_t iSlice = r.begin(); iSlice < r.end(); iSlice++) {
+  mMaxClusterZ = tbb::parallel_reduce(tbb::blocked_range<int32_t>(0, NSECTORS, 1), float(0.f), [&](const tbb::blocked_range<int32_t>& r, float maxClusterZ) {
+    for (int32_t iSector = r.begin(); iSector < r.end(); iSector++) {
       int32_t row = 0;
-      uint32_t nCls = mParam->par.earlyTpcTransform ? mIOPtrs->nClusterData[iSlice] : (mIOPtrs->clustersNative ? mIOPtrs->clustersNative->nClustersSector[iSlice] : 0);
+      uint32_t nCls = mParam->par.earlyTpcTransform ? mIOPtrs->nClusterData[iSector] : (mIOPtrs->clustersNative ? mIOPtrs->clustersNative->nClustersSector[iSector] : 0);
       for (uint32_t i = 0; i < nCls; i++) {
         int32_t cid;
         if (mParam->par.earlyTpcTransform) {
-          const auto& cl = mIOPtrs->clusterData[iSlice][i];
+          const auto& cl = mIOPtrs->clusterData[iSector][i];
           cid = cl.id;
           row = cl.row;
         } else {
-          cid = mIOPtrs->clustersNative->clusterOffset[iSlice][0] + i;
-          while (row < GPUCA_ROW_COUNT - 1 && mIOPtrs->clustersNative->clusterOffset[iSlice][row + 1] <= (uint32_t)cid) {
+          cid = mIOPtrs->clustersNative->clusterOffset[iSector][0] + i;
+          while (row < GPUCA_ROW_COUNT - 1 && mIOPtrs->clustersNative->clusterOffset[iSector][row + 1] <= (uint32_t)cid) {
             row++;
           }
         }
@@ -149,22 +149,22 @@ void GPUDisplay::DrawGLScene_updateEventData()
         }
         float4* ptr = &mGlobalPos[cid];
         if (mParam->par.earlyTpcTransform) {
-          const auto& cl = mIOPtrs->clusterData[iSlice][i];
-          mParam->Slice2Global(iSlice, (mCfgH.clustersOnNominalRow ? mParam->tpcGeometry.Row2X(row) : cl.x) + mCfgH.xAdd, cl.y, cl.z, &ptr->x, &ptr->y, &ptr->z);
+          const auto& cl = mIOPtrs->clusterData[iSector][i];
+          mParam->Sector2Global(iSector, (mCfgH.clustersOnNominalRow ? mParam->tpcGeometry.Row2X(row) : cl.x) + mCfgH.xAdd, cl.y, cl.z, &ptr->x, &ptr->y, &ptr->z);
         } else {
           float x, y, z;
-          const auto& cln = mIOPtrs->clustersNative->clusters[iSlice][0][i];
-          GPUTPCConvertImpl::convert(*mCalib->fastTransform, *mParam, iSlice, row, cln.getPad(), cln.getTime(), x, y, z);
+          const auto& cln = mIOPtrs->clustersNative->clusters[iSector][0][i];
+          GPUTPCConvertImpl::convert(*mCalib->fastTransform, *mParam, iSector, row, cln.getPad(), cln.getTime(), x, y, z);
           if (mCfgH.clustersOnNominalRow) {
             x = mParam->tpcGeometry.Row2X(row);
           }
-          mParam->Slice2Global(iSlice, x + mCfgH.xAdd, y, z, &ptr->x, &ptr->y, &ptr->z);
+          mParam->Sector2Global(iSector, x + mCfgH.xAdd, y, z, &ptr->x, &ptr->y, &ptr->z);
         }
 
         if (fabsf(ptr->z) > maxClusterZ) {
           maxClusterZ = fabsf(ptr->z);
         }
-        ptr->z += iSlice < 18 ? mCfgH.zAdd : -mCfgH.zAdd;
+        ptr->z += iSector < 18 ? mCfgH.zAdd : -mCfgH.zAdd;
         ptr->x *= GL_SCALE_FACTOR;
         ptr->y *= GL_SCALE_FACTOR;
         ptr->z *= GL_SCALE_FACTOR;
@@ -186,7 +186,7 @@ void GPUDisplay::DrawGLScene_updateEventData()
       const auto& sp = mIOPtrs->trdSpacePoints[i];
       int32_t iSec = trdGeometry()->GetSector(mIOPtrs->trdTracklets[i].GetDetector());
       float4* ptr = &mGlobalPosTRD[i];
-      mParam->Slice2Global(iSec, sp.getX() + mCfgH.xAdd, sp.getY(), sp.getZ(), &ptr->x, &ptr->y, &ptr->z);
+      mParam->Sector2Global(iSec, sp.getX() + mCfgH.xAdd, sp.getY(), sp.getZ(), &ptr->x, &ptr->y, &ptr->z);
       ptr->z += ptr->z > 0 ? trdZoffset : -trdZoffset;
       if (fabsf(ptr->z) > maxClusterZ) {
         maxClusterZ = fabsf(ptr->z);
@@ -196,7 +196,7 @@ void GPUDisplay::DrawGLScene_updateEventData()
       ptr->z *= GL_SCALE_FACTOR;
       ptr->w = tTRDCLUSTER;
       ptr = &mGlobalPosTRD2[i];
-      mParam->Slice2Global(iSec, sp.getX() + mCfgH.xAdd + 4.5f, sp.getY() + 1.5f * sp.getDy(), sp.getZ(), &ptr->x, &ptr->y, &ptr->z);
+      mParam->Sector2Global(iSec, sp.getX() + mCfgH.xAdd + 4.5f, sp.getY() + 1.5f * sp.getDy(), sp.getZ(), &ptr->x, &ptr->y, &ptr->z);
       ptr->z += ptr->z > 0 ? trdZoffset : -trdZoffset;
       if (fabsf(ptr->z) > maxClusterZ) {
         maxClusterZ = fabsf(ptr->z);
@@ -212,7 +212,7 @@ void GPUDisplay::DrawGLScene_updateEventData()
   mMaxClusterZ = tbb::parallel_reduce(tbb::blocked_range<int32_t>(0, mCurrentClustersTOF, 32), float(mMaxClusterZ), [&](const tbb::blocked_range<int32_t>& r, float maxClusterZ) {
     for (int32_t i = r.begin(); i < r.end(); i++) {
       float4* ptr = &mGlobalPosTOF[i];
-      mParam->Slice2Global(mIOPtrs->tofClusters[i].getSector(), mIOPtrs->tofClusters[i].getX() + mCfgH.xAdd, mIOPtrs->tofClusters[i].getY(), mIOPtrs->tofClusters[i].getZ(), &ptr->x, &ptr->y, &ptr->z);
+      mParam->Sector2Global(mIOPtrs->tofClusters[i].getSector(), mIOPtrs->tofClusters[i].getX() + mCfgH.xAdd, mIOPtrs->tofClusters[i].getY(), mIOPtrs->tofClusters[i].getZ(), &ptr->x, &ptr->y, &ptr->z);
       float ZOffset = 0;
       if (mParam->par.continuousTracking) {
         float tofTime = mIOPtrs->tofClusters[i].getTime() * 1e-3 / o2::constants::lhc::LHCBunchSpacingNS / o2::tpc::constants::LHCBCPERTIMEBIN;

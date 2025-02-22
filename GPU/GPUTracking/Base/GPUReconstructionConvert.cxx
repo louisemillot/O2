@@ -49,16 +49,16 @@ using namespace std::string_literals;
 
 void GPUReconstructionConvert::ConvertNativeToClusterData(o2::tpc::ClusterNativeAccess* native, std::unique_ptr<GPUTPCClusterData[]>* clusters, uint32_t* nClusters, const TPCFastTransform* transform, int32_t continuousMaxTimeBin)
 {
-  memset(nClusters, 0, NSLICES * sizeof(nClusters[0]));
+  memset(nClusters, 0, NSECTORS * sizeof(nClusters[0]));
   uint32_t offset = 0;
-  for (uint32_t i = 0; i < NSLICES; i++) {
-    uint32_t nClSlice = 0;
+  for (uint32_t i = 0; i < NSECTORS; i++) {
+    uint32_t nClSector = 0;
     for (int32_t j = 0; j < GPUCA_ROW_COUNT; j++) {
-      nClSlice += native->nClusters[i][j];
+      nClSector += native->nClusters[i][j];
     }
-    nClusters[i] = nClSlice;
-    clusters[i].reset(new GPUTPCClusterData[nClSlice]);
-    nClSlice = 0;
+    nClusters[i] = nClSector;
+    clusters[i].reset(new GPUTPCClusterData[nClSector]);
+    nClSector = 0;
     for (int32_t j = 0; j < GPUCA_ROW_COUNT; j++) {
       for (uint32_t k = 0; k < native->nClusters[i][j]; k++) {
         const auto& clin = native->clusters[i][j][k];
@@ -68,7 +68,7 @@ void GPUReconstructionConvert::ConvertNativeToClusterData(o2::tpc::ClusterNative
         } else {
           transform->TransformInTimeFrame(i, j, clin.getPad(), clin.getTime(), x, y, z, continuousMaxTimeBin);
         }
-        auto& clout = clusters[i].get()[nClSlice];
+        auto& clout = clusters[i].get()[nClSector];
         clout.x = x;
         clout.y = y;
         clout.z = z;
@@ -76,7 +76,7 @@ void GPUReconstructionConvert::ConvertNativeToClusterData(o2::tpc::ClusterNative
         clout.amp = clin.qTot;
         clout.flags = clin.getFlags();
         clout.id = offset + k;
-        nClSlice++;
+        nClSector++;
       }
       native->clusterOffset[i][j] = offset;
       offset += native->nClusters[i][j];
@@ -87,7 +87,7 @@ void GPUReconstructionConvert::ConvertNativeToClusterData(o2::tpc::ClusterNative
 void GPUReconstructionConvert::ConvertRun2RawToNative(o2::tpc::ClusterNativeAccess& native, std::unique_ptr<ClusterNative[]>& nativeBuffer, const AliHLTTPCRawCluster** rawClusters, uint32_t* nRawClusters)
 {
   memset((void*)&native, 0, sizeof(native));
-  for (uint32_t i = 0; i < NSLICES; i++) {
+  for (uint32_t i = 0; i < NSECTORS; i++) {
     for (uint32_t j = 0; j < nRawClusters[i]; j++) {
       native.nClusters[i][rawClusters[i][j].GetPadRow()]++;
     }
@@ -96,7 +96,7 @@ void GPUReconstructionConvert::ConvertRun2RawToNative(o2::tpc::ClusterNativeAcce
   nativeBuffer.reset(new ClusterNative[native.nClustersTotal]);
   native.clustersLinear = nativeBuffer.get();
   native.setOffsetPtrs();
-  for (uint32_t i = 0; i < NSLICES; i++) {
+  for (uint32_t i = 0; i < NSECTORS; i++) {
     for (uint32_t j = 0; j < GPUCA_ROW_COUNT; j++) {
       native.nClusters[i][j] = 0;
     }
@@ -117,7 +117,7 @@ void GPUReconstructionConvert::ConvertRun2RawToNative(o2::tpc::ClusterNativeAcce
 int32_t GPUReconstructionConvert::GetMaxTimeBin(const ClusterNativeAccess& native)
 {
   float retVal = 0;
-  for (uint32_t i = 0; i < NSLICES; i++) {
+  for (uint32_t i = 0; i < NSECTORS; i++) {
     for (uint32_t j = 0; j < GPUCA_ROW_COUNT; j++) {
       for (uint32_t k = 0; k < native.nClusters[i][j]; k++) {
         if (native.clusters[i][j][k].getTime() > retVal) {
@@ -132,7 +132,7 @@ int32_t GPUReconstructionConvert::GetMaxTimeBin(const ClusterNativeAccess& nativ
 int32_t GPUReconstructionConvert::GetMaxTimeBin(const GPUTrackingInOutDigits& digits)
 {
   float retVal = 0;
-  for (uint32_t i = 0; i < NSLICES; i++) {
+  for (uint32_t i = 0; i < NSECTORS; i++) {
     for (uint32_t k = 0; k < digits.nTPCDigits[i]; k++) {
       if (digits.tpcDigits[i][k].getTimeStamp() > retVal) {
         retVal = digits.tpcDigits[i][k].getTimeStamp();
@@ -145,12 +145,12 @@ int32_t GPUReconstructionConvert::GetMaxTimeBin(const GPUTrackingInOutDigits& di
 int32_t GPUReconstructionConvert::GetMaxTimeBin(const GPUTrackingInOutZS& zspages)
 {
   float retVal = 0;
-  for (uint32_t i = 0; i < NSLICES; i++) {
-    int32_t firstHBF = zspages.slice[i].count[0] ? o2::raw::RDHUtils::getHeartBeatOrbit(*(const o2::header::RAWDataHeader*)zspages.slice[i].zsPtr[0][0]) : 0;
+  for (uint32_t i = 0; i < NSECTORS; i++) {
+    int32_t firstHBF = zspages.sector[i].count[0] ? o2::raw::RDHUtils::getHeartBeatOrbit(*(const o2::header::RAWDataHeader*)zspages.sector[i].zsPtr[0][0]) : 0;
     for (uint32_t j = 0; j < GPUTrackingInOutZS::NENDPOINTS; j++) {
-      for (uint32_t k = 0; k < zspages.slice[i].count[j]; k++) {
-        const char* page = (const char*)zspages.slice[i].zsPtr[j][k];
-        for (uint32_t l = 0; l < zspages.slice[i].nZSPtr[j][k]; l++) {
+      for (uint32_t k = 0; k < zspages.sector[i].count[j]; k++) {
+        const char* page = (const char*)zspages.sector[i].zsPtr[j][k];
+        for (uint32_t l = 0; l < zspages.sector[i].nZSPtr[j][k]; l++) {
           o2::header::RAWDataHeader* rdh = (o2::header::RAWDataHeader*)(page + l * TPCZSHDR::TPC_ZS_PAGE_SIZE);
           TPCZSHDR* hdr = (TPCZSHDR*)(page + l * TPCZSHDR::TPC_ZS_PAGE_SIZE + sizeof(o2::header::RAWDataHeader));
           int32_t nTimeBinSpan = hdr->nTimeBinSpan;
@@ -1328,8 +1328,8 @@ void GPUReconstructionConvert::RunZSEncoder(const S& in, std::unique_ptr<uint64_
     throw std::runtime_error("Invalid parameters");
   }
 #ifdef GPUCA_TPC_GEOMETRY_O2
-  std::vector<zsPage> buffer[NSLICES][GPUTrackingInOutZS::NENDPOINTS];
-  auto reduced = tbb::parallel_reduce(tbb::blocked_range<uint32_t>(0, NSLICES), o2::gpu::internal::tmpReductionResult(), [&](const auto range, auto red) {
+  std::vector<zsPage> buffer[NSECTORS][GPUTrackingInOutZS::NENDPOINTS];
+  auto reduced = tbb::parallel_reduce(tbb::blocked_range<uint32_t>(0, NSECTORS), o2::gpu::internal::tmpReductionResult(), [&](const auto range, auto red) {
     for (uint32_t i = range.begin(); i < range.end(); i++) {
       std::vector<o2::tpc::Digit> tmpBuffer;
       red.digitsInput += ZSEncoderGetNDigits(in, i);
@@ -1392,7 +1392,7 @@ void GPUReconstructionConvert::RunZSEncoder(const S& in, std::unique_ptr<uint64_
   if (outBuffer) {
     outBuffer->reset(new uint64_t[reduced.totalPages * TPCZSHDR::TPC_ZS_PAGE_SIZE / sizeof(uint64_t)]);
     uint64_t offset = 0;
-    for (uint32_t i = 0; i < NSLICES; i++) {
+    for (uint32_t i = 0; i < NSECTORS; i++) {
       for (uint32_t j = 0; j < GPUTrackingInOutZS::NENDPOINTS; j++) {
         memcpy((char*)outBuffer->get() + offset, buffer[i][j].data(), buffer[i][j].size() * TPCZSHDR::TPC_ZS_PAGE_SIZE);
         offset += buffer[i][j].size() * TPCZSHDR::TPC_ZS_PAGE_SIZE;
@@ -1417,20 +1417,20 @@ template void GPUReconstructionConvert::RunZSEncoder<DigitArray>(const DigitArra
 void GPUReconstructionConvert::RunZSEncoderCreateMeta(const uint64_t* buffer, const uint32_t* sizes, void** ptrs, GPUTrackingInOutZS* out)
 {
   uint64_t offset = 0;
-  for (uint32_t i = 0; i < NSLICES; i++) {
+  for (uint32_t i = 0; i < NSECTORS; i++) {
     for (uint32_t j = 0; j < GPUTrackingInOutZS::NENDPOINTS; j++) {
       ptrs[i * GPUTrackingInOutZS::NENDPOINTS + j] = (char*)buffer + offset;
       offset += sizes[i * GPUTrackingInOutZS::NENDPOINTS + j] * TPCZSHDR::TPC_ZS_PAGE_SIZE;
-      out->slice[i].zsPtr[j] = &ptrs[i * GPUTrackingInOutZS::NENDPOINTS + j];
-      out->slice[i].nZSPtr[j] = &sizes[i * GPUTrackingInOutZS::NENDPOINTS + j];
-      out->slice[i].count[j] = 1;
+      out->sector[i].zsPtr[j] = &ptrs[i * GPUTrackingInOutZS::NENDPOINTS + j];
+      out->sector[i].nZSPtr[j] = &sizes[i * GPUTrackingInOutZS::NENDPOINTS + j];
+      out->sector[i].count[j] = 1;
     }
   }
 }
 
 void GPUReconstructionConvert::RunZSFilter(std::unique_ptr<o2::tpc::Digit[]>* buffers, const o2::tpc::Digit* const* ptrs, size_t* nsb, const size_t* ns, const GPUParam& param, bool zs12bit, float threshold)
 {
-  for (uint32_t i = 0; i < NSLICES; i++) {
+  for (uint32_t i = 0; i < NSECTORS; i++) {
     if (buffers[i].get() != ptrs[i] || nsb != ns) {
       throw std::runtime_error("Not owning digits");
     }

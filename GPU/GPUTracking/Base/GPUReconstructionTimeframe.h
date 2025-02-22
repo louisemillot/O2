@@ -48,7 +48,7 @@ class GPUReconstructionTimeframe
   static constexpr int32_t TIME_ORBIT = 1000000000 / ORBIT_RATE;
 
  private:
-  constexpr static uint32_t NSLICES = GPUReconstruction::NSLICES;
+  constexpr static uint32_t NSECTORS = GPUReconstruction::NSECTORS;
 
   void SetDisplayInformation(int32_t iCol);
 

@@ -31,7 +31,7 @@
 #include "GPUOutputControl.h"
 #include "GPUMemoryResource.h"
 #include "GPUConstantMem.h"
-#include "GPUTPCSliceOutput.h"
+#include "GPUTPCSectorOutput.h"
 #include "GPULogging.h"
 
 namespace o2
@@ -76,7 +76,7 @@ class GPUReconstruction
   GPUReconstruction& operator=(const GPUReconstruction&) = delete;
 
   // General definitions
-  constexpr static uint32_t NSLICES = GPUCA_NSLICES;
+  constexpr static uint32_t NSECTORS = GPUCA_NSECTORS;
 
   using GeometryType = GPUDataTypes::GeometryType;
   using DeviceType = GPUDataTypes::DeviceType;
@@ -94,8 +94,8 @@ class GPUReconstruction
 
   static DeviceType GetDeviceType(const char* type);
   enum InOutPointerType : uint32_t { CLUSTER_DATA = 0,
-                                     SLICE_OUT_TRACK = 1,
-                                     SLICE_OUT_CLUSTER = 2,
+                                     SECTOR_OUT_TRACK = 1,
+                                     SECTOR_OUT_CLUSTER = 2,
                                      MC_LABEL_TPC = 3,
                                      MC_INFO_TPC = 4,
                                      MERGED_TRACK = 5,
@@ -113,10 +113,10 @@ class GPUReconstruction
                                      TRD_SPACEPOINT = 17,
                                      TRD_TRIGGERRECORDS = 18,
                                      TF_SETTINGS = 19 };
-  static constexpr const char* const IOTYPENAMES[] = {"TPC HLT Clusters", "TPC Slice Tracks", "TPC Slice Track Clusters", "TPC Cluster MC Labels", "TPC Track MC Informations", "TPC Tracks", "TPC Track Clusters", "TRD Tracks", "TRD Tracklets",
+  static constexpr const char* const IOTYPENAMES[] = {"TPC HLT Clusters", "TPC Sector Tracks", "TPC Sector Track Clusters", "TPC Cluster MC Labels", "TPC Track MC Informations", "TPC Tracks", "TPC Track Clusters", "TRD Tracks", "TRD Tracklets",
                                                       "TPC Raw Clusters", "TPC Native Clusters", "TRD Tracklet MC Labels", "TPC Compressed Clusters", "TPC Digit", "TPC ZS Page", "TPC Native Clusters MC Labels", "TPC Digit MC Labeels",
                                                       "TRD Spacepoints", "TRD Triggerrecords", "TF Settings"};
-  static uint32_t getNIOTypeMultiplicity(InOutPointerType type) { return (type == CLUSTER_DATA || type == SLICE_OUT_TRACK || type == SLICE_OUT_CLUSTER || type == RAW_CLUSTERS || type == TPC_DIGIT || type == TPC_DIGIT_MC) ? NSLICES : 1; }
+  static uint32_t getNIOTypeMultiplicity(InOutPointerType type) { return (type == CLUSTER_DATA || type == SECTOR_OUT_TRACK || type == SECTOR_OUT_CLUSTER || type == RAW_CLUSTERS || type == TPC_DIGIT || type == TPC_DIGIT_MC) ? NSECTORS : 1; }
 
   // Functionality to create an instance of GPUReconstruction for the desired device
   static GPUReconstruction* CreateInstance(const GPUSettingsDeviceBackend& cfg);

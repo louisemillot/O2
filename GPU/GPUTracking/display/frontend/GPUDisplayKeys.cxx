@@ -20,8 +20,8 @@ const char* HelpText[] = {
   "[ESC]                         Quit",
   "[n]                           Next event",
   "[r]                           Reset Display Settings",
-  "[l] / [k] / [J]               Draw single slice (next  / previous slice), draw related slices (same plane in phi)",
-  "[;] / [:]                     Show splitting of TPC in slices by extruding volume, [:] resets",
+  "[l] / [k] / [J]               Draw single sector (next  / previous sector), draw related sectors (same plane in phi)",
+  "[;] / [:]                     Show splitting of TPC in sectors by extruding volume, [:] resets",
   "[#]                           Invert colors",
   "[y] / [Y] / [X] / [M]         Start Animation, Add / remove Animation point, Reset Points, Cycle animation camera mode (resets)",
   "[>] / [<]                     Toggle config interpolation during Animation / change Animation interval (via movement)",
@@ -110,27 +110,27 @@ void GPUDisplay::HandleKey(uint8_t key)
   } else if (key == mFrontend->KEY_ALT) {
     mFrontend->mKeys[mFrontend->KEY_CTRL] = false; // Release CTRL with alt, to avoid orienting along y automatically!
   } else if (key == 'l') {
-    if (mCfgL.drawSlice >= (mCfgL.drawRelatedSlices ? (NSLICES / 4 - 1) : (NSLICES - 1))) {
-      mCfgL.drawSlice = -1;
-      SetInfo("Showing all slices", 1);
+    if (mCfgL.drawSector >= (mCfgL.drawRelatedSectors ? (NSECTORS / 4 - 1) : (NSECTORS - 1))) {
+      mCfgL.drawSector = -1;
+      SetInfo("Showing all sectors", 1);
     } else {
-      mCfgL.drawSlice++;
-      SetInfo("Showing slice %d", mCfgL.drawSlice);
+      mCfgL.drawSector++;
+      SetInfo("Showing sector %d", mCfgL.drawSector);
     }
   } else if (key == 'k') {
-    if (mCfgL.drawSlice <= -1) {
-      mCfgL.drawSlice = mCfgL.drawRelatedSlices ? (NSLICES / 4 - 1) : (NSLICES - 1);
+    if (mCfgL.drawSector <= -1) {
+      mCfgL.drawSector = mCfgL.drawRelatedSectors ? (NSECTORS / 4 - 1) : (NSECTORS - 1);
     } else {
-      mCfgL.drawSlice--;
+      mCfgL.drawSector--;
     }
-    if (mCfgL.drawSlice == -1) {
-      SetInfo("Showing all slices", 1);
+    if (mCfgL.drawSector == -1) {
+      SetInfo("Showing all sectors", 1);
     } else {
-      SetInfo("Showing slice %d", mCfgL.drawSlice);
+      SetInfo("Showing sector %d", mCfgL.drawSector);
     }
   } else if (key == 'J') {
-    mCfgL.drawRelatedSlices ^= 1;
-    SetInfo("Drawing of related slices %s", mCfgL.drawRelatedSlices ? "enabled" : "disabled");
+    mCfgL.drawRelatedSectors ^= 1;
+    SetInfo("Drawing of related sectors %s", mCfgL.drawRelatedSectors ? "enabled" : "disabled");
   } else if (key == 'L') {
     if (mCfgL.showCollision >= mNCollissions - 1) {
       mCfgL.showCollision = -1;

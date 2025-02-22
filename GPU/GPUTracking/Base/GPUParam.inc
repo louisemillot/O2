@@ -24,19 +24,19 @@ namespace o2
 namespace gpu
 {
 
-GPUdi() void GPUParam::Slice2Global(int32_t iSlice, float x, float y, float z, float* X, float* Y, float* Z) const
+GPUdi() void GPUParam::Sector2Global(int32_t iSector, float x, float y, float z, float* X, float* Y, float* Z) const
 {
   // conversion of coordinates sector->global
-  *X = x * SliceParam[iSlice].CosAlpha - y * SliceParam[iSlice].SinAlpha;
-  *Y = y * SliceParam[iSlice].CosAlpha + x * SliceParam[iSlice].SinAlpha;
+  *X = x * SectorParam[iSector].CosAlpha - y * SectorParam[iSector].SinAlpha;
+  *Y = y * SectorParam[iSector].CosAlpha + x * SectorParam[iSector].SinAlpha;
   *Z = z;
 }
 
-GPUdi() void GPUParam::Global2Slice(int32_t iSlice, float X, float Y, float Z, float* x, float* y, float* z) const
+GPUdi() void GPUParam::Global2Sector(int32_t iSector, float X, float Y, float Z, float* x, float* y, float* z) const
 {
   // conversion of coordinates global->sector
-  *x = X * SliceParam[iSlice].CosAlpha + Y * SliceParam[iSlice].SinAlpha;
-  *y = Y * SliceParam[iSlice].CosAlpha - X * SliceParam[iSlice].SinAlpha;
+  *x = X * SectorParam[iSector].CosAlpha + Y * SectorParam[iSector].SinAlpha;
+  *y = Y * SectorParam[iSector].CosAlpha - X * SectorParam[iSector].SinAlpha;
   *z = Z;
 }
 
@@ -117,7 +117,7 @@ GPUdi() float GPUParam::GetSystematicClusterErrorC122(float x, float y, uint8_t 
     return 0.f;
   }
   constexpr float dEdgeInv = 18.f / CAMath::Pi();
-  const float dy = (sector == (GPUCA_NSLICES / 2 + 1) ? 0.5f : -0.5f) * (y / x) * dEdgeInv + 0.5f;
+  const float dy = (sector == (GPUCA_NSECTORS / 2 + 1) ? 0.5f : -0.5f) * (y / x) * dEdgeInv + 0.5f;
   const float errC12 = rec.tpc.sysClusErrorC12Norm * occupancyTotal * dy;
   return errC12 * errC12;
 }

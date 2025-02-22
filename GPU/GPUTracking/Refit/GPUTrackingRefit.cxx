@@ -271,7 +271,7 @@ GPUd() int32_t GPUTrackingRefit::RefitTrack(T& trkX, bool outward, bool resetCov
             break;
           }
           row = hit.row;
-          sector = hit.slice;
+          sector = hit.sector;
           nextState = mPclusterState[hit.num];
         } else if constexpr (std::is_same_v<T, TrackTPC>) {
           cl = &trkX.getCluster(mPtrackHitReferences, i, *mPclusterNative, sector, row);

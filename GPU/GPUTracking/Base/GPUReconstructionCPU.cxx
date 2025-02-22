@@ -18,8 +18,8 @@
 #include "GPUChain.h"
 
 #include "GPUTPCClusterData.h"
-#include "GPUTPCSliceOutput.h"
-#include "GPUTPCSliceOutCluster.h"
+#include "GPUTPCSectorOutput.h"
+#include "GPUTPCSectorOutCluster.h"
 #include "GPUTPCGMMergedTrack.h"
 #include "GPUTPCGMMergedTrackHit.h"
 #include "GPUTRDTrackletWord.h"

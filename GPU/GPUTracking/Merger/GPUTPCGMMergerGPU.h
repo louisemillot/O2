@@ -48,18 +48,18 @@ class GPUTPCGMMergerFollowLoopers : public GPUTPCGMMergerGeneral
   GPUd() static void Thread(int32_t nBlocks, int32_t nThreads, int32_t iBlock, int32_t iThread, GPUsharedref() GPUSharedMemory& smem, processorType& merger);
 };
 
-class GPUTPCGMMergerSliceRefit : public GPUTPCGMMergerGeneral
+class GPUTPCGMMergerSectorRefit : public GPUTPCGMMergerGeneral
 {
  public:
   template <int32_t iKernel = defaultKernel>
-  GPUd() static void Thread(int32_t nBlocks, int32_t nThreads, int32_t iBlock, int32_t iThread, GPUsharedref() GPUSharedMemory& smem, processorType& merger, int32_t iSlice);
+  GPUd() static void Thread(int32_t nBlocks, int32_t nThreads, int32_t iBlock, int32_t iThread, GPUsharedref() GPUSharedMemory& smem, processorType& merger, int32_t iSector);
 };
 
 class GPUTPCGMMergerUnpackGlobal : public GPUTPCGMMergerGeneral
 {
  public:
   template <int32_t iKernel = defaultKernel>
-  GPUd() static void Thread(int32_t nBlocks, int32_t nThreads, int32_t iBlock, int32_t iThread, GPUsharedref() GPUSharedMemory& smem, processorType& merger, int32_t iSlice);
+  GPUd() static void Thread(int32_t nBlocks, int32_t nThreads, int32_t iBlock, int32_t iThread, GPUsharedref() GPUSharedMemory& smem, processorType& merger, int32_t iSector);
 };
 
 class GPUTPCGMMergerUnpackSaveNumber : public GPUTPCGMMergerGeneral
@@ -100,7 +100,7 @@ class GPUTPCGMMergerMergeWithinPrepare : public GPUTPCGMMergerGeneral
   GPUd() static void Thread(int32_t nBlocks, int32_t nThreads, int32_t iBlock, int32_t iThread, GPUsharedref() GPUSharedMemory& smem, processorType& merger);
 };
 
-class GPUTPCGMMergerMergeSlicesPrepare : public GPUTPCGMMergerGeneral
+class GPUTPCGMMergerMergeSectorsPrepare : public GPUTPCGMMergerGeneral
 {
  public:
   template <int32_t iKernel = defaultKernel>

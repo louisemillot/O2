@@ -144,7 +144,7 @@ HighResTimer& GPUReconstructionProcessing::getKernelTimer(RecoStep step, int32_t
   static int32_t id = getNextTimerId();
   timerMeta* timer = getTimerById(id, increment);
   if (timer == nullptr) {
-    timer = insertTimer(id, GetKernelName<T, I>(), -1, NSLICES, 0, step);
+    timer = insertTimer(id, GetKernelName<T, I>(), -1, NSECTORS, 0, step);
   }
   if (addMemorySize) {
     timer->memSize += addMemorySize;

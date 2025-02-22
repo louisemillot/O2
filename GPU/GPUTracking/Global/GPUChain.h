@@ -51,7 +51,7 @@ class GPUChain
   virtual bool SupportsDoublePipeline() { return false; }
   virtual int32_t FinalizePipelinedProcessing() { return 0; }
 
-  constexpr static int32_t NSLICES = GPUReconstruction::NSLICES;
+  constexpr static int32_t NSECTORS = GPUReconstruction::NSECTORS;
 
   virtual void DumpSettings(const char* dir = "") {}
   virtual void ReadSettings(const char* dir = "") {}

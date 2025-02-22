@@ -1469,7 +1469,7 @@ uint32_t GPUDisplayBackendVulkan::drawVertices(const vboList& v, const drawType 
 {
   auto first = std::get<0>(v);
   auto count = std::get<1>(v);
-  auto iSlice = std::get<2>(v);
+  auto iSector = std::get<2>(v);
   if (count == 0) {
     return 0;
   }
@@ -1482,10 +1482,10 @@ uint32_t GPUDisplayBackendVulkan::drawVertices(const vboList& v, const drawType 
     mCurrentCommandBufferLastPipeline = tt;
   }
   if (mDisplay->cfgR().useGLIndirectDraw) {
-    mCurrentCommandBuffer.drawIndirect(mIndirectCommandBuffer.buffer, (mIndirectSliceOffset[iSlice] + first) * sizeof(DrawArraysIndirectCommand), count, sizeof(DrawArraysIndirectCommand));
+    mCurrentCommandBuffer.drawIndirect(mIndirectCommandBuffer.buffer, (mIndirectSectorOffset[iSector] + first) * sizeof(DrawArraysIndirectCommand), count, sizeof(DrawArraysIndirectCommand));
   } else {
     for (uint32_t k = 0; k < count; k++) {
-      mCurrentCommandBuffer.draw(mDisplay->vertexBufferCount()[iSlice][first + k], 1, mDisplay->vertexBufferStart()[iSlice][first + k], 0);
+      mCurrentCommandBuffer.draw(mDisplay->vertexBufferCount()[iSector][first + k], 1, mDisplay->vertexBufferStart()[iSector][first + k], 0);
     }
   }
 

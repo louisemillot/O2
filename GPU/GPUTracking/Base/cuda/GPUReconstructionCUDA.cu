@@ -280,8 +280,8 @@ int32_t GPUReconstructionCUDA::InitDevice_Runtime()
     }
 
 #ifdef GPUCA_USE_TEXTURES
-    if (GPUCA_SLICE_DATA_MEMORY * NSLICES > (size_t)deviceProp.maxTexture1DLinear) {
-      GPUError("Invalid maximum texture size of device: %ld < %ld\n", (int64_t)deviceProp.maxTexture1DLinear, (int64_t)(GPUCA_SLICE_DATA_MEMORY * NSLICES));
+    if (GPUCA_SECTOR_DATA_MEMORY * NSECTORS > (size_t)deviceProp.maxTexture1DLinear) {
+      GPUError("Invalid maximum texture size of device: %ld < %ld\n", (int64_t)deviceProp.maxTexture1DLinear, (int64_t)(GPUCA_SECTOR_DATA_MEMORY * NSECTORS));
       return (1);
     }
 #endif
@@ -671,9 +671,9 @@ int32_t GPUReconstructionCUDA::PrepareTextures()
 #ifdef GPUCA_USE_TEXTURES
   cudaChannelFormatDesc channelDescu2 = cudaCreateChannelDesc<cahit2>();
   size_t offset;
-  GPUFailedMsg(cudaBindTexture(&offset, &gAliTexRefu2, mProcessorsShadow->tpcTrackers[0].Data().Memory(), &channelDescu2, NSLICES * GPUCA_SLICE_DATA_MEMORY));
+  GPUFailedMsg(cudaBindTexture(&offset, &gAliTexRefu2, mProcessorsShadow->tpcTrackers[0].Data().Memory(), &channelDescu2, NSECTORS * GPUCA_SECTOR_DATA_MEMORY));
   cudaChannelFormatDesc channelDescu = cudaCreateChannelDesc<calink>();
-  GPUFailedMsg(cudaBindTexture(&offset, &gAliTexRefu, mProcessorsShadow->tpcTrackers[0].Data().Memory(), &channelDescu, NSLICES * GPUCA_SLICE_DATA_MEMORY));
+  GPUFailedMsg(cudaBindTexture(&offset, &gAliTexRefu, mProcessorsShadow->tpcTrackers[0].Data().Memory(), &channelDescu, NSECTORS * GPUCA_SECTOR_DATA_MEMORY));
 #endif
   return (0);
 }
