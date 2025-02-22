@@ -24,9 +24,7 @@
 #include "GPUReconstructionKernelIncludes.h"
 #include "GPUReconstructionKernels.h"
 
-namespace o2
-{
-namespace gpu
+namespace o2::gpu
 {
 
 class GPUReconstructionCPUBackend : public GPUReconstructionProcessing
@@ -197,7 +195,6 @@ inline int32_t GPUReconstructionCPU::runKernel(krnlSetup&& setup, Args&&... args
   return retVal;
 }
 
-} // namespace gpu
-} // namespace o2
+} // namespace o2::gpu
 
 #endif

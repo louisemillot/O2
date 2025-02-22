@@ -15,9 +15,7 @@
 #ifndef GPUTPCHITID_H
 #define GPUTPCHITID_H
 
-namespace o2
-{
-namespace gpu
+namespace o2::gpu
 {
 class GPUTPCHitId
 {
@@ -29,7 +27,6 @@ class GPUTPCHitId
  private:
   int32_t mId;
 };
-} // namespace gpu
-} // namespace o2
+} // namespace o2::gpu
 
 #endif // GPUTPCHITID_H

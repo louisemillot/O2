@@ -17,9 +17,7 @@
 
 #include "GPUTPCDef.h"
 
-namespace o2
-{
-namespace gpu
+namespace o2::gpu
 {
 struct GPUTPCClusterData {
   int32_t id;
@@ -37,7 +35,6 @@ struct GPUTPCClusterData {
   float sigmaTime2;
 #endif
 };
-} // namespace gpu
-} // namespace o2
+} // namespace o2::gpu
 
 #endif // CLUSTERDATA_H

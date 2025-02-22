@@ -18,9 +18,7 @@
 #include "GPUGeneralKernels.h"
 #include "GPUConstantMem.h"
 
-namespace o2
-{
-namespace gpu
+namespace o2::gpu
 {
 class GPUTPCTracker;
 
@@ -61,7 +59,6 @@ class GPUTPCExtrapolationTrackingCopyNumbers : public GPUKernelTemplate
   GPUd() static void Thread(int32_t nBlocks, int32_t nThreads, int32_t iBlock, int32_t iThread, GPUsharedref() GPUSharedMemory& smem, processorType& tracker, int32_t n);
 };
 
-} // namespace gpu
-} // namespace o2
+} // namespace o2::gpu
 
 #endif // GPUTPCTRACKLETCONSTRUCTOR_H

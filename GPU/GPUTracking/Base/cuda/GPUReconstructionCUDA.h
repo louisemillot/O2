@@ -25,9 +25,7 @@ extern "C" __declspec(dllexport) o2::gpu::GPUReconstruction* GPUReconstruction_C
 extern "C" o2::gpu::GPUReconstruction* GPUReconstruction_Create_CUDA(const o2::gpu::GPUSettingsDeviceBackend& cfg);
 #endif
 
-namespace o2
-{
-namespace gpu
+namespace o2::gpu
 {
 struct GPUReconstructionCUDAInternals;
 
@@ -104,7 +102,6 @@ class GPUReconstructionCUDA : public GPUReconstructionKernels<GPUReconstructionC
   const char *mRtcSrcExtension = ".src", *mRtcBinExtension = ".o";
 };
 
-} // namespace gpu
-} // namespace o2
+} // namespace o2::gpu
 
 #endif

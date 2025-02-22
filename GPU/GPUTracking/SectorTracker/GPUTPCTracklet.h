@@ -18,9 +18,7 @@
 #include "GPUTPCBaseTrackParam.h"
 #include "GPUTPCDef.h"
 
-namespace o2
-{
-namespace gpu
+namespace o2::gpu
 {
 /**
  * @class GPUTPCTracklet
@@ -32,7 +30,7 @@ class GPUTPCTracklet
 {
  public:
 #if !defined(GPUCA_GPUCODE)
-  GPUTPCTracklet() : mFirstRow(0), mLastRow(0), mParam(), mHitWeight(0), mFirstHit(0) {};
+  GPUTPCTracklet() : mFirstRow(0), mLastRow(0), mParam(), mHitWeight(0), mFirstHit(0){};
 #endif //! GPUCA_GPUCODE
 
   GPUhd() int32_t FirstRow() const { return mFirstRow; }
@@ -54,7 +52,6 @@ class GPUTPCTracklet
   int32_t mHitWeight;          // Hit Weight of Tracklet
   uint32_t mFirstHit;          // first hit in row hit array
 };
-} // namespace gpu
-} // namespace o2
+} // namespace o2::gpu
 
 #endif // GPUTPCTRACKLET_H

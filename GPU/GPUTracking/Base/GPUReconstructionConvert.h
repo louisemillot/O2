@@ -37,9 +37,7 @@ class RawFileWriter;
 
 struct AliHLTTPCRawCluster;
 
-namespace o2
-{
-namespace gpu
+namespace o2::gpu
 {
 struct GPUParam;
 struct GPUTPCClusterData;
@@ -63,7 +61,6 @@ class GPUReconstructionConvert
   static std::function<void(std::vector<o2::tpc::Digit>&, const void*, uint32_t, uint32_t)> GetDecoder(int32_t version, const GPUParam* param);
 };
 
-} // namespace gpu
-} // namespace o2
+} // namespace o2::gpu
 
 #endif

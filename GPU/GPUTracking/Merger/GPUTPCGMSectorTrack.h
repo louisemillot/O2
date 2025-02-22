@@ -20,9 +20,7 @@
 #include "GPUCommonMath.h"
 #include "GPUO2DataTypes.h"
 
-namespace o2
-{
-namespace gpu
+namespace o2::gpu
 {
 /**
  * @class GPUTPCGMSectorTrack
@@ -142,7 +140,6 @@ class GPUTPCGMSectorTrack
 
   ClassDefNV(GPUTPCGMSectorTrack, 1);
 };
-} // namespace gpu
-} // namespace o2
+} // namespace o2::gpu
 
 #endif

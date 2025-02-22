@@ -27,9 +27,7 @@
 #include "GPUTPCTracklet.h"
 #include "GPUProcessor.h"
 
-namespace o2
-{
-namespace gpu
+namespace o2::gpu
 {
 class GPUTPCSectorOutput;
 struct GPUTPCClusterData;
@@ -276,7 +274,6 @@ class GPUTPCTracker : public GPUProcessor
 
   static int32_t StarthitSortComparison(const void* a, const void* b);
 };
-} // namespace gpu
-} // namespace o2
+} // namespace o2::gpu
 
 #endif // GPUTPCTRACKER_H

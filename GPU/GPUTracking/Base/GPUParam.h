@@ -31,9 +31,7 @@ using Propagator = PropagatorImpl<float>;
 } // namespace o2::base
 #endif
 
-namespace o2
-{
-namespace gpu
+namespace o2::gpu
 {
 struct GPUSettingsRec;
 struct GPUSettingsGTP;
@@ -114,7 +112,6 @@ struct GPUParam : public internal::GPUParam_t<GPUSettingsRec, GPUSettingsParam> 
   GPUd() bool rejectEdgeClusterByY(float uncorrectedY, int32_t iRow, float trackSigmaY) const;
 };
 
-} // namespace gpu
-} // namespace o2
+} // namespace o2::gpu
 
 #endif

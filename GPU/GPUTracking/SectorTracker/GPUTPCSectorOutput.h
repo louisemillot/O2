@@ -18,9 +18,7 @@
 #include "GPUTPCDef.h"
 #include "GPUTPCTrack.h"
 
-namespace o2
-{
-namespace gpu
+namespace o2::gpu
 {
 struct GPUOutputControl;
 
@@ -77,6 +75,5 @@ class GPUTPCSectorOutput
   uint32_t mNTrackClusters; // total number of track clusters
   size_t mMemorySize;       // Amount of memory really used
 };
-} // namespace gpu
-} // namespace o2
+} // namespace o2::gpu
 #endif

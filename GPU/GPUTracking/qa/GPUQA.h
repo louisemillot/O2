@@ -33,9 +33,7 @@ typedef int16_t Color_t;
 
 #if !defined(GPUCA_BUILD_QA) || defined(GPUCA_GPUCODE)
 
-namespace o2
-{
-namespace gpu
+namespace o2::gpu
 {
 class GPUQA
 {
@@ -59,8 +57,7 @@ class GPUQA
   static bool IsInitialized() { return false; }
   void UpdateChain(GPUChainTracking* chain) {}
 };
-} // namespace gpu
-} // namespace o2
+} // namespace o2::gpu
 
 #else
 

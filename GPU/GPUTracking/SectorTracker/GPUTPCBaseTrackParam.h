@@ -17,9 +17,7 @@
 
 #include "GPUTPCDef.h"
 
-namespace o2
-{
-namespace gpu
+namespace o2::gpu
 {
 class GPUTPCTrackParam;
 
@@ -80,7 +78,6 @@ struct GPUTPCBaseTrackParam {
   float mZOffset; // z offset
   float mP[5];    // 'active' track parameters: Y, Z, SinPhi, DzDs, q/Pt
 };
-} // namespace gpu
-} // namespace o2
+} // namespace o2::gpu
 
 #endif

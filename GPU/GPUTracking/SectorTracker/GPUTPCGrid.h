@@ -17,9 +17,7 @@
 
 #include "GPUTPCDef.h"
 
-namespace o2
-{
-namespace gpu
+namespace o2::gpu
 {
 /**
  * @class GPUTPCGrid
@@ -66,7 +64,6 @@ class GPUTPCGrid
   float mStepYInv; //* inverse bin size in Y
   float mStepZInv; //* inverse bin size in Z
 };
-} // namespace gpu
-} // namespace o2
+} // namespace o2::gpu
 
 #endif // GPUTPCGRID_H

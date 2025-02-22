@@ -27,9 +27,7 @@
 
 class AliExternalTrackParam;
 
-namespace o2
-{
-namespace gpu
+namespace o2::gpu
 {
 class GPUTPCGMMerger;
 class GPUTPCGMBorderTrack;
@@ -285,7 +283,6 @@ GPUdi() float GPUTPCGMTrackParam::GetMirroredY(float Bz) const
   }
   return GetY() - 2.f * CAMath::Sqrt(cosPhi2) / qptBz;
 }
-} // namespace gpu
-} // namespace o2
+} // namespace o2::gpu
 
 #endif

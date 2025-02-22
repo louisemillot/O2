@@ -17,9 +17,7 @@
 
 #include "GPUCommonDef.h"
 
-namespace o2
-{
-namespace gpu
+namespace o2::gpu
 {
 struct GPUTPCGMMergedTrackHit {
   uint32_t num;
@@ -49,7 +47,6 @@ struct GPUTPCGMMergedTrackHitXYZ {
 #endif
 };
 
-} // namespace gpu
-} // namespace o2
+} // namespace o2::gpu
 
 #endif

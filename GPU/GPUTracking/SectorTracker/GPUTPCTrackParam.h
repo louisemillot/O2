@@ -19,9 +19,7 @@
 #include "GPUTPCDef.h"
 #include "GPUCommonMath.h"
 
-namespace o2
-{
-namespace gpu
+namespace o2::gpu
 {
 class GPUTPCTrackLinearisation;
 
@@ -181,7 +179,6 @@ GPUdi() void GPUTPCTrackParam::InitParam()
   SetCov(14, 1000.f);
   SetZOffset(0);
 }
-} // namespace gpu
-} // namespace o2
+} // namespace o2::gpu
 
 #endif // GPUTPCTRACKPARAM_H

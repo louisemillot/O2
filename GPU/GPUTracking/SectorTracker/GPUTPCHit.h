@@ -17,9 +17,7 @@
 
 #include "GPUTPCDef.h"
 
-namespace o2
-{
-namespace gpu
+namespace o2::gpu
 {
 /**
  * @class GPUTPCHit
@@ -43,7 +41,6 @@ class GPUTPCHit
  private:
   friend class GPUTPCNeighboursFinder;
 };
-} // namespace gpu
-} // namespace o2
+} // namespace o2::gpu
 
 #endif // GPUTPCHIT_H

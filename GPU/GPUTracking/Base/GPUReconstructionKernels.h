@@ -17,9 +17,7 @@
 
 #include "GPUReconstruction.h"
 
-namespace o2
-{
-namespace gpu
+namespace o2::gpu
 {
 
 namespace gpu_reconstruction_kernels
@@ -113,7 +111,6 @@ class GPUReconstructionKernels : public T
 #undef GPUCA_KRNL
 };
 
-} // namespace gpu
-} // namespace o2
+} // namespace o2::gpu
 
 #endif

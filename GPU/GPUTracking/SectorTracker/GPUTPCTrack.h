@@ -19,9 +19,7 @@
 #include "GPUTPCDef.h"
 #include "GPUTPCSectorOutCluster.h"
 
-namespace o2
-{
-namespace gpu
+namespace o2::gpu
 {
 /**
  * @class GPUTPCTrack
@@ -67,7 +65,6 @@ class GPUTPCTrack
 
  private:
 };
-} // namespace gpu
-} // namespace o2
+} // namespace o2::gpu
 
 #endif // GPUTPCTRACK_H

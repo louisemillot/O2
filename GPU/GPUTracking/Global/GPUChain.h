@@ -17,9 +17,7 @@
 
 #include "GPUReconstructionCPU.h"
 
-namespace o2
-{
-namespace gpu
+namespace o2::gpu
 {
 class GPUChain
 {
@@ -294,7 +292,6 @@ int32_t GPUChain::runRecoStep(RecoStep step, S T::*func, Args... args)
   return false;
 }
 
-} // namespace gpu
-} // namespace o2
+} // namespace o2::gpu
 
 #endif

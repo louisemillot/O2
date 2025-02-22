@@ -30,21 +30,16 @@
 #include <iostream>
 #endif // GPUCA_GPUCODE
 
-namespace o2
-{
-namespace base
+namespace o2::base
 {
 class MatLayerCylSet;
 }
-namespace tpc
+namespace o2::tpc
 {
 struct ClusterNative;
 }
-} // namespace o2
 
-namespace o2
-{
-namespace gpu
+namespace o2::gpu
 {
 class GPUTPCSectorTrack;
 class GPUTPCSectorOutput;
@@ -291,7 +286,6 @@ class GPUTPCGMMerger : public GPUProcessor
   uint32_t* mRetryRefitIds;
   GPUTPCGMLoopData* mLoopData;
 };
-} // namespace gpu
-} // namespace o2
+} // namespace o2::gpu
 
 #endif // GPUTPCGMMERGER_H

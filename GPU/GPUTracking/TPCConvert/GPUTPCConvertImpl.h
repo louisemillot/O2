@@ -20,9 +20,7 @@
 #include "TPCFastTransform.h"
 #include "CorrectionMapsHelper.h"
 
-namespace o2
-{
-namespace gpu
+namespace o2::gpu
 {
 
 class GPUTPCConvertImpl
@@ -46,7 +44,6 @@ class GPUTPCConvertImpl
   }
 };
 
-} // namespace gpu
-} // namespace o2
+} // namespace o2::gpu
 
 #endif

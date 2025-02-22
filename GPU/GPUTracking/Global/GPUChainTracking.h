@@ -24,35 +24,24 @@
 #include <vector>
 #include <utility>
 
-namespace o2
-{
-namespace trd
+namespace o2::trd
 {
 class GeometryFlat;
-}
-} // namespace o2
+} // namespace o2::trd
 
-namespace o2
-{
-namespace tpc
+namespace o2::tpc
 {
 struct ClusterNativeAccess;
 struct ClusterNative;
 class CalibdEdxContainer;
-} // namespace tpc
-} // namespace o2
+} // namespace o2::tpc
 
-namespace o2
-{
-namespace base
+namespace o2::base
 {
 class MatLayerCylSet;
-}
-} // namespace o2
+} // namespace o2::base
 
-namespace o2
-{
-namespace gpu
+namespace o2::gpu
 {
 //class GPUTRDTrackerGPU;
 class GPUTPCGPUTracker;
@@ -320,7 +309,6 @@ class GPUChainTracking : public GPUChain
 
   int32_t OutputStream() const { return mRec->NStreams() - 2; }
 };
-} // namespace gpu
-} // namespace o2
+} // namespace o2::gpu
 
 #endif

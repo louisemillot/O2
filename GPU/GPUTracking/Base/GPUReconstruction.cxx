@@ -44,9 +44,7 @@
 
 #include "GPUReconstructionIncludesITS.h"
 
-namespace o2
-{
-namespace gpu
+namespace o2::gpu
 {
 struct GPUReconstructionPipelineQueue {
   uint32_t op = 0; // For now, 0 = process, 1 = terminate
@@ -63,8 +61,7 @@ struct GPUReconstructionPipelineContext {
   std::condition_variable cond;
   bool terminate = false;
 };
-} // namespace gpu
-} // namespace o2
+} // namespace o2::gpu
 
 using namespace o2::gpu;
 

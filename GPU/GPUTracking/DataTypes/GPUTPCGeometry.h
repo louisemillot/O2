@@ -26,9 +26,7 @@
 #endif
 #endif
 
-namespace o2
-{
-namespace gpu
+namespace o2::gpu
 {
 // Copy of TPC constants from AliRoot:TPCGeometry / O2:TPC/Base/Mapper
 // Should be unified, but cannot take the contants from the official headers for now, since we want it to be constexpr
@@ -144,6 +142,5 @@ class GPUTPCGeometry // TODO: Make values constexpr
     return (250.f - v) * FACTOR_Z2T; // Used in compression, must remain constant at 250cm
   }
 };
-} // namespace gpu
-} // namespace o2
+} // namespace o2::gpu
 #endif

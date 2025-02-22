@@ -22,9 +22,7 @@
 #include <vector>
 #include <utility>
 
-namespace o2
-{
-namespace gpu
+namespace o2::gpu
 {
 
 struct GPUTPCCFChainContext {
@@ -83,7 +81,6 @@ struct GPUTPCCFChainContext {
   }
 };
 
-} // namespace gpu
-} // namespace o2
+} // namespace o2::gpu
 
 #endif

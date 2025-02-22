@@ -18,9 +18,7 @@
 #include "GPUDef.h"
 #include "GPUProcessor.h"
 
-namespace o2
-{
-namespace gpu
+namespace o2::gpu
 {
 struct GPUTPCClusterData;
 
@@ -53,7 +51,6 @@ class GPUTPCConvert : public GPUProcessor
   int16_t mMemoryResOutput = -1;
   int16_t mMemoryResMemory = -1;
 };
-} // namespace gpu
-} // namespace o2
+} // namespace o2::gpu
 
 #endif

@@ -17,9 +17,7 @@
 
 #include "GPUSettings.h"
 
-namespace o2
-{
-namespace gpu
+namespace o2::gpu
 {
 
 class GPUChainTracking;
@@ -61,7 +59,6 @@ class GPUDisplayFrontendInterface
   GPUDisplayFrontendInterface();
 };
 
-} // namespace gpu
-} // namespace o2
+} // namespace o2::gpu
 
 #endif // GPUDISPLAYINTERFACE_H

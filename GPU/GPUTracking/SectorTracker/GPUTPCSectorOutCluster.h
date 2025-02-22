@@ -17,9 +17,7 @@
 
 #include "GPUTPCDef.h"
 
-namespace o2
-{
-namespace gpu
+namespace o2::gpu
 {
 /**
  * @class GPUTPCSectorOutCluster
@@ -63,7 +61,6 @@ class GPUTPCSectorOutCluster
   float mTime;
 #endif
 };
-} // namespace gpu
-} // namespace o2
+} // namespace o2::gpu
 
 #endif

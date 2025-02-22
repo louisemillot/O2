@@ -18,9 +18,7 @@
 #include "GPUCommonDef.h"
 #include "GPUCommonMath.h"
 
-namespace o2
-{
-namespace gpu
+namespace o2::gpu
 {
 /**
  * @class GPUTPCGMBorderTrack
@@ -127,7 +125,6 @@ class GPUTPCGMBorderTrack
 
   ClassDefNV(GPUTPCGMBorderTrack, 1);
 };
-} // namespace gpu
-} // namespace o2
+} // namespace o2::gpu
 
 #endif

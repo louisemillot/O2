@@ -20,9 +20,7 @@
 #include "GPUGeneralKernels.h"
 #include "GPUConstantMem.h"
 
-namespace o2
-{
-namespace gpu
+namespace o2::gpu
 {
 /**
  * @class GPUTPCTrackletConstructor
@@ -108,7 +106,6 @@ class GPUTPCTrackletConstructor
   GPUd() static void Thread(int32_t nBlocks, int32_t nThreads, int32_t iBlock, int32_t iThread, GPUsharedref() GPUSharedMemory& smem, processorType& tracker);
 };
 
-} // namespace gpu
-} // namespace o2
+} // namespace o2::gpu
 
 #endif // GPUTPCTRACKLETCONSTRUCTOR_H

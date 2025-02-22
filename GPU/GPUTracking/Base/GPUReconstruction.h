@@ -34,19 +34,14 @@
 #include "GPUTPCSectorOutput.h"
 #include "GPULogging.h"
 
-namespace o2
-{
-namespace its
+namespace o2::its
 {
 class TrackerTraits;
 class VertexerTraits;
 class TimeFrame;
-} // namespace its
-} // namespace o2
+} // namespace o2::its
 
-namespace o2
-{
-namespace gpu
+namespace o2::gpu
 {
 class GPUChain;
 struct GPUMemorySizeScalers;
@@ -483,7 +478,6 @@ inline void GPUReconstruction::SetupGPUProcessor(T* proc, bool allocate)
   }
 }
 
-} // namespace gpu
-} // namespace o2
+} // namespace o2::gpu
 
 #endif

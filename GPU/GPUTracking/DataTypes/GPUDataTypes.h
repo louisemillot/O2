@@ -27,9 +27,7 @@
 
 struct AliHLTTPCClusterMCLabel;
 struct AliHLTTPCRawCluster;
-namespace o2
-{
-namespace tpc
+namespace o2::tpc
 {
 struct ClusterNativeAccess;
 struct CompressedClustersFlat;
@@ -38,8 +36,7 @@ class TrackTPC;
 namespace constants
 {
 } // namespace constants
-} // namespace tpc
-} // namespace o2
+} // namespace o2::tpc
 
 namespace o2
 {
@@ -91,21 +88,13 @@ class CalibdEdxContainer;
 } // namespace tpc
 } // namespace o2
 
-namespace o2
-{
-namespace gpu
+namespace o2::gpu
 {
 class CorrectionMapsHelper;
 class TPCFastTransform;
 struct TPCPadGainCalib;
 struct TPCZSLinkMapping;
-} // namespace gpu
-} // namespace o2
 
-namespace o2
-{
-namespace gpu
-{
 #include "utils/bitfield.h"
 #define ENUM_CLASS class
 #define ENUM_UINT : uint32_t
@@ -325,7 +314,6 @@ struct GPUTrackingInOutPointers {
 
 #undef ENUM_CLASS
 #undef ENUM_UINT
-} // namespace gpu
-} // namespace o2
+} // namespace o2::gpu
 
 #endif

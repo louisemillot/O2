@@ -29,9 +29,7 @@
 
 #include "utils/timer.h"
 
-namespace o2
-{
-namespace gpu
+namespace o2::gpu
 {
 class GPUTPCTracker;
 struct GPUParam;
@@ -321,7 +319,6 @@ class GPUDisplay : public GPUDisplayInterface
 
   float mYFactor = 1.0f;
 };
-} // namespace gpu
-} // namespace o2
+} // namespace o2::gpu
 
 #endif

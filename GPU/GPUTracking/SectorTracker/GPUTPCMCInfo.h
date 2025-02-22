@@ -15,9 +15,7 @@
 #ifndef GPUTPCMCINFO_H
 #define GPUTPCMCINFO_H
 
-namespace o2
-{
-namespace gpu
+namespace o2::gpu
 {
 struct GPUTPCMCInfo {
   int32_t charge;
@@ -39,7 +37,6 @@ struct GPUTPCMCInfoCol {
   uint32_t first;
   uint32_t num;
 };
-} // namespace gpu
-} // namespace o2
+} // namespace o2::gpu
 
 #endif

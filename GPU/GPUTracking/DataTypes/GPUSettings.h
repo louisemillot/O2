@@ -23,9 +23,7 @@
 #include <string>
 #endif
 
-namespace o2
-{
-namespace gpu
+namespace o2::gpu
 {
 class GPUDisplayFrontendInterface;
 class GPUReconstruction;
@@ -80,8 +78,7 @@ struct GPUSettingsDeviceBackend {
   GPUReconstruction* master = nullptr;                     // GPUReconstruction master object
 };
 
-} // namespace gpu
-} // namespace o2
+} // namespace o2::gpu
 
 #ifdef GPUCA_GPUCODE_DEVICE
 #define QCONFIG_GPU

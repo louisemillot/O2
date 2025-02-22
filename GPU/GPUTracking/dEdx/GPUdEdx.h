@@ -24,9 +24,7 @@
 #include "CalibdEdxContainer.h"
 #include "GPUDebugStreamer.h"
 
-namespace o2
-{
-namespace gpu
+namespace o2::gpu
 {
 
 class GPUdEdx
@@ -198,7 +196,6 @@ GPUdi() void GPUdEdx::fillSubThreshold(int32_t padRow, const GPUParam& GPUrestri
   mNSubThresh++;
 }
 
-} // namespace gpu
-} // namespace o2
+} // namespace o2::gpu
 
 #endif

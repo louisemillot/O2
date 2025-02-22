@@ -30,9 +30,7 @@
 #include <vector>
 #endif
 
-namespace o2
-{
-namespace gpu
+namespace o2::gpu
 {
 
 class GPUTRDTrackletWord;
@@ -196,7 +194,6 @@ class GPUTRDTracker_t : public GPUProcessor
   float mTPCTDriftOffset;             // TPC drift time additive offset
   GPUTRDTrackerDebug<TRDTRK>* mDebug; // debug output
 };
-} // namespace gpu
-} // namespace o2
+} // namespace o2::gpu
 
 #endif // GPUTRDTRACKER_H

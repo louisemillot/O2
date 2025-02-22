@@ -1105,12 +1105,9 @@ GPUd() bool GPUTRDTracker_t<TRDTRK, PROP>::IsGeoFindable(const TRDTRK* t, const 
 
 
 #ifndef GPUCA_GPUCODE
-namespace o2
-{
-namespace gpu
+namespace o2::gpu
 {
 template class GPUTRDTracker_t<GPUTRDTrack, GPUTRDPropagator>;
 template class GPUTRDTracker_t<GPUTRDTrackGPU, GPUTRDPropagatorGPU>;
-} // namespace gpu
-} // namespace o2
+} // namespace o2::gpu
 #endif

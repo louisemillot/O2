@@ -21,9 +21,7 @@
 #include "GPUParam.h"
 #include "GPUProcessor.h"
 
-namespace o2
-{
-namespace gpu
+namespace o2::gpu
 {
 struct GPUTPCClusterData;
 class GPUTPCHit;
@@ -190,7 +188,6 @@ GPUdi() void GPUTPCTrackingData::SetHitWeight(const GPUTPCRow& row, uint32_t hit
 }
 
 GPUdi() int32_t GPUTPCTrackingData::HitWeight(const GPUTPCRow& row, uint32_t hitIndex) const { return mHitWeights[row.mHitNumberOffset + hitIndex]; }
-} // namespace gpu
-} // namespace o2
+} // namespace o2::gpu
 
 #endif // GPUTPCSECTORDATA_H

@@ -19,9 +19,7 @@
 #include "GPUTPCGMMergedTrackHit.h"
 #include "GPUTPCClusterOccupancyMap.h"
 
-namespace o2
-{
-namespace gpu
+namespace o2::gpu
 {
 
 GPUdi() void GPUParam::Sector2Global(int32_t iSector, float x, float y, float z, float* X, float* Y, float* Z) const
@@ -223,7 +221,6 @@ GPUdi() bool GPUParam::rejectEdgeClusterByY(float uncorrectedY, int32_t iRow, fl
   return CAMath::Abs(uncorrectedY) > (tpcGeometry.NPads(iRow) - 1) * 0.5f * tpcGeometry.PadWidth(iRow) + rec.tpc.rejectEdgeClustersMargin + trackSigmaY * rec.tpc.rejectEdgeClustersSigmaMargin;
 }
 
-} // namespace gpu
-} // namespace o2
+} // namespace o2::gpu
 
 #endif

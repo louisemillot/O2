@@ -20,9 +20,7 @@
 #include "GPUChain.h"
 #include <vector>
 
-namespace o2
-{
-namespace gpu
+namespace o2::gpu
 {
 #if !(defined(__CLING__) || defined(__ROOTCLING__) || defined(G__ROOT))
 extern template class GPUReconstructionKernels<GPUReconstructionCPUBackend>;
@@ -87,7 +85,6 @@ inline size_t GPUReconstructionDeviceBase::GPUMemCpyAlways(bool onGpu, void* dst
     return GPUReconstructionCPU::GPUMemCpyAlways(false, dst, src, size, stream, toGPU, ev, evList, nEvents);
   }
 }
-} // namespace gpu
-} // namespace o2
+} // namespace o2::gpu
 
 #endif
