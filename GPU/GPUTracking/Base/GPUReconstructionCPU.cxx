@@ -72,12 +72,14 @@ inline int32_t GPUReconstructionCPUBackend::runKernelBackendInternal(const krnlS
       if (mProcessingSettings.debugLevel >= 5) {
         printf("Running %d Threads\n", nThreads);
       }
-      mThreading->activeThreads->execute([&] {
-        tbb::parallel_for(tbb::blocked_range<uint32_t>(0, x.nBlocks, 1), [&](const tbb::blocked_range<uint32_t>& r) {
-          typename T::GPUSharedMemory smem;
-          for (uint32_t iB = r.begin(); iB < r.end(); iB++) {
-            T::template Thread<I>(x.nBlocks, 1, iB, 0, smem, T::Processor(*mHostConstantMem)[y.start + k], args...);
-          }
+      tbb::this_task_arena::isolate([&] {
+        mThreading->activeThreads->execute([&] {
+          tbb::parallel_for(tbb::blocked_range<uint32_t>(0, x.nBlocks, 1), [&](const tbb::blocked_range<uint32_t>& r) {
+            typename T::GPUSharedMemory smem;
+            for (uint32_t iB = r.begin(); iB < r.end(); iB++) {
+              T::template Thread<I>(x.nBlocks, 1, iB, 0, smem, T::Processor(*mHostConstantMem)[y.start + k], args...);
+            }
+          });
         });
       });
     } else {
