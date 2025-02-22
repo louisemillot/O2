@@ -315,12 +315,12 @@ void GPUQA::createHist(T*& h, const char* name, Args... args)
   p.second->emplace_back(&h);
 }
 
-namespace o2::gpu
+namespace o2::gpu::internal
 {
 struct GPUQAGarbageCollection {
   std::tuple<std::vector<std::unique_ptr<TCanvas>>, std::vector<std::unique_ptr<TLegend>>, std::vector<std::unique_ptr<TPad>>, std::vector<std::unique_ptr<TLatex>>, std::vector<std::unique_ptr<TH1D>>> v;
 };
-} // namespace o2::gpu
+} // namespace o2::gpu::internal
 
 template <class T, typename... Args>
 T* GPUQA::createGarbageCollected(Args... args)
@@ -335,7 +335,7 @@ void GPUQA::clearGarbagageCollector()
   std::apply([](auto&&... args) { ((args.clear()), ...); }, mGarbageCollector->v);
 }
 
-GPUQA::GPUQA(GPUChainTracking* chain, const GPUSettingsQA* config, const GPUParam* param) : mTracking(chain), mConfig(config ? *config : GPUQA_GetConfig(chain)), mParam(param ? param : &chain->GetParam()), mGarbageCollector(std::make_unique<GPUQAGarbageCollection>())
+GPUQA::GPUQA(GPUChainTracking* chain, const GPUSettingsQA* config, const GPUParam* param) : mTracking(chain), mConfig(config ? *config : GPUQA_GetConfig(chain)), mParam(param ? param : &chain->GetParam()), mGarbageCollector(std::make_unique<internal::GPUQAGarbageCollection>())
 {
   mMCEventOffset.resize(1, 0);
 }

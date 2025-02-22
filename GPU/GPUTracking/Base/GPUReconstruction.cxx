@@ -46,6 +46,8 @@
 
 namespace o2::gpu
 {
+namespace // anonymous
+{
 struct GPUReconstructionPipelineQueue {
   uint32_t op = 0; // For now, 0 = process, 1 = terminate
   GPUChain* chain = nullptr;
@@ -54,6 +56,7 @@ struct GPUReconstructionPipelineQueue {
   bool done = false;
   int32_t retVal = 0;
 };
+} // namespace
 
 struct GPUReconstructionPipelineContext {
   std::queue<GPUReconstructionPipelineQueue*> queue;
@@ -951,8 +954,12 @@ int32_t GPUReconstruction::unregisterMemoryForGPU(const void* ptr)
   return 1;
 }
 
+namespace o2::gpu::internal
+{
+namespace // anonymous
+{
 template <class T>
-static inline int32_t getStepNum(T step, bool validCheck, int32_t N, const char* err = "Invalid step num")
+constexpr static inline int32_t getStepNum(T step, bool validCheck, int32_t N, const char* err = "Invalid step num")
 {
   static_assert(sizeof(step) == sizeof(uint32_t), "Invalid step enum size");
   int32_t retVal = 8 * sizeof(uint32_t) - 1 - CAMath::Clz((uint32_t)step);
@@ -964,9 +971,11 @@ static inline int32_t getStepNum(T step, bool validCheck, int32_t N, const char*
   }
   return retVal;
 }
+} // anonymous namespace
+} // namespace o2::gpu::internal
 
-int32_t GPUReconstruction::getRecoStepNum(RecoStep step, bool validCheck) { return getStepNum(step, validCheck, GPUDataTypes::N_RECO_STEPS, "Invalid Reco Step"); }
-int32_t GPUReconstruction::getGeneralStepNum(GeneralStep step, bool validCheck) { return getStepNum(step, validCheck, GPUDataTypes::N_GENERAL_STEPS, "Invalid General Step"); }
+int32_t GPUReconstruction::getRecoStepNum(RecoStep step, bool validCheck) { return internal::getStepNum(step, validCheck, GPUDataTypes::N_RECO_STEPS, "Invalid Reco Step"); }
+int32_t GPUReconstruction::getGeneralStepNum(GeneralStep step, bool validCheck) { return internal::getStepNum(step, validCheck, GPUDataTypes::N_GENERAL_STEPS, "Invalid General Step"); }
 
 void GPUReconstruction::RunPipelineWorker()
 {

@@ -58,14 +58,18 @@
 #include "SimulationDataFormat/MCCompLabel.h"
 #endif
 
+namespace o2::gpu::internal
+{
+}
 using namespace o2::gpu;
+using namespace o2::gpu::internal;
 using namespace o2::tpc;
 using namespace gputpcgmmergertypes;
 
 static constexpr int32_t kMaxParts = 400;
 static constexpr int32_t kMaxClusters = GPUCA_MERGER_MAX_TRACK_CLUSTERS;
 
-namespace o2::gpu
+namespace o2::gpu::internal
 {
 struct MergeLooperParam {
   float refz;
@@ -73,7 +77,7 @@ struct MergeLooperParam {
   float y;
   uint32_t id;
 };
-} // namespace o2::gpu
+} // namespace o2::gpu::internal
 
 #ifndef GPUCA_GPUCODE
 
@@ -741,6 +745,10 @@ GPUd() void GPUTPCGMMerger::MergeBorderTracks<1>(int32_t nBlocks, int32_t nThrea
 }
 
 #if defined(GPUCA_SPECIALIZE_THRUST_SORTS) && !defined(GPUCA_GPUCODE_COMPILEKERNELS) // Specialize MergeBorderTracks<3>
+namespace o2::gpu::internal
+{
+namespace // anonymous
+{
 struct MergeBorderTracks_compMax {
   GPUd() bool operator()(const GPUTPCGMBorderRange& a, const GPUTPCGMBorderRange& b)
   {
@@ -761,6 +769,8 @@ struct MergeBorderTracks_compMin {
 #endif
   }
 };
+} // anonymous namespace
+} // namespace o2::gpu::internal
 
 template <>
 inline void GPUCA_KRNL_BACKEND_CLASS::runKernelBackendInternal<GPUTPCGMMergerMergeBorders, 3>(const krnlSetupTime& _xyz, GPUTPCGMBorderRange* const& range, int32_t const& N, int32_t const& cmpMax)
@@ -1436,6 +1446,10 @@ GPUd() void GPUTPCGMMerger::MergeCE(int32_t nBlocks, int32_t nThreads, int32_t i
   // for (int32_t i = 0;i < mMemory->nOutputTracks;i++) {if (mOutputTracks[i].CCE() == false) {mOutputTracks[i].SetNClusters(0);mOutputTracks[i].SetOK(false);}} //Remove all non-CE tracks
 }
 
+namespace o2::gpu::internal
+{
+namespace // anonymous
+{
 struct GPUTPCGMMerger_CompareClusterIdsLooper {
   struct clcomparestruct {
     uint8_t leg;
@@ -1489,6 +1503,8 @@ struct GPUTPCGMMerger_CompareClusterIds {
 #endif
   }
 };
+} // anonymous namespace
+} // namespace o2::gpu::internal
 
 GPUd() void GPUTPCGMMerger::CollectMergedTracks(int32_t nBlocks, int32_t nThreads, int32_t iBlock, int32_t iThread)
 {
@@ -1803,6 +1819,10 @@ GPUd() void GPUTPCGMMerger::PrepareClustersForFit0(int32_t nBlocks, int32_t nThr
 }
 
 #if defined(GPUCA_SPECIALIZE_THRUST_SORTS) && !defined(GPUCA_GPUCODE_COMPILEKERNELS) // Specialize GPUTPCGMMergerSortTracks and GPUTPCGMMergerSortTracksQPt
+namespace o2::gpu::internal
+{
+namespace // anonymous
+{
 struct GPUTPCGMMergerSortTracks_comp {
   const GPUTPCGMMergedTrack* const mCmp;
   GPUhd() GPUTPCGMMergerSortTracks_comp(GPUTPCGMMergedTrack* cmp) : mCmp(cmp) {}
@@ -1833,14 +1853,6 @@ struct GPUTPCGMMergerSortTracks_comp {
   }
 };
 
-template <>
-inline void GPUCA_KRNL_BACKEND_CLASS::runKernelBackendInternal<GPUTPCGMMergerSortTracks, 0>(const krnlSetupTime& _xyz)
-{
-  thrust::device_ptr<uint32_t> trackSort((uint32_t*)mProcessorsShadow->tpcMerger.TrackOrderProcess());
-  ThrustVolatileAsyncAllocator alloc(this);
-  thrust::sort(GPUCA_THRUST_NAMESPACE::par(alloc).on(mInternals->Streams[_xyz.x.stream]), trackSort, trackSort + processors()->tpcMerger.NOutputTracks(), GPUTPCGMMergerSortTracks_comp(mProcessorsShadow->tpcMerger.OutputTracks()));
-}
-
 struct GPUTPCGMMergerSortTracksQPt_comp {
   const GPUTPCGMMergedTrack* const mCmp;
   GPUhd() GPUTPCGMMergerSortTracksQPt_comp(GPUTPCGMMergedTrack* cmp) : mCmp(cmp) {}
@@ -1861,6 +1873,16 @@ struct GPUTPCGMMergerSortTracksQPt_comp {
 #endif
   }
 };
+} // anonymous namespace
+} // namespace o2::gpu::internal
+
+template <>
+inline void GPUCA_KRNL_BACKEND_CLASS::runKernelBackendInternal<GPUTPCGMMergerSortTracks, 0>(const krnlSetupTime& _xyz)
+{
+  thrust::device_ptr<uint32_t> trackSort((uint32_t*)mProcessorsShadow->tpcMerger.TrackOrderProcess());
+  ThrustVolatileAsyncAllocator alloc(this);
+  thrust::sort(GPUCA_THRUST_NAMESPACE::par(alloc).on(mInternals->Streams[_xyz.x.stream]), trackSort, trackSort + processors()->tpcMerger.NOutputTracks(), GPUTPCGMMergerSortTracks_comp(mProcessorsShadow->tpcMerger.OutputTracks()));
+}
 
 template <>
 inline void GPUCA_KRNL_BACKEND_CLASS::runKernelBackendInternal<GPUTPCGMMergerSortTracksQPt, 0>(const krnlSetupTime& _xyz)
@@ -2074,12 +2096,18 @@ GPUd() void GPUTPCGMMerger::MergeLoopersSort(int32_t nBlocks, int32_t nThreads, 
 }
 
 #if defined(GPUCA_SPECIALIZE_THRUST_SORTS) && !defined(GPUCA_GPUCODE_COMPILEKERNELS) // Specialize GPUTPCGMMergerSortTracks and GPUTPCGMMergerSortTracksQPt
+namespace o2::gpu::internal
+{
+namespace // anonymous
+{
 struct GPUTPCGMMergerMergeLoopers_comp {
   GPUd() bool operator()(const MergeLooperParam& a, const MergeLooperParam& b)
   {
     return CAMath::Abs(a.refz) < CAMath::Abs(b.refz);
   }
 };
+} // anonymous namespace
+} // namespace o2::gpu::internal
 
 template <>
 inline void GPUCA_KRNL_BACKEND_CLASS::runKernelBackendInternal<GPUTPCGMMergerMergeLoopers, 1>(const krnlSetupTime& _xyz)

@@ -23,7 +23,9 @@
 using namespace o2::gpu;
 
 // Small helper to compute Huffman probabilities
-namespace
+namespace o2::gpu
+{
+namespace // anonymous
 {
 typedef std::vector<bool> HuffCode;
 typedef std::map<uint32_t, HuffCode> HuffCodeMap;
@@ -101,7 +103,8 @@ void GenerateCodes(const INode* node, const HuffCode& prefix, HuffCodeMap& outCo
     GenerateCodes(in->right, rightPrefix, outCodes);
   }
 }
-} // namespace
+} // anonymous namespace
+} // namespace o2::gpu
 
 void GPUTPCClusterStatistics::RunStatistics(const o2::tpc::ClusterNativeAccess* clustersNative, const o2::tpc::CompressedClusters* clustersCompressed, const GPUParam& param)
 {

@@ -174,6 +174,8 @@ int32_t GPUReconstructionConvert::GetMaxTimeBin(const GPUTrackingInOutZS& zspage
 // ------------------------------------------------- TPC ZS -------------------------------------------------
 
 #ifdef GPUCA_TPC_GEOMETRY_O2
+namespace o2::gpu
+{
 namespace // anonymous
 {
 
@@ -1306,18 +1308,8 @@ size_t zsEncoderRun<T>::compare(std::vector<zsPage>* buffer, std::vector<o2::tpc
 }
 
 } // anonymous namespace
+} // namespace o2::gpu
 #endif // GPUCA_TPC_GEOMETRY_O2
-
-namespace o2::gpu::internal
-{
-struct tmpReductionResult {
-  uint32_t totalPages = 0;
-  size_t totalSize = 0;
-  size_t nErrors = 0;
-  size_t digitsInput = 0;
-  size_t digitsEncoded = 0;
-};
-} // namespace o2::gpu::internal
 
 template <class S>
 void GPUReconstructionConvert::RunZSEncoder(const S& in, std::unique_ptr<uint64_t[]>* outBuffer, uint32_t* outSizes, o2::raw::RawFileWriter* raw, const o2::InteractionRecord* ir, const GPUParam& param, int32_t version, bool verify, float threshold, bool padding, std::function<void(std::vector<o2::tpc::Digit>&)> digitsFilter)
@@ -1329,7 +1321,14 @@ void GPUReconstructionConvert::RunZSEncoder(const S& in, std::unique_ptr<uint64_
   }
 #ifdef GPUCA_TPC_GEOMETRY_O2
   std::vector<zsPage> buffer[NSECTORS][GPUTrackingInOutZS::NENDPOINTS];
-  auto reduced = tbb::parallel_reduce(tbb::blocked_range<uint32_t>(0, NSECTORS), o2::gpu::internal::tmpReductionResult(), [&](const auto range, auto red) {
+  struct tmpReductionResult {
+    uint32_t totalPages = 0;
+    size_t totalSize = 0;
+    size_t nErrors = 0;
+    size_t digitsInput = 0;
+    size_t digitsEncoded = 0;
+  };
+  auto reduced = tbb::parallel_reduce(tbb::blocked_range<uint32_t>(0, NSECTORS), tmpReductionResult(), [&](const auto range, auto red) {
     for (uint32_t i = range.begin(); i < range.end(); i++) {
       std::vector<o2::tpc::Digit> tmpBuffer;
       red.digitsInput += ZSEncoderGetNDigits(in, i);
@@ -1455,6 +1454,8 @@ void GPUReconstructionConvert::RunZSFilter(std::unique_ptr<o2::tpc::Digit[]>* bu
 }
 
 #ifdef GPUCA_O2_LIB
+namespace o2::gpu::internal
+{
 template <class T>
 static inline auto GetDecoder_internal(const GPUParam* param, int32_t version)
 {
@@ -1480,15 +1481,16 @@ static inline auto GetDecoder_internal(const GPUParam* param, int32_t version)
     enc->decodePage(outBuffer, (const zsPage*)page, endpoint, firstTfOrbit, triggerBC);
   };
 }
+} // namespace o2::gpu::internal
 
 std::function<void(std::vector<o2::tpc::Digit>&, const void*, uint32_t, uint32_t)> GPUReconstructionConvert::GetDecoder(int32_t version, const GPUParam* param)
 {
   if (version >= o2::tpc::ZSVersion::ZSVersionRowBased10BitADC && version <= o2::tpc::ZSVersion::ZSVersionRowBased12BitADC) {
-    return GetDecoder_internal<zsEncoderRow>(param, version);
+    return o2::gpu::internal::GetDecoder_internal<zsEncoderRow>(param, version);
   } else if (version == o2::tpc::ZSVersion::ZSVersionLinkBasedWithMeta) {
-    return GetDecoder_internal<zsEncoderImprovedLinkBased>(param, version);
+    return o2::gpu::internal::GetDecoder_internal<zsEncoderImprovedLinkBased>(param, version);
   } else if (version >= o2::tpc::ZSVersion::ZSVersionDenseLinkBased && version <= o2::tpc::ZSVersion::ZSVersionDenseLinkBasedV2) {
-    return GetDecoder_internal<zsEncoderDenseLinkBased>(param, version);
+    return o2::gpu::internal::GetDecoder_internal<zsEncoderDenseLinkBased>(param, version);
   } else {
     throw std::runtime_error("Invalid ZS version "s + std::to_string(version) + ", cannot create decoder"s);
   }

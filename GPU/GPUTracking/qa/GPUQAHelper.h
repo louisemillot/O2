@@ -26,9 +26,11 @@
 struct AliHLTTPCClusterMCWeight;
 struct AliHLTTPCClusterMCLabel;
 
-namespace o2::gpu
+namespace o2
 {
 class MCCompLabel;
+namespace gpu
+{
 namespace internal
 {
 
@@ -165,6 +167,6 @@ static inline auto GPUTPCTrkLbl(const AliHLTTPCClusterMCLabel* x, Args... args)
 }
 
 } // namespace gpu
-} // namespace o2::gpu
+} // namespace o2
 
 #endif

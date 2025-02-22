@@ -48,7 +48,10 @@ class GPUTPCTracker;
 class GPUChainTracking;
 class GPUTPCGMPolynomialField;
 struct GPUTPCGMLoopData;
+namespace internal
+{
 struct MergeLooperParam;
+} // namespace internal
 
 /**
  * @class GPUTPCGMMerger
@@ -126,7 +129,7 @@ class GPUTPCGMMerger : public GPUProcessor
   GPUhdi() uint2* ClusRefTmp() { return mClusRefTmp; }
   GPUhdi() uint32_t* TrackSort() { return mTrackSort; }
   GPUhdi() tmpSort* TrackSortO2() { return mTrackSortO2; }
-  GPUhdi() MergeLooperParam* LooperCandidates() { return mLooperCandidates; }
+  GPUhdi() internal::MergeLooperParam* LooperCandidates() { return mLooperCandidates; }
   GPUhdi() GPUAtomic(uint32_t) * SharedCount() { return mSharedCount; }
   GPUhdi() gputpcgmmergertypes::GPUTPCGMBorderRange* BorderRange(int32_t i) { return mBorderRange[i]; }
   GPUhdi() const gputpcgmmergertypes::GPUTPCGMBorderRange* BorderRange(int32_t i) const { return mBorderRange[i]; }
@@ -267,7 +270,7 @@ class GPUTPCGMMerger : public GPUProcessor
   o2::tpc::TrackTPC* mOutputTracksTPCO2;
   uint32_t* mOutputClusRefsTPCO2;
   o2::MCCompLabel* mOutputTracksTPCO2MC;
-  MergeLooperParam* mLooperCandidates;
+  internal::MergeLooperParam* mLooperCandidates;
 
   uint32_t* mTrackOrderAttach;
   uint32_t* mTrackOrderProcess;
