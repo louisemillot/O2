@@ -13,6 +13,7 @@
 /// \author David Rohr
 
 #include "GPUChainTracking.h"
+#include "GPUReconstructionIO.h"
 #include "GPUTPCClusterData.h"
 #include "GPUTPCSliceOutput.h"
 #include "GPUTPCSliceOutCluster.h"

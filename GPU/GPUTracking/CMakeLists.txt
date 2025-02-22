@@ -71,6 +71,7 @@ set(SRCS_NO_CINT
     DataTypes/GPUNewCalibValues.cxx
     DataTypes/GPUTPCClusterOccupancyMap.cxx
     Base/GPUReconstruction.cxx
+    Base/GPUReconstructionProcessing.cxx
     Base/GPUReconstructionCPU.cxx
     Base/GPUProcessor.cxx
     Base/GPUMemoryResource.cxx
@@ -106,6 +107,7 @@ set(HDRS_INSTALL
     Base/GPUParamRTC.h
     Base/GPUReconstructionIncludes.h
     Base/GPUReconstructionThreading.h
+    Base/GPUReconstructionIO.h
     Base/GPUReconstructionIncludesITS.h
     Base/GPUReconstructionKernelMacros.h
     Base/GPUReconstructionKernels.h

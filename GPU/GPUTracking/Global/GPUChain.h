@@ -101,7 +101,7 @@ class GPUChain
   }
   inline bool IsEventDone(deviceEvent* evList, int32_t nEvents = 1) { return mRec->IsEventDone(evList, nEvents); }
   inline void RecordMarker(deviceEvent* ev, int32_t stream) { mRec->RecordMarker(ev, stream); }
-  virtual inline std::unique_ptr<GPUReconstruction::GPUThreadContext> GetThreadContext() { return mRec->GetThreadContext(); }
+  virtual inline std::unique_ptr<gpu_reconstruction_kernels::threadContext> GetThreadContext() { return mRec->GetThreadContext(); }
   inline void SynchronizeGPU() { mRec->SynchronizeGPU(); }
   inline void ReleaseEvent(deviceEvent ev, bool doGPU = true)
   {

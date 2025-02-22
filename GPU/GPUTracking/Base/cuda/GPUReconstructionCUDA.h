@@ -71,7 +71,7 @@ class GPUReconstructionCUDA : public GPUReconstructionKernels<GPUReconstructionC
   int32_t ExitDevice_Runtime() override;
   void UpdateAutomaticProcessingSettings() override;
 
-  std::unique_ptr<GPUThreadContext> GetThreadContext() override;
+  std::unique_ptr<gpu_reconstruction_kernels::threadContext> GetThreadContext() override;
   void SynchronizeGPU() override;
   int32_t GPUDebug(const char* state = "UNKNOWN", int32_t stream = -1, bool force = false) override;
   void SynchronizeStream(int32_t stream) override;

@@ -26,6 +26,7 @@
 #include "GPUReconstruction.h"
 #include "GPUReconstructionIncludes.h"
 #include "GPUReconstructionThreading.h"
+#include "GPUReconstructionIO.h"
 #include "GPUROOTDumpCore.h"
 #include "GPUConfigDump.h"
 #include "GPUChainTracking.h"
@@ -115,15 +116,6 @@ void GPUReconstruction::GetITSTraits(std::unique_ptr<o2::its::TrackerTraits>* tr
   }
   if (timeFrame) {
     timeFrame->reset(new o2::its::TimeFrame);
-  }
-}
-
-void GPUReconstruction::SetNActiveThreads(int32_t n)
-{
-  mActiveHostKernelThreads = std::max(1, n < 0 ? mMaxHostThreads : std::min(n, mMaxHostThreads));
-  mThreading->activeThreads = std::make_unique<tbb::task_arena>(mActiveHostKernelThreads);
-  if (mProcessingSettings.debugLevel >= 3) {
-    GPUInfo("Set number of active parallel kernels threads on host to %d (%d requested)", mActiveHostKernelThreads, n);
   }
 }
 
@@ -327,12 +319,12 @@ int32_t GPUReconstruction::InitPhaseBeforeDevice()
   } else {
     mProcessingSettings.autoAdjustHostThreads = false;
   }
-  mMaxHostThreads = mActiveHostKernelThreads = mProcessingSettings.nHostThreads;
+  mMaxHostThreads = mProcessingSettings.nHostThreads;
   if (mMaster == nullptr) {
     mThreading = std::make_shared<GPUReconstructionThreading>();
     mThreading->control = std::make_unique<tbb::global_control>(tbb::global_control::max_allowed_parallelism, mMaxHostThreads);
     mThreading->allThreads = std::make_unique<tbb::task_arena>(mMaxHostThreads);
-    mThreading->activeThreads = std::make_unique<tbb::task_arena>(mActiveHostKernelThreads);
+    mThreading->activeThreads = std::make_unique<tbb::task_arena>(mMaxHostThreads);
   } else {
     mThreading = mMaster->mThreading;
   }
@@ -1181,8 +1173,3 @@ void GPUReconstruction::SetInputControl(void* ptr, size_t size)
 {
   mInputControl.set(ptr, size);
 }
-
-GPUReconstruction::GPUThreadContext::GPUThreadContext() = default;
-GPUReconstruction::GPUThreadContext::~GPUThreadContext() = default;
-
-std::unique_ptr<GPUReconstruction::GPUThreadContext> GPUReconstruction::GetThreadContext() { return std::unique_ptr<GPUReconstruction::GPUThreadContext>(new GPUThreadContext); }

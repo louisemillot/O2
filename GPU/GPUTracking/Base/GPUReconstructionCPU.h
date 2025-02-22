@@ -15,10 +15,9 @@
 #ifndef GPURECONSTRUCTIONICPU_H
 #define GPURECONSTRUCTIONICPU_H
 
-#include "GPUReconstruction.h"
+#include "GPUReconstructionProcessing.h"
 #include "GPUConstantMem.h"
 #include <stdexcept>
-#include "utils/timer.h"
 #include <vector>
 
 #include "GPUGeneralKernels.h"
@@ -30,21 +29,19 @@ namespace o2
 namespace gpu
 {
 
-class GPUReconstructionCPUBackend : public GPUReconstruction
+class GPUReconstructionCPUBackend : public GPUReconstructionProcessing
 {
  public:
   ~GPUReconstructionCPUBackend() override = default;
 
  protected:
-  GPUReconstructionCPUBackend(const GPUSettingsDeviceBackend& cfg) : GPUReconstruction(cfg) {}
+  GPUReconstructionCPUBackend(const GPUSettingsDeviceBackend& cfg) : GPUReconstructionProcessing(cfg) {}
   template <class T, int32_t I = 0, typename... Args>
   int32_t runKernelBackend(const gpu_reconstruction_kernels::krnlSetupArgs<T, I, Args...>& args);
   template <class T, int32_t I = 0, typename... Args>
   int32_t runKernelBackendInternal(const gpu_reconstruction_kernels::krnlSetupTime& _xyz, const Args&... args);
   template <class T, int32_t I>
   gpu_reconstruction_kernels::krnlProperties getKernelPropertiesBackend();
-  uint32_t mNActiveThreadsOuterLoop = 1;
-  int32_t getNKernelHostThreads(bool splitCores);
 };
 
 class GPUReconstructionCPU : public GPUReconstructionKernels<GPUReconstructionCPUBackend>
@@ -65,22 +62,11 @@ class GPUReconstructionCPU : public GPUReconstructionKernels<GPUReconstructionCP
     return getKernelPropertiesImpl(gpu_reconstruction_kernels::classArgument<S, I>());
   }
 
-  template <class T, int32_t I>
-  constexpr static const char* GetKernelName();
-
   virtual int32_t GPUDebug(const char* state = "UNKNOWN", int32_t stream = -1, bool force = false);
   int32_t GPUStuck() { return mGPUStuck; }
   void ResetDeviceProcessorTypes();
-  template <class T>
-  void AddGPUEvents(T*& events);
 
   int32_t RunChains() override;
-
-  HighResTimer& getRecoStepTimer(RecoStep step) { return mTimersRecoSteps[getRecoStepNum(step)].timerTotal; }
-  HighResTimer& getGeneralStepTimer(GeneralStep step) { return mTimersGeneralSteps[getGeneralStepNum(step)]; }
-
-  void SetNActiveThreadsOuterLoop(uint32_t f) { mNActiveThreadsOuterLoop = f; }
-  uint32_t SetAndGetNActiveThreadsOuterLoop(bool condition, uint32_t max);
 
   void UpdateParamOccupancyMap(const uint32_t* mapHost, const uint32_t* mapGPU, uint32_t occupancyTotal, int32_t stream = -1);
 
@@ -142,43 +128,8 @@ class GPUReconstructionCPU : public GPUReconstructionKernels<GPUReconstructionCP
   uint32_t mThreadCount = 1;
   uint32_t mWarpSize = 1;
 
-  struct timerMeta {
-    std::unique_ptr<HighResTimer[]> timer;
-    std::string name;
-    int32_t num;        // How many parallel instances to sum up (CPU threads / GPU streams)
-    int32_t type;       // 0 = kernel, 1 = CPU step, 2 = DMA transfer
-    uint32_t count;     // How often was the timer queried
-    RecoStep step;      // Which RecoStep is this
-    size_t memSize;     // Memory size for memory bandwidth computation
-  };
-
-  struct RecoStepTimerMeta {
-    HighResTimer timerToGPU;
-    HighResTimer timerToHost;
-    HighResTimer timerTotal;
-    size_t bytesToGPU = 0;
-    size_t bytesToHost = 0;
-    uint32_t countToGPU = 0;
-    uint32_t countToHost = 0;
-  };
-
-  HighResTimer mTimersGeneralSteps[GPUDataTypes::N_GENERAL_STEPS];
-
-  std::vector<std::unique_ptr<timerMeta>> mTimers;
-  RecoStepTimerMeta mTimersRecoSteps[GPUDataTypes::N_RECO_STEPS];
-  HighResTimer timerTotal;
-  template <class T, int32_t I = 0>
-  HighResTimer& getKernelTimer(RecoStep step, int32_t num = 0, size_t addMemorySize = 0, bool increment = true);
-  template <class T, int32_t J = -1>
-  HighResTimer& getTimer(const char* name, int32_t num = -1);
-
-  std::vector<std::vector<deviceEvent>> mEvents;
-
  private:
   size_t TransferMemoryResourcesHelper(GPUProcessor* proc, int32_t stream, bool all, bool toGPU);
-  uint32_t getNextTimerId();
-  timerMeta* getTimerById(uint32_t id, bool increment = true);
-  timerMeta* insertTimer(uint32_t id, std::string&& name, int32_t J, int32_t num, int32_t type, RecoStep step);
 };
 
 template <class S, int32_t I, typename... Args>
@@ -244,57 +195,6 @@ inline int32_t GPUReconstructionCPU::runKernel(krnlSetup&& setup, Args&&... args
     }
   }
   return retVal;
-}
-
-#define GPUCA_KRNL(x_class, ...)                                                              \
-  template <>                                                                                 \
-  constexpr const char* GPUReconstructionCPU::GetKernelName<GPUCA_M_KRNL_TEMPLATE(x_class)>() \
-  {                                                                                           \
-    return GPUCA_M_STR(GPUCA_M_KRNL_NAME(x_class));                                           \
-  }
-#include "GPUReconstructionKernelList.h"
-#undef GPUCA_KRNL
-
-template <class T>
-inline void GPUReconstructionCPU::AddGPUEvents(T*& events)
-{
-  mEvents.emplace_back(std::vector<deviceEvent>(sizeof(T) / sizeof(deviceEvent)));
-  events = (T*)mEvents.back().data();
-}
-
-template <class T, int32_t I>
-HighResTimer& GPUReconstructionCPU::getKernelTimer(RecoStep step, int32_t num, size_t addMemorySize, bool increment)
-{
-  static int32_t id = getNextTimerId();
-  timerMeta* timer = getTimerById(id, increment);
-  if (timer == nullptr) {
-    timer = insertTimer(id, GetKernelName<T, I>(), -1, NSLICES, 0, step);
-  }
-  if (addMemorySize) {
-    timer->memSize += addMemorySize;
-  }
-  if (num < 0 || num >= timer->num) {
-    throw std::runtime_error("Invalid timer requested");
-  }
-  return timer->timer[num];
-}
-
-template <class T, int32_t J>
-HighResTimer& GPUReconstructionCPU::getTimer(const char* name, int32_t num)
-{
-  static int32_t id = getNextTimerId();
-  timerMeta* timer = getTimerById(id);
-  if (timer == nullptr) {
-    int32_t max = std::max<int32_t>({mMaxHostThreads, mProcessingSettings.nStreams});
-    timer = insertTimer(id, name, J, max, 1, RecoStep::NoRecoStep);
-  }
-  if (num == -1) {
-    num = getHostThreadIndex();
-  }
-  if (num < 0 || num >= timer->num) {
-    throw std::runtime_error("Invalid timer requested");
-  }
-  return timer->timer[num];
 }
 
 } // namespace gpu

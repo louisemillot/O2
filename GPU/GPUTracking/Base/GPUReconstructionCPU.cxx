@@ -54,23 +54,6 @@ GPUReconstructionCPU::~GPUReconstructionCPU()
   Exit(); // Needs to be identical to GPU backend bahavior in order to avoid calling abstract methods later in the destructor
 }
 
-int32_t GPUReconstructionCPUBackend::getNKernelHostThreads(bool splitCores)
-{
-  int32_t nThreads = 0;
-  if (mProcessingSettings.inKernelParallel == 2 && mNActiveThreadsOuterLoop) {
-    if (splitCores) {
-      nThreads = mMaxHostThreads / mNActiveThreadsOuterLoop;
-      nThreads += (uint32_t)getHostThreadIndex() < mMaxHostThreads % mNActiveThreadsOuterLoop;
-    } else {
-      nThreads = mMaxHostThreads;
-    }
-    nThreads = std::max(1, nThreads);
-  } else {
-    nThreads = mProcessingSettings.inKernelParallel ? mMaxHostThreads : 1;
-  }
-  return nThreads;
-}
-
 template <class T, int32_t I, typename... Args>
 inline int32_t GPUReconstructionCPUBackend::runKernelBackendInternal(const krnlSetupTime& _xyz, const Args&... args)
 {
@@ -198,6 +181,8 @@ int32_t GPUReconstructionCPU::GetThread()
 
 int32_t GPUReconstructionCPU::InitDevice()
 {
+  mActiveHostKernelThreads = mMaxHostThreads;
+  mThreading->activeThreads = std::make_unique<tbb::task_arena>(mActiveHostKernelThreads);
   if (mProcessingSettings.memoryAllocationStrategy == GPUMemoryResource::ALLOCATION_GLOBAL) {
     if (mMaster == nullptr) {
       if (mDeviceMemorySize > mHostMemorySize) {
@@ -337,60 +322,6 @@ void GPUReconstructionCPU::ResetDeviceProcessorTypes()
       mProcessors[i].proc->mLinkedProcessor->InitGPUProcessor(this, GPUProcessor::PROCESSOR_TYPE_DEVICE);
     }
   }
-}
-
-static std::atomic_flag timerFlag = ATOMIC_FLAG_INIT; // TODO: Should be a class member not global, but cannot be moved to header due to ROOT limitation
-
-GPUReconstructionCPU::timerMeta* GPUReconstructionCPU::insertTimer(uint32_t id, std::string&& name, int32_t J, int32_t num, int32_t type, RecoStep step)
-{
-  while (timerFlag.test_and_set()) {
-  }
-  if (mTimers.size() <= id) {
-    mTimers.resize(id + 1);
-  }
-  if (mTimers[id] == nullptr) {
-    if (J >= 0) {
-      name += std::to_string(J);
-    }
-    mTimers[id].reset(new timerMeta{std::unique_ptr<HighResTimer[]>{new HighResTimer[num]}, name, num, type, 1u, step, (size_t)0});
-  } else {
-    mTimers[id]->count++;
-  }
-  timerMeta* retVal = mTimers[id].get();
-  timerFlag.clear();
-  return retVal;
-}
-
-GPUReconstructionCPU::timerMeta* GPUReconstructionCPU::getTimerById(uint32_t id, bool increment)
-{
-  timerMeta* retVal = nullptr;
-  while (timerFlag.test_and_set()) {
-  }
-  if (mTimers.size() > id && mTimers[id]) {
-    retVal = mTimers[id].get();
-    retVal->count += increment;
-  }
-  timerFlag.clear();
-  return retVal;
-}
-
-uint32_t GPUReconstructionCPU::getNextTimerId()
-{
-  static std::atomic<uint32_t> id{0};
-  return id.fetch_add(1);
-}
-
-uint32_t GPUReconstructionCPU::SetAndGetNActiveThreadsOuterLoop(bool condition, uint32_t max)
-{
-  if (condition && mProcessingSettings.inKernelParallel != 1) {
-    mNActiveThreadsOuterLoop = mProcessingSettings.inKernelParallel == 2 ? std::min<uint32_t>(max, mMaxHostThreads) : mMaxHostThreads;
-  } else {
-    mNActiveThreadsOuterLoop = 1;
-  }
-  if (mProcessingSettings.debugLevel >= 5) {
-    printf("Running %d threads in outer loop\n", mNActiveThreadsOuterLoop);
-  }
-  return mNActiveThreadsOuterLoop;
 }
 
 void GPUReconstructionCPU::UpdateParamOccupancyMap(const uint32_t* mapHost, const uint32_t* mapGPU, uint32_t occupancyTotal, int32_t stream)
