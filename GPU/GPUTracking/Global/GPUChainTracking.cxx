@@ -718,7 +718,7 @@ int32_t GPUChainTracking::RunChain()
   }
 
   if (GetProcessingSettings().autoAdjustHostThreads && !mRec->IsGPU() && mIOPtrs.clustersNative) {
-    mRec->SetNActiveThreads(mIOPtrs.clustersNative->nClustersTotal / 5000);
+    mRec->SetNActiveThreads(mIOPtrs.clustersNative->nClustersTotal / 1500);
   }
 
   if (mIOPtrs.clustersNative && runRecoStep(RecoStep::TPCConversion, &GPUChainTracking::ConvertNativeToClusterData)) {

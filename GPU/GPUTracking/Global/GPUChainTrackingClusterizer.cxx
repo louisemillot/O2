@@ -577,7 +577,7 @@ int32_t GPUChainTracking::RunTPCClusterizer(bool synchronizeOutput)
     return 1;
   }
   if (GetProcessingSettings().autoAdjustHostThreads && !doGPU) {
-    mRec->SetNActiveThreads(mRec->MemoryScalers()->nTPCdigits / 20000);
+    mRec->SetNActiveThreads(mRec->MemoryScalers()->nTPCdigits / 6000);
   }
 
   mRec->MemoryScalers()->nTPCHits = mRec->MemoryScalers()->NTPCClusters(mRec->MemoryScalers()->nTPCdigits);
@@ -1065,6 +1065,10 @@ int32_t GPUChainTracking::RunTPCClusterizer(bool synchronizeOutput)
   if (mPipelineNotifyCtx) {
     mRec->UnblockStackedMemory();
     mPipelineNotifyCtx = nullptr;
+  }
+
+  if (GetProcessingSettings().autoAdjustHostThreads && !doGPU) {
+    mRec->SetNActiveThreads(-1);
   }
 
 #endif
