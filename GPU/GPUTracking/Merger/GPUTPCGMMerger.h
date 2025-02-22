@@ -241,53 +241,53 @@ class GPUTPCGMMerger : public GPUProcessor
   int32_t mNextSectorInd[NSECTORS];
   int32_t mPrevSectorInd[NSECTORS];
 
-  int32_t* mTrackLinks;
+  int32_t* mTrackLinks = nullptr;
   int32_t* mTrackCCRoots; // root of the connected component of this track
 
-  uint32_t mNTotalSectorTracks;      // maximum number of incoming sector tracks
-  uint32_t mNMaxTracks;              // maximum number of output tracks
-  uint32_t mNMaxSingleSectorTracks;  // max N tracks in one sector
-  uint32_t mNMaxOutputTrackClusters; // max number of clusters in output tracks (double-counting shared clusters)
-  uint32_t mNMaxClusters;            // max total unique clusters (in event)
-  uint32_t mNMaxLooperMatches;       // Maximum number of candidate pairs for looper matching
+  uint32_t mNTotalSectorTracks = 0;      // maximum number of incoming sector tracks
+  uint32_t mNMaxTracks = 0;              // maximum number of output tracks
+  uint32_t mNMaxSingleSectorTracks = 0;  // max N tracks in one sector
+  uint32_t mNMaxOutputTrackClusters = 0; // max number of clusters in output tracks (double-counting shared clusters)
+  uint32_t mNMaxClusters = 0;            // max total unique clusters (in event)
+  uint32_t mNMaxLooperMatches = 0;       // Maximum number of candidate pairs for looper matching
 
-  uint16_t mMemoryResMemory;
-  uint16_t mMemoryResOutput;
-  uint16_t mMemoryResOutputState;
-  uint16_t mMemoryResOutputO2;
-  uint16_t mMemoryResOutputO2Clus;
-  uint16_t mMemoryResOutputO2MC;
-  uint16_t mMemoryResOutputO2Scratch;
+  uint16_t mMemoryResMemory = (uint16_t)-1;
+  uint16_t mMemoryResOutput = (uint16_t)-1;
+  uint16_t mMemoryResOutputState = (uint16_t)-1;
+  uint16_t mMemoryResOutputO2 = (uint16_t)-1;
+  uint16_t mMemoryResOutputO2Clus = (uint16_t)-1;
+  uint16_t mMemoryResOutputO2MC = (uint16_t)-1;
+  uint16_t mMemoryResOutputO2Scratch = (uint16_t)-1;
 
-  int32_t mNClusters;                   // Total number of incoming clusters (from sector tracks)
-  GPUTPCGMMergedTrack* mOutputTracks;   //* array of output merged tracks
-  GPUdEdxInfo* mOutputTracksdEdx;       //* dEdx information
-  GPUTPCGMSectorTrack* mSectorTrackInfos; //* additional information for sector tracks
-  int32_t* mSectorTrackInfoIndex;
-  GPUTPCGMMergedTrackHit* mClusters;
-  GPUTPCGMMergedTrackHitXYZ* mClustersXYZ;
-  GPUAtomic(uint32_t) * mClusterAttachment;
-  o2::tpc::TrackTPC* mOutputTracksTPCO2;
-  uint32_t* mOutputClusRefsTPCO2;
-  o2::MCCompLabel* mOutputTracksTPCO2MC;
-  internal::MergeLooperParam* mLooperCandidates;
+  int32_t mNClusters = 0;                           // Total number of incoming clusters (from sector tracks)
+  GPUTPCGMMergedTrack* mOutputTracks = nullptr;     //* array of output merged tracks
+  GPUdEdxInfo* mOutputTracksdEdx = nullptr;         //* dEdx information
+  GPUTPCGMSectorTrack* mSectorTrackInfos = nullptr; //* additional information for sector tracks
+  int32_t* mSectorTrackInfoIndex = nullptr;
+  GPUTPCGMMergedTrackHit* mClusters = nullptr;
+  GPUTPCGMMergedTrackHitXYZ* mClustersXYZ = nullptr;
+  GPUAtomic(uint32_t) * mClusterAttachment = nullptr;
+  o2::tpc::TrackTPC* mOutputTracksTPCO2 = nullptr;
+  uint32_t* mOutputClusRefsTPCO2 = nullptr;
+  o2::MCCompLabel* mOutputTracksTPCO2MC = nullptr;
+  internal::MergeLooperParam* mLooperCandidates = nullptr;
 
-  uint32_t* mTrackOrderAttach;
-  uint32_t* mTrackOrderProcess;
-  uint8_t* mClusterStateExt;
-  uint2* mClusRefTmp;
-  int32_t* mTrackIDs;
-  int32_t* mTmpSortMemory;
-  uint32_t* mTrackSort;
-  tmpSort* mTrackSortO2;
-  GPUAtomic(uint32_t) * mSharedCount;     // Must be uint32_t unfortunately for atomic support
-  GPUTPCGMBorderTrack* mBorderMemory;     // memory for border tracks
+  uint32_t* mTrackOrderAttach = nullptr;
+  uint32_t* mTrackOrderProcess = nullptr;
+  uint8_t* mClusterStateExt = nullptr;
+  uint2* mClusRefTmp = nullptr;
+  int32_t* mTrackIDs = nullptr;
+  int32_t* mTmpSortMemory = nullptr;
+  uint32_t* mTrackSort = nullptr;
+  tmpSort* mTrackSortO2 = nullptr;
+  GPUAtomic(uint32_t) * mSharedCount = nullptr; // Must be uint32_t unfortunately for atomic support
+  GPUTPCGMBorderTrack* mBorderMemory = nullptr; // memory for border tracks
   GPUTPCGMBorderTrack* mBorder[2 * NSECTORS];
-  gputpcgmmergertypes::GPUTPCGMBorderRange* mBorderRangeMemory;    // memory for border tracks
-  gputpcgmmergertypes::GPUTPCGMBorderRange* mBorderRange[NSECTORS]; // memory for border tracks
-  memory* mMemory;
-  uint32_t* mRetryRefitIds;
-  GPUTPCGMLoopData* mLoopData;
+  gputpcgmmergertypes::GPUTPCGMBorderRange* mBorderRangeMemory = nullptr; // memory for border tracks
+  gputpcgmmergertypes::GPUTPCGMBorderRange* mBorderRange[NSECTORS];       // memory for border tracks
+  memory* mMemory = nullptr;
+  uint32_t* mRetryRefitIds = nullptr;
+  GPUTPCGMLoopData* mLoopData = nullptr;
 };
 } // namespace o2::gpu
 

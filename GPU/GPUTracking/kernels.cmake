@@ -13,7 +13,7 @@
 # author David Rohr
 
 o2_gpu_kernel_file_list(ERRORS GPUErrors.cxx)
-o2_gpu_kernel_file_list(TPCTRACKER ERRORS GPUTPCTrackParam.cxx GPUTPCTrack.cxx GPUTPCGrid.cxx GPUTPCRow.cxx GPUTPCTracker.cxx)
+o2_gpu_kernel_file_list(TPCTRACKER ERRORS GPUTPCTrackParam.cxx GPUTPCTrack.cxx GPUTPCGrid.cxx GPUTPCTracker.cxx)
 o2_gpu_kernel_file_list(TPCTRACKLETCONS GPUTPCTrackletConstructor.cxx)
 o2_gpu_kernel_file_list(TPCSECTORDATA TPCTRACKER GPUTPCTrackingData.cxx)
 o2_gpu_kernel_file_list(TPCOCCUPANCY GPUTPCClusterOccupancyMap.cxx)

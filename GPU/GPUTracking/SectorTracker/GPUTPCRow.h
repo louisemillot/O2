@@ -32,10 +32,6 @@ class GPUTPCRow
   friend class GPUTPCTrackingData;
 
  public:
-#if !defined(GPUCA_GPUCODE)
-  GPUTPCRow();
-#endif //! GPUCA_GPUCODE
-
   GPUhd() int32_t NHits() const
   {
     return mNHits;
@@ -72,8 +68,7 @@ class GPUTPCRow
   float mHstepYi; // inverse step size
   float mHstepZi; // inverse step size
 
-  int32_t mHitNumberOffset; // index of the first hit in the hit array, used as
-  // offset in GPUTPCTrackingData::LinkUp/DownData/HitDataY/...
+  int32_t mHitNumberOffset;      // index of the first hit in the hit array, used as offset in GPUTPCTrackingData::LinkUp/DownData/HitDataY/...
   uint32_t mFirstHitInBinOffset; // offset in Tracker::mRowData to find the FirstHitInBin
 };
 } // namespace o2::gpu

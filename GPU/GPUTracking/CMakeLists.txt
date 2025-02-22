@@ -44,7 +44,6 @@ set(SRCS
     SectorTracker/GPUTPCNeighboursFinder.cxx
     SectorTracker/GPUTPCGrid.cxx
     SectorTracker/GPUTPCTrackletSelector.cxx
-    SectorTracker/GPUTPCRow.cxx
     SectorTracker/GPUTPCExtrapolationTracking.cxx
     SectorTracker/GPUTPCCreateTrackingData.cxx
     Merger/GPUTPCGMMerger.cxx

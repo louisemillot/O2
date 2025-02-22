@@ -40,7 +40,7 @@ class GPUTPCTracker : public GPUProcessor
 {
  public:
 #ifndef GPUCA_GPUCODE_DEVICE
-  GPUTPCTracker();
+  GPUTPCTracker() = default;
   ~GPUTPCTracker();
   GPUTPCTracker(const GPUTPCTracker&) = delete;
   GPUTPCTracker& operator=(const GPUTPCTracker&) = delete;
@@ -233,40 +233,40 @@ class GPUTPCTracker : public GPUProcessor
   friend class GPUTPCNeighboursFinder;
   friend class GPUTPCStartHitsSorter;
   friend class GPUTPCStartHitsFinder;
-  char* mLinkTmpMemory; // tmp memory for hits after neighbours finder
+  char* mLinkTmpMemory = nullptr; // tmp memory for hits after neighbours finder
 
-  int32_t mISector; // Number of sector
+  int32_t mISector = -1; // Number of sector
 
   GPUTPCTrackingData mData; // The TrackingData object. It is used to encapsulate the storage in memory from the access
 
-  uint32_t mNMaxStartHits;
-  uint32_t mNMaxRowStartHits;
-  uint32_t mNMaxTracklets;
-  uint32_t mNMaxRowHits;
-  uint32_t mNMaxTracks;
-  uint32_t mNMaxTrackHits;
-  int16_t mMemoryResLinks;
-  int16_t mMemoryResScratch;
-  int16_t mMemoryResScratchHost;
-  int16_t mMemoryResCommon;
-  int16_t mMemoryResTracklets;
-  int16_t mMemoryResOutput;
-  int16_t mMemoryResSectorScratch;
+  uint32_t mNMaxStartHits = 0;
+  uint32_t mNMaxRowStartHits = 0;
+  uint32_t mNMaxTracklets = 0;
+  uint32_t mNMaxRowHits = 0;
+  uint32_t mNMaxTracks = 0;
+  uint32_t mNMaxTrackHits = 0;
+  uint16_t mMemoryResLinks = (uint16_t)-1;
+  uint16_t mMemoryResScratch = (uint16_t)-1;
+  uint16_t mMemoryResScratchHost = (uint16_t)-1;
+  uint16_t mMemoryResCommon = (uint16_t)-1;
+  uint16_t mMemoryResTracklets = (uint16_t)-1;
+  uint16_t mMemoryResOutput = (uint16_t)-1;
+  uint16_t mMemoryResSectorScratch = (uint16_t)-1;
 
   // GPU Temp Arrays
-  GPUglobalref() int32_t* mRowStartHitCountOffset;   // Offset, length and new offset of start hits in row
-  GPUglobalref() GPUTPCHitId* mTrackletTmpStartHits; // Unsorted start hits
-  GPUglobalref() char* mGPUTrackletTemp;             // Temp Memory for GPU Tracklet Constructor
+  GPUglobalref() int32_t* mRowStartHitCountOffset = nullptr;   // Offset, length and new offset of start hits in row
+  GPUglobalref() GPUTPCHitId* mTrackletTmpStartHits = nullptr; // Unsorted start hits
+  GPUglobalref() char* mGPUTrackletTemp = nullptr;             // Temp Memory for GPU Tracklet Constructor
 
   StructGPUParametersConst mGPUParametersConst; // Parameters for GPU if this is a GPU tracker
 
   // event
-  GPUglobalref() commonMemoryStruct* mCommonMem;  // common event memory
-  GPUglobalref() GPUTPCHitId* mTrackletStartHits; // start hits for the tracklets
-  GPUglobalref() GPUTPCTracklet* mTracklets;      // tracklets
-  GPUglobalref() calink* mTrackletRowHits;        // Hits for each Tracklet in each row
-  GPUglobalref() GPUTPCTrack* mTracks;            // reconstructed tracks
-  GPUglobalref() GPUTPCHitId* mTrackHits;         // array of track hit numbers
+  GPUglobalref() commonMemoryStruct* mCommonMem = nullptr;  // common event memory
+  GPUglobalref() GPUTPCHitId* mTrackletStartHits = nullptr; // start hits for the tracklets
+  GPUglobalref() GPUTPCTracklet* mTracklets = nullptr;      // tracklets
+  GPUglobalref() calink* mTrackletRowHits = nullptr;        // Hits for each Tracklet in each row
+  GPUglobalref() GPUTPCTrack* mTracks = nullptr;            // reconstructed tracks
+  GPUglobalref() GPUTPCHitId* mTrackHits = nullptr;         // array of track hit numbers
 
   // output
   GPUglobalref() GPUTPCSectorOutput* mOutput; // address of pointer pointing to SectorOutput Object

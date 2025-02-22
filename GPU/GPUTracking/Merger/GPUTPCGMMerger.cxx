@@ -85,10 +85,7 @@ struct MergeLooperParam {
 #include "GPUMemorySizeScalers.h"
 
 GPUTPCGMMerger::GPUTPCGMMerger()
-  : mTrackLinks(nullptr), mNTotalSectorTracks(0), mNMaxTracks(0), mNMaxSingleSectorTracks(0), mNMaxOutputTrackClusters(0), mNMaxClusters(0), mMemoryResMemory(-1), mNClusters(0), mOutputTracks(nullptr), mSectorTrackInfos(nullptr), mSectorTrackInfoIndex(nullptr), mClusters(nullptr), mClustersXYZ(nullptr), mClusterAttachment(nullptr), mOutputTracksTPCO2(nullptr), mOutputClusRefsTPCO2(nullptr), mOutputTracksTPCO2MC(nullptr), mTrackOrderAttach(nullptr), mTrackOrderProcess(nullptr), mBorderMemory(nullptr), mBorderRangeMemory(nullptr), mMemory(nullptr), mRetryRefitIds(nullptr), mLoopData(nullptr)
 {
-  //* constructor
-
   for (int32_t iSector = 0; iSector < NSECTORS; iSector++) {
     mNextSectorInd[iSector] = iSector + 1;
     mPrevSectorInd[iSector] = iSector - 1;
