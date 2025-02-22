@@ -33,6 +33,7 @@
 #include "GPUConstantMem.h"
 #include "GPUMemorySizeScalers.h"
 #include <atomic>
+#include <ctime>
 
 #define GPUCA_LOGGING_PRINTF
 #include "GPULogging.h"
@@ -220,7 +221,8 @@ int32_t GPUReconstructionCPU::RunChains()
   mStatNEvents++;
   mNEventsProcessed++;
 
-  timerTotal.Start();
+  mTimerTotal.Start();
+  const std::clock_t cpuTimerStart = std::clock();
   if (mProcessingSettings.doublePipeline) {
     int32_t retVal = EnqueuePipeline();
     if (retVal) {
@@ -237,17 +239,18 @@ int32_t GPUReconstructionCPU::RunChains()
       }
     }
   }
-  timerTotal.Stop();
+  mTimerTotal.Stop();
+  mStatCPUTime += (double)(std::clock() - cpuTimerStart) / CLOCKS_PER_SEC;
 
-  mStatWallTime = (timerTotal.GetElapsedTime() * 1000000. / mStatNEvents);
+  mStatWallTime = (mTimerTotal.GetElapsedTime() * 1000000. / mStatNEvents);
   std::string nEventReport;
   if (GetProcessingSettings().debugLevel >= 0 && mStatNEvents > 1) {
     nEventReport += "   (avergage of " + std::to_string(mStatNEvents) + " runs)";
   }
-  if (GetProcessingSettings().debugLevel >= 1) {
-    double kernelTotal = 0;
-    std::vector<double> kernelStepTimes(GPUDataTypes::N_RECO_STEPS);
+  double kernelTotal = 0;
+  std::vector<double> kernelStepTimes(GPUDataTypes::N_RECO_STEPS, 0.);
 
+  if (GetProcessingSettings().debugLevel >= 1) {
     for (uint32_t i = 0; i < mTimers.size(); i++) {
       double time = 0;
       if (mTimers[i] == nullptr) {
@@ -277,9 +280,12 @@ int32_t GPUReconstructionCPU::RunChains()
         mTimers[i]->memSize = 0;
       }
     }
+  }
+  if (GetProcessingSettings().recoTaskTiming) {
     for (int32_t i = 0; i < GPUDataTypes::N_RECO_STEPS; i++) {
       if (kernelStepTimes[i] != 0. || mTimersRecoSteps[i].timerTotal.GetElapsedTime() != 0.) {
-        printf("Execution Time: Step              : %11s %38s Time: %'10.0f us %64s ( Total Time : %'14.0f us)\n", "Tasks", GPUDataTypes::RECO_STEP_NAMES[i], kernelStepTimes[i] * 1000000 / mStatNEvents, "", mTimersRecoSteps[i].timerTotal.GetElapsedTime() * 1000000 / mStatNEvents);
+        printf("Execution Time: Step              : %11s %38s Time: %'10.0f us %64s ( Total Time : %'14.0f us, CPU Time : %'14.0f us, %'7.2fx )\n", "Tasks",
+               GPUDataTypes::RECO_STEP_NAMES[i], kernelStepTimes[i] * 1000000 / mStatNEvents, "", mTimersRecoSteps[i].timerTotal.GetElapsedTime() * 1000000 / mStatNEvents, mTimersRecoSteps[i].timerCPU * 1000000 / mStatNEvents, mTimersRecoSteps[i].timerCPU / mTimersRecoSteps[i].timerTotal.GetElapsedTime());
       }
       if (mTimersRecoSteps[i].bytesToGPU) {
         printf("Execution Time: Step (D %8ux): %11s %38s Time: %'10.0f us (%8.3f GB/s - %'14zu bytes - %'14zu per call)\n", mTimersRecoSteps[i].countToGPU, "DMA to GPU", GPUDataTypes::RECO_STEP_NAMES[i], mTimersRecoSteps[i].timerToGPU.GetElapsedTime() * 1000000 / mStatNEvents,
@@ -294,6 +300,7 @@ int32_t GPUReconstructionCPU::RunChains()
         mTimersRecoSteps[i].timerToGPU.Reset();
         mTimersRecoSteps[i].timerToHost.Reset();
         mTimersRecoSteps[i].timerTotal.Reset();
+        mTimersRecoSteps[i].timerCPU = 0;
         mTimersRecoSteps[i].countToGPU = 0;
         mTimersRecoSteps[i].countToHost = 0;
       }
@@ -303,15 +310,18 @@ int32_t GPUReconstructionCPU::RunChains()
         printf("Execution Time: General Step      : %50s Time: %'10.0f us\n", GPUDataTypes::GENERAL_STEP_NAMES[i], mTimersGeneralSteps[i].GetElapsedTime() * 1000000 / mStatNEvents);
       }
     }
-    mStatKernelTime = kernelTotal * 1000000 / mStatNEvents;
-    printf("Execution Time: Total   : %50s Time: %'10.0f us%s\n", "Total Kernel", mStatKernelTime, nEventReport.c_str());
-    printf("Execution Time: Total   : %50s Time: %'10.0f us%s\n", "Total Wall", mStatWallTime, nEventReport.c_str());
+    if (GetProcessingSettings().debugLevel >= 1) {
+      mStatKernelTime = kernelTotal * 1000000 / mStatNEvents;
+      printf("Execution Time: Total   : %50s Time: %'10.0f us%s\n", "Total Kernel", mStatKernelTime, nEventReport.c_str());
+    }
+    printf("Execution Time: Total   : %50s Time: %'10.0f us ( CPU Time : %'10.0f us, %7.2fx ) %s\n", "Total Wall", mStatWallTime, mStatCPUTime * 1000000 / mStatNEvents, mStatCPUTime / mTimerTotal.GetElapsedTime(), nEventReport.c_str());
   } else if (GetProcessingSettings().debugLevel >= 0) {
-    GPUInfo("Total Wall Time: %lu us%s", (uint64_t)mStatWallTime, nEventReport.c_str());
+    GPUInfo("Total Wall Time: %10.0f us%s", mStatWallTime, nEventReport.c_str());
   }
   if (mProcessingSettings.resetTimers) {
     mStatNEvents = 0;
-    timerTotal.Reset();
+    mStatCPUTime = 0;
+    mTimerTotal.Reset();
   }
 
   return 0;

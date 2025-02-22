@@ -332,6 +332,7 @@ class GPUReconstruction
   uint32_t mNEventsProcessed = 0;
   double mStatKernelTime = 0.;
   double mStatWallTime = 0.;
+  double mStatCPUTime = 0.;
   std::shared_ptr<GPUROOTDumpCore> mROOTDump;
   std::vector<std::array<uint32_t, 4>>* mOutputErrorCodes = nullptr;
 

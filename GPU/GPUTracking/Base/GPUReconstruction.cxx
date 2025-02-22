@@ -249,6 +249,9 @@ int32_t GPUReconstruction::InitPhaseBeforeDevice()
   if (mProcessingSettings.debugLevel < 1) {
     mProcessingSettings.deviceTimers = false;
   }
+  if (mProcessingSettings.debugLevel > 0) {
+    mProcessingSettings.recoTaskTiming = true;
+  }
   if (mProcessingSettings.deterministicGPUReconstruction == -1) {
     mProcessingSettings.deterministicGPUReconstruction = mProcessingSettings.debugLevel >= 6;
   }

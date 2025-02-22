@@ -17,6 +17,8 @@
 
 #include "GPUReconstructionCPU.h"
 
+#include <ctime>
+
 namespace o2::gpu
 {
 class GPUChain
@@ -280,16 +282,20 @@ template <class T, class S, typename... Args>
 int32_t GPUChain::runRecoStep(RecoStep step, S T::*func, Args... args)
 {
   if (GetRecoSteps().isSet(step)) {
-    if (GetProcessingSettings().debugLevel >= 1) {
-      mRec->getRecoStepTimer(step).Start();
+    auto* timer = GetProcessingSettings().recoTaskTiming ? &mRec->getRecoStepTimer(step) : nullptr;
+    std::clock_t c;
+    if (timer) {
+      timer->timerTotal.Start();
+      c = std::clock();
     }
     int32_t retVal = (reinterpret_cast<T*>(this)->*func)(args...);
-    if (GetProcessingSettings().debugLevel >= 1) {
-      mRec->getRecoStepTimer(step).Stop();
+    if (timer) {
+      timer->timerTotal.Stop();
+      timer->timerCPU += (double)(std::clock() - c) / CLOCKS_PER_SEC;
     }
     return retVal;
   }
-  return false;
+  return 0;
 }
 
 } // namespace o2::gpu

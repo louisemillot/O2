@@ -77,13 +77,24 @@ class GPUReconstructionProcessing : public GPUReconstruction
   constexpr static const char* GetKernelName();
 
   // Public queries for timers
-  HighResTimer& getRecoStepTimer(RecoStep step) { return mTimersRecoSteps[getRecoStepNum(step)].timerTotal; }
+  auto& getRecoStepTimer(RecoStep step) { return mTimersRecoSteps[getRecoStepNum(step)]; }
   HighResTimer& getGeneralStepTimer(GeneralStep step) { return mTimersGeneralSteps[getGeneralStepNum(step)]; }
 
   template <class T>
   void AddGPUEvents(T*& events);
 
   virtual std::unique_ptr<gpu_reconstruction_kernels::threadContext> GetThreadContext() override;
+
+  struct RecoStepTimerMeta {
+    HighResTimer timerToGPU;
+    HighResTimer timerToHost;
+    HighResTimer timerTotal;
+    double timerCPU = 0.;
+    size_t bytesToGPU = 0;
+    size_t bytesToHost = 0;
+    uint32_t countToGPU = 0;
+    uint32_t countToHost = 0;
+  };
 
  protected:
   GPUReconstructionProcessing(const GPUSettingsDeviceBackend& cfg) : GPUReconstruction(cfg) {}
@@ -105,21 +116,11 @@ class GPUReconstructionProcessing : public GPUReconstruction
     size_t memSize; // Memory size for memory bandwidth computation
   };
 
-  struct RecoStepTimerMeta {
-    HighResTimer timerToGPU;
-    HighResTimer timerToHost;
-    HighResTimer timerTotal;
-    size_t bytesToGPU = 0;
-    size_t bytesToHost = 0;
-    uint32_t countToGPU = 0;
-    uint32_t countToHost = 0;
-  };
-
   HighResTimer mTimersGeneralSteps[GPUDataTypes::N_GENERAL_STEPS];
 
   std::vector<std::unique_ptr<timerMeta>> mTimers;
   RecoStepTimerMeta mTimersRecoSteps[GPUDataTypes::N_RECO_STEPS];
-  HighResTimer timerTotal;
+  HighResTimer mTimerTotal;
   template <class T, int32_t I = 0>
   HighResTimer& getKernelTimer(RecoStep step, int32_t num = 0, size_t addMemorySize = 0, bool increment = true);
   template <class T, int32_t J = -1>
