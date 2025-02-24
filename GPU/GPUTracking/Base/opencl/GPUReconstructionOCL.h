@@ -74,7 +74,6 @@ class GPUReconstructionOCLBackend : public GPUReconstructionDeviceBase
   S& getKernelObject();
 
   int32_t GetOCLPrograms();
-  bool CheckPlatform(uint32_t i);
 };
 
 using GPUReconstructionOCL = GPUReconstructionKernels<GPUReconstructionOCLBackend>;

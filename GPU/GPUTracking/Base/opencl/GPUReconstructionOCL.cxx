@@ -110,6 +110,45 @@ int32_t GPUReconstructionOCLBackend::InitDevice_Runtime()
     }
 
     bool found = false;
+    char platform_profile[256] = {}, platform_version[256] = {}, platform_name[256] = {}, platform_vendor[256] = {};
+    auto queryPlatforms = [&platform_profile, &platform_version, &platform_name, &platform_vendor](auto platform) {
+      clGetPlatformInfo(platform, CL_PLATFORM_PROFILE, sizeof(platform_profile), platform_profile, nullptr);
+      clGetPlatformInfo(platform, CL_PLATFORM_VERSION, sizeof(platform_version), platform_version, nullptr);
+      clGetPlatformInfo(platform, CL_PLATFORM_NAME, sizeof(platform_name), platform_name, nullptr);
+      clGetPlatformInfo(platform, CL_PLATFORM_VENDOR, sizeof(platform_vendor), platform_vendor, nullptr);
+    };
+    auto checkPlatform = [&](auto platform) {
+      cl_uint tmp;
+      if (clGetDeviceIDs(platform, CL_DEVICE_TYPE_ALL, 0, nullptr, &tmp) != CL_SUCCESS || tmp == 0) {
+        return false;
+      }
+
+      queryPlatforms(platform);
+      float ver1 = 0;
+      sscanf(platform_version, "OpenCL %f", &ver1);
+      if (ver1 >= 2.2f) {
+        if (mProcessingSettings.debugLevel >= 2) {
+          GPUInfo("OpenCL 2.2 capable platform found");
+        }
+        return true;
+      }
+
+      if (strcmp(platform_vendor, "Advanced Micro Devices, Inc.") == 0 && ver1 >= 2.0f) {
+        float ver2 = 0;
+        const char* pos = strchr(platform_version, '(');
+        if (pos) {
+          sscanf(pos, "(%f)", &ver2);
+        }
+        if ((ver1 >= 2.f && ver2 >= 2000.f) || ver1 >= 2.1f) {
+          if (mProcessingSettings.debugLevel >= 2) {
+            GPUInfo("AMD ROCm OpenCL Platform found");
+          }
+          return true;
+        }
+      }
+      return false;
+    };
+
     if (mProcessingSettings.platformNum >= 0) {
       if (mProcessingSettings.platformNum >= (int32_t)num_platforms) {
         quit("Invalid platform specified");
@@ -117,22 +156,14 @@ int32_t GPUReconstructionOCLBackend::InitDevice_Runtime()
       mInternals->platform = mInternals->platforms[mProcessingSettings.platformNum];
       found = true;
       if (mProcessingSettings.debugLevel >= 2) {
-        char platform_profile[256] = {}, platform_version[256] = {}, platform_name[256] = {}, platform_vendor[256] = {};
-        clGetPlatformInfo(mInternals->platform, CL_PLATFORM_PROFILE, sizeof(platform_profile), platform_profile, nullptr);
-        clGetPlatformInfo(mInternals->platform, CL_PLATFORM_VERSION, sizeof(platform_version), platform_version, nullptr);
-        clGetPlatformInfo(mInternals->platform, CL_PLATFORM_NAME, sizeof(platform_name), platform_name, nullptr);
-        clGetPlatformInfo(mInternals->platform, CL_PLATFORM_VENDOR, sizeof(platform_vendor), platform_vendor, nullptr);
+        queryPlatforms(mInternals->platform);
         GPUInfo("Selected Platform %d: (%s %s) %s %s", mProcessingSettings.platformNum, platform_profile, platform_version, platform_vendor, platform_name);
       }
     } else {
       for (uint32_t i_platform = 0; i_platform < num_platforms; i_platform++) {
-        char platform_profile[256] = {}, platform_version[256] = {}, platform_name[256] = {}, platform_vendor[256] = {};
-        clGetPlatformInfo(mInternals->platforms[i_platform], CL_PLATFORM_PROFILE, sizeof(platform_profile), platform_profile, nullptr);
-        clGetPlatformInfo(mInternals->platforms[i_platform], CL_PLATFORM_VERSION, sizeof(platform_version), platform_version, nullptr);
-        clGetPlatformInfo(mInternals->platforms[i_platform], CL_PLATFORM_NAME, sizeof(platform_name), platform_name, nullptr);
-        clGetPlatformInfo(mInternals->platforms[i_platform], CL_PLATFORM_VENDOR, sizeof(platform_vendor), platform_vendor, nullptr);
+        queryPlatforms(mInternals->platforms[i_platform]);
         const char* platformUsageInfo = "";
-        if (!found && CheckPlatform(i_platform)) {
+        if (!found && checkPlatform(mInternals->platforms[i_platform])) {
           found = true;
           mInternals->platform = mInternals->platforms[i_platform];
           if (mProcessingSettings.debugLevel >= 2) {
@@ -149,14 +180,14 @@ int32_t GPUReconstructionOCLBackend::InitDevice_Runtime()
       quit("Did not find compatible OpenCL Platform");
     }
 
-    cl_uint count, bestDevice = (cl_uint)-1;
-    if (GPUFailedMsgI(clGetDeviceIDs(mInternals->platform, CL_DEVICE_TYPE_ALL, 0, nullptr, &count))) {
+    cl_uint deviceCount, bestDevice = (cl_uint)-1;
+    if (GPUFailedMsgI(clGetDeviceIDs(mInternals->platform, CL_DEVICE_TYPE_ALL, 0, nullptr, &deviceCount))) {
       quit("Error getting OPENCL Device Count");
     }
 
     // Query devices
-    mInternals->devices.reset(new cl_device_id[count]);
-    if (GPUFailedMsgI(clGetDeviceIDs(mInternals->platform, CL_DEVICE_TYPE_ALL, count, mInternals->devices.get(), nullptr))) {
+    mInternals->devices.reset(new cl_device_id[deviceCount]);
+    if (GPUFailedMsgI(clGetDeviceIDs(mInternals->platform, CL_DEVICE_TYPE_ALL, deviceCount, mInternals->devices.get(), nullptr))) {
       quit("Error getting OpenCL devices");
     }
 
@@ -167,8 +198,8 @@ int32_t GPUReconstructionOCLBackend::InitDevice_Runtime()
     if (mProcessingSettings.debugLevel >= 2) {
       GPUInfo("Available OPENCL devices:");
     }
-    std::vector<bool> devicesOK(count, false);
-    for (uint32_t i = 0; i < count; i++) {
+    std::vector<bool> devicesOK(deviceCount, false);
+    for (uint32_t i = 0; i < deviceCount; i++) {
       if (mProcessingSettings.debugLevel >= 3) {
         GPUInfo("Examining device %d", i);
       }
@@ -215,11 +246,11 @@ int32_t GPUReconstructionOCLBackend::InitDevice_Runtime()
       }
     }
     if (bestDevice == (cl_uint)-1) {
-      quit("No %sOPENCL Device available, aborting OPENCL Initialisation", count ? "appropriate " : "");
+      quit("No %sOPENCL Device available, aborting OPENCL Initialisation", deviceCount ? "appropriate " : "");
     }
 
     if (mProcessingSettings.deviceNum > -1) {
-      if (mProcessingSettings.deviceNum >= (signed)count) {
+      if (mProcessingSettings.deviceNum >= (signed)deviceCount) {
         quit("Requested device ID %d does not exist", mProcessingSettings.deviceNum);
       } else if (!devicesOK[mProcessingSettings.deviceNum]) {
         quit("Unsupported device requested (%d)", mProcessingSettings.deviceNum);
@@ -269,7 +300,7 @@ int32_t GPUReconstructionOCLBackend::InitDevice_Runtime()
     mWarpSize = 32;
     mMaxBackendThreads = std::max<int32_t>(mMaxBackendThreads, maxWorkGroup * mBlockCount);
 
-    mInternals->context = clCreateContext(nullptr, ContextForAllPlatforms() ? count : 1, ContextForAllPlatforms() ? mInternals->devices.get() : &mInternals->device, nullptr, nullptr, &ocl_error);
+    mInternals->context = clCreateContext(nullptr, ContextForAllPlatforms() ? deviceCount : 1, ContextForAllPlatforms() ? mInternals->devices.get() : &mInternals->device, nullptr, nullptr, &ocl_error);
     if (GPUFailedMsgI(ocl_error)) {
       quit("Could not create OPENCL Device Context!");
     }
@@ -607,34 +638,4 @@ int32_t GPUReconstructionOCLBackend::GetOCLPrograms()
 #undef GPUCA_KRNL_LOAD_multi
 
   return 0;
-}
-
-bool GPUReconstructionOCLBackend::CheckPlatform(uint32_t i)
-{
-  char platform_version[64] = {}, platform_vendor[64] = {};
-  clGetPlatformInfo(mInternals->platforms[i], CL_PLATFORM_VERSION, sizeof(platform_version), platform_version, nullptr);
-  clGetPlatformInfo(mInternals->platforms[i], CL_PLATFORM_VENDOR, sizeof(platform_vendor), platform_vendor, nullptr);
-  float ver1 = 0;
-  sscanf(platform_version, "OpenCL %f", &ver1);
-  if (ver1 >= 2.2f) {
-    if (mProcessingSettings.debugLevel >= 2) {
-      GPUInfo("OpenCL 2.2 capable platform found");
-    }
-    return true;
-  }
-
-  if (strcmp(platform_vendor, "Advanced Micro Devices, Inc.") == 0 && ver1 >= 2.0f) {
-    float ver2 = 0;
-    const char* pos = strchr(platform_version, '(');
-    if (pos) {
-      sscanf(pos, "(%f)", &ver2);
-    }
-    if ((ver1 >= 2.f && ver2 >= 2000.f) || ver1 >= 2.1f) {
-      if (mProcessingSettings.debugLevel >= 2) {
-        GPUInfo("AMD ROCm OpenCL Platform found");
-      }
-      return true;
-    }
-  }
-  return false;
 }
