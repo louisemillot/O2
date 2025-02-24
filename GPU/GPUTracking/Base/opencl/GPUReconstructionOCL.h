@@ -60,7 +60,7 @@ class GPUReconstructionOCLBackend : public GPUReconstructionDeviceBase
   template <class T, int32_t I = 0>
   uint32_t FindKernel(int32_t num);
   template <typename K, typename... Args>
-  int32_t runKernelBackendInternal(const krnlSetupTime& _xyz, K& k, const Args&... args);
+  void runKernelBackendInternal(const krnlSetupTime& _xyz, K& k, const Args&... args);
   template <class T, int32_t I = 0>
   gpu_reconstruction_kernels::krnlProperties getKernelPropertiesBackend();
 
@@ -68,7 +68,7 @@ class GPUReconstructionOCLBackend : public GPUReconstructionDeviceBase
   float mOclVersion;
 
   template <class T, int32_t I = 0, typename... Args>
-  int32_t runKernelBackend(const krnlSetupArgs<T, I, Args...>& args);
+  void runKernelBackend(const krnlSetupArgs<T, I, Args...>& args);
   template <class S, class T, int32_t I, bool MULTI>
   S& getKernelObject();
 

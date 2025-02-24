@@ -99,9 +99,9 @@ class GPUReconstructionKernels : public T
   using krnlSetupArgs = gpu_reconstruction_kernels::krnlSetupArgs<S, I, Args...>;
 
 #define GPUCA_KRNL(x_class, attributes, x_arguments, x_forward, x_types)                                                                                \
-  virtual int32_t runKernelImpl(const krnlSetupArgs<GPUCA_M_KRNL_TEMPLATE(x_class) GPUCA_M_STRIP(x_types)>& args)                                       \
+  virtual void runKernelImpl(const krnlSetupArgs<GPUCA_M_KRNL_TEMPLATE(x_class) GPUCA_M_STRIP(x_types)>& args)                                          \
   {                                                                                                                                                     \
-    return T::template runKernelBackend<GPUCA_M_KRNL_TEMPLATE(x_class)>(args);                                                                          \
+    T::template runKernelBackend<GPUCA_M_KRNL_TEMPLATE(x_class)>(args);                                                                                 \
   }                                                                                                                                                     \
   virtual gpu_reconstruction_kernels::krnlProperties getKernelPropertiesImpl(gpu_reconstruction_kernels::classArgument<GPUCA_M_KRNL_TEMPLATE(x_class)>) \
   {                                                                                                                                                     \

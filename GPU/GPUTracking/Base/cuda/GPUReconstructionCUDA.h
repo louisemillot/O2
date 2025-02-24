@@ -42,7 +42,7 @@ class GPUReconstructionCUDABackend : public GPUReconstructionDeviceBase
   void PrintKernelOccupancies() override;
 
   template <class T, int32_t I = 0, typename... Args>
-  int32_t runKernelBackend(const krnlSetupArgs<T, I, Args...>& args);
+  void runKernelBackend(const krnlSetupArgs<T, I, Args...>& args);
   template <class T, int32_t I = 0, typename... Args>
   void runKernelBackendInternal(const krnlSetupTime& _xyz, const Args&... args);
   template <class T, int32_t I = 0>

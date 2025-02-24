@@ -171,7 +171,7 @@ class GPUChain
     mRec->ReadStructFromFile<T>(file, obj);
   }
   template <class S, int32_t I = 0, typename... Args>
-  inline int32_t runKernel(gpu_reconstruction_kernels::krnlSetup&& setup, Args&&... args)
+  inline void runKernel(gpu_reconstruction_kernels::krnlSetup&& setup, Args&&... args)
   {
     return mRec->runKernel<S, I, Args...>(std::forward<gpu_reconstruction_kernels::krnlSetup&&>(setup), std::forward<Args>(args)...);
   }

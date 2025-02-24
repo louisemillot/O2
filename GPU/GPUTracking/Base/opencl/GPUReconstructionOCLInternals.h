@@ -171,7 +171,7 @@ struct GPUReconstructionOCLInternals {
 };
 
 template <typename K, typename... Args>
-inline int32_t GPUReconstructionOCLBackend::runKernelBackendInternal(const krnlSetupTime& _xyz, K& k, const Args&... args)
+inline void GPUReconstructionOCLBackend::runKernelBackendInternal(const krnlSetupTime& _xyz, K& k, const Args&... args)
 {
   auto& x = _xyz.x;
   auto& y = _xyz.y;
@@ -202,7 +202,6 @@ inline int32_t GPUReconstructionOCLBackend::runKernelBackendInternal(const krnlS
       GPUFailedMsg(clReleaseEvent(ev));
     }
   }
-  return 0;
 }
 
 template <class T, int32_t I>

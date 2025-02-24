@@ -56,7 +56,7 @@ GPUReconstructionCPU::~GPUReconstructionCPU()
 }
 
 template <class T, int32_t I, typename... Args>
-inline int32_t GPUReconstructionCPUBackend::runKernelBackendInternal(const krnlSetupTime& _xyz, const Args&... args)
+inline void GPUReconstructionCPUBackend::runKernelBackendInternal(const krnlSetupTime& _xyz, const Args&... args)
 {
   auto& x = _xyz.x;
   auto& y = _xyz.y;
@@ -90,11 +90,10 @@ inline int32_t GPUReconstructionCPUBackend::runKernelBackendInternal(const krnlS
       }
     }
   }
-  return 0;
 }
 
 template <>
-inline int32_t GPUReconstructionCPUBackend::runKernelBackendInternal<GPUMemClean16, 0>(const krnlSetupTime& _xyz, void* const& ptr, uint64_t const& size)
+inline void GPUReconstructionCPUBackend::runKernelBackendInternal<GPUMemClean16, 0>(const krnlSetupTime& _xyz, void* const& ptr, uint64_t const& size)
 {
   int32_t nnThreads = std::max<int32_t>(1, std::min<int32_t>(size / (16 * 1024 * 1024), getNKernelHostThreads(true)));
   if (nnThreads > 1) {
@@ -112,13 +111,12 @@ inline int32_t GPUReconstructionCPUBackend::runKernelBackendInternal<GPUMemClean
   } else {
     memset(ptr, 0, size);
   }
-  return 0;
 }
 
 template <class T, int32_t I, typename... Args>
-int32_t GPUReconstructionCPUBackend::runKernelBackend(const krnlSetupArgs<T, I, Args...>& args)
+void GPUReconstructionCPUBackend::runKernelBackend(const krnlSetupArgs<T, I, Args...>& args)
 {
-  return std::apply([this, &args](auto&... vals) { return runKernelBackendInternal<T, I, Args...>(args.s, vals...); }, args.v);
+  std::apply([this, &args](auto&... vals) { runKernelBackendInternal<T, I, Args...>(args.s, vals...); }, args.v);
 }
 
 template <class T, int32_t I>
@@ -127,8 +125,8 @@ krnlProperties GPUReconstructionCPUBackend::getKernelPropertiesBackend()
   return krnlProperties{1, 1};
 }
 
-#define GPUCA_KRNL(x_class, x_attributes, x_arguments, x_forward, x_types)                                                                                                          \
-  template int32_t GPUReconstructionCPUBackend::runKernelBackend<GPUCA_M_KRNL_TEMPLATE(x_class)>(const krnlSetupArgs<GPUCA_M_KRNL_TEMPLATE(x_class) GPUCA_M_STRIP(x_types)>& args); \
+#define GPUCA_KRNL(x_class, x_attributes, x_arguments, x_forward, x_types)                                                                                                       \
+  template void GPUReconstructionCPUBackend::runKernelBackend<GPUCA_M_KRNL_TEMPLATE(x_class)>(const krnlSetupArgs<GPUCA_M_KRNL_TEMPLATE(x_class) GPUCA_M_STRIP(x_types)>& args); \
   template krnlProperties GPUReconstructionCPUBackend::getKernelPropertiesBackend<GPUCA_M_KRNL_TEMPLATE(x_class)>();
 #include "GPUReconstructionKernelList.h"
 #undef GPUCA_KRNL

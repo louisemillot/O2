@@ -559,10 +559,10 @@ int32_t GPUReconstructionOCLBackend::GPUDebug(const char* state, int32_t stream,
 }
 
 template <class T, int32_t I, typename... Args>
-int32_t GPUReconstructionOCLBackend::runKernelBackend(const krnlSetupArgs<T, I, Args...>& args)
+void GPUReconstructionOCLBackend::runKernelBackend(const krnlSetupArgs<T, I, Args...>& args)
 {
   cl_kernel k = args.s.y.num > 1 ? getKernelObject<cl_kernel, T, I, true>() : getKernelObject<cl_kernel, T, I, false>();
-  return std::apply([this, &args, &k](auto&... vals) { return runKernelBackendInternal(args.s, k, vals...); }, args.v);
+  std::apply([this, &args, &k](auto&... vals) { runKernelBackendInternal(args.s, k, vals...); }, args.v);
 }
 
 template <class S, class T, int32_t I, bool MULTI>
