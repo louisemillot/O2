@@ -457,7 +457,11 @@ size_t GPUReconstructionOCLBackend::GPUMemCpy(void* dst, const void* src, size_t
   if (stream == -1) {
     SynchronizeGPU();
   }
-  if (toGPU == -2) {
+  if (size == 0) {
+    if (ev || nEvents) { // Workaround for OCL runtimes, which can throw an error in case size = 0
+      GPUFailedMsg(clEnqueueMarkerWithWaitList(mInternals->command_queue[stream == -1 ? 0 : stream], nEvents, evList->getEventList<cl_event>(), ev->getEventList<cl_event>()));
+    }
+  } else if (toGPU == -2) {
     GPUFailedMsg(clEnqueueCopyBuffer(mInternals->command_queue[stream == -1 ? 0 : stream], mInternals->mem_gpu, mInternals->mem_gpu, (char*)src - (char*)mDeviceMemoryBase, (char*)dst - (char*)mDeviceMemoryBase, size, nEvents, evList->getEventList<cl_event>(), ev->getEventList<cl_event>()));
   } else if (toGPU) {
     GPUFailedMsg(clEnqueueWriteBuffer(mInternals->command_queue[stream == -1 ? 0 : stream], mInternals->mem_gpu, stream == -1, (char*)dst - (char*)mDeviceMemoryBase, size, src, nEvents, evList->getEventList<cl_event>(), ev->getEventList<cl_event>()));
