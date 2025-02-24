@@ -37,7 +37,7 @@ set(OCL_DEFINECL "-D$<JOIN:$<TARGET_PROPERTY:O2::GPUTracking,COMPILE_DEFINITIONS
 )
 
 set(SRCS GPUReconstructionOCL.cxx)
-set(HDRS GPUReconstructionOCL.h GPUReconstructionOCLInternals.h)
+set(HDRS GPUReconstructionOCL.h)
 
 if (NOT DEFINED GPUCA_OCL_SPIRV_VERSION)
   set(GPUCA_OCL_SPIRV_VERSION 1.2)
