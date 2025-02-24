@@ -209,14 +209,14 @@ int32_t GPUReconstructionOCLBackend::InitDevice_Runtime()
             while ((pos = device_il_version.find("SPIR-V", pos)) != std::string::npos) {
               float spirvVersion;
               sscanf(device_il_version.c_str() + pos, "SPIR-V_%f", &spirvVersion);
-              if (spirvVersion >= 1.2) {
+              if (spirvVersion >= GPUCA_OCL_SPIRV_VERSION) {
                 break;
               }
               pos += strlen("SPIR-V_0.0");
             }
             if (pos == std::string::npos) {
               deviceOK = false;
-              deviceFailure += " - No SPIR-V 1.6 (" + device_il_version + ")";
+              deviceFailure += " - No SPIR-V " + std::to_string(GPUCA_OCL_SPIRV_VERSION) + " (" + device_il_version + ")";
             }
           }
 
