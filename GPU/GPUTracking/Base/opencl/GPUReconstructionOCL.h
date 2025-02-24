@@ -55,8 +55,6 @@ class GPUReconstructionOCLBackend : public GPUReconstructionDeviceBase
   void ReleaseEvent(deviceEvent ev) override;
   void RecordMarker(deviceEvent* ev, int32_t stream) override;
 
-  virtual bool ContextForAllPlatforms() { return false; }
-
   template <class T, int32_t I = 0>
   int32_t AddKernel(bool multi = false);
   template <class T, int32_t I = 0>
@@ -67,6 +65,7 @@ class GPUReconstructionOCLBackend : public GPUReconstructionDeviceBase
   gpu_reconstruction_kernels::krnlProperties getKernelPropertiesBackend();
 
   GPUReconstructionOCLInternals* mInternals;
+  float mOclVersion;
 
   template <class T, int32_t I = 0, typename... Args>
   int32_t runKernelBackend(const krnlSetupArgs<T, I, Args...>& args);

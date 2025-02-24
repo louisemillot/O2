@@ -160,8 +160,6 @@ static inline int64_t clExecuteKernelA(cl_command_queue queue, cl_kernel krnl, s
 struct GPUReconstructionOCLInternals {
   cl_platform_id platform;
   cl_device_id device;
-  std::unique_ptr<cl_platform_id[]> platforms;
-  std::unique_ptr<cl_device_id[]> devices;
   cl_context context;
   cl_command_queue command_queue[GPUCA_MAX_STREAMS];
   cl_mem mem_gpu;
