@@ -45,9 +45,14 @@ void GPUReconstructionProcessing::SetNActiveThreads(int32_t n)
 
 void GPUReconstructionProcessing::runParallelOuterLoop(bool doGPU, uint32_t nThreads, std::function<void(uint32_t)> lambda)
 {
-  tbb::task_arena(SetAndGetNActiveThreadsOuterLoop(!doGPU, nThreads)).execute([&] {
-    tbb::parallel_for<uint32_t>(0, nThreads, lambda, tbb::simple_partitioner());
-  });
+  uint32_t nThreadsAdjusted = SetAndGetNActiveThreadsOuterLoop(!doGPU, nThreads);
+  if (nThreadsAdjusted > 1) {
+    tbb::task_arena(nThreadsAdjusted).execute([&] {
+      tbb::parallel_for<uint32_t>(0, nThreads, lambda, tbb::simple_partitioner());
+    });
+  } else {
+    lambda(0);
+  }
 }
 
 namespace o2::gpu
