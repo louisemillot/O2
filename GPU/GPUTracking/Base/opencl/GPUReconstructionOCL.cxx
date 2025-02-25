@@ -181,6 +181,13 @@ struct GPUReconstructionOCLInternals {
 static_assert(std::is_convertible<cl_event, void*>::value, "OpenCL event type incompatible to deviceEvent");
 } // namespace o2::gpu
 
+template <>
+inline void GPUReconstructionOCLBackend::runKernelBackendInternal<GPUMemClean16, 0>(const krnlSetupTime& _xyz, void* const& ptr, uint64_t const& size)
+{
+  cl_int4 val0 = {0, 0, 0, 0};
+  GPUFailedMsg(clEnqueueFillBuffer(mInternals->command_queue[_xyz.x.stream], mInternals->mem_gpu, &val0, sizeof(val0), (char*)ptr - (char*)mDeviceMemoryBase, (size + sizeof(val0) - 1) & ~(sizeof(val0) - 1), _xyz.z.evList == nullptr ? 0 : _xyz.z.nEvents, _xyz.z.evList->getEventList<cl_event>(), _xyz.z.ev->getEventList<cl_event>()));
+}
+
 #define GPUErrorReturn(...) \
   {                         \
     GPUError(__VA_ARGS__);  \
