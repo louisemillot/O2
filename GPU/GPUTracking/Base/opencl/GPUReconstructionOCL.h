@@ -73,6 +73,15 @@ class GPUReconstructionOCLBackend : public GPUReconstructionDeviceBase
   S& getKernelObject();
 
   int32_t GetOCLPrograms();
+
+ private:
+  static const char* convertErrorToString(int32_t errorCode);
+  template <typename T, typename... Args>
+  static inline int64_t OCLsetKernelParameters_helper(cl_kernel& kernel, int32_t i, const T& firstParameter, const Args&... restOfParameters);
+  template <typename... Args>
+  static int64_t OCLsetKernelParameters(cl_kernel& kernel, const Args&... args);
+  static int64_t clExecuteKernelA(cl_command_queue queue, cl_kernel krnl, size_t local_size, size_t global_size, cl_event* pEvent = nullptr, cl_event* wait = nullptr, cl_int nWaitEvents = 1);
+  int32_t AddKernels();
 };
 
 using GPUReconstructionOCL = GPUReconstructionKernels<GPUReconstructionOCLBackend>;

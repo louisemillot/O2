@@ -9,7 +9,7 @@
 // granted to it by virtue of its status as an Intergovernmental Organization
 // or submit itself to any jurisdiction.
 
-/// \file GPUReconstructionHIPInclude.h
+/// \file GPUReconstructionHIPIncludesHost.h
 /// \author David Rohr
 
 #ifndef O2_GPU_RECONSTRUCTIONHIPINCLUDES_H
@@ -26,5 +26,9 @@
 #include <thrust/execution_policy.h>
 #include <thrust/device_ptr.h>
 #pragma GCC diagnostic pop
+
+#ifndef GPUCA_RTC_CODE
+#include "GPUReconstructionHIPDef.h"
+#endif
 
 #endif

@@ -36,8 +36,8 @@ set(OCL_DEFINECL "-D$<JOIN:$<TARGET_PROPERTY:O2::GPUTracking,COMPILE_DEFINITIONS
             -I${CMAKE_SOURCE_DIR}/DataFormats/Reconstruction/src
 )
 
-set(SRCS GPUReconstructionOCL.cxx)
-set(HDRS GPUReconstructionOCL.h)
+set(SRCS GPUReconstructionOCL.cxx GPUReconstructionOCLKernels.cxx)
+set(HDRS GPUReconstructionOCL.h GPUReconstructionOCLIncludesHost.h)
 
 if (NOT DEFINED GPUCA_OCL_SPIRV_VERSION)
   set(GPUCA_OCL_SPIRV_VERSION 1.2)

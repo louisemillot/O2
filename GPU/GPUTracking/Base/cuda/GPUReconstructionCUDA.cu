@@ -13,8 +13,7 @@
 /// \author David Rohr
 
 #define GPUCA_GPUCODE_HOSTONLY
-#include "GPUReconstructionCUDADef.h"
-#include "GPUReconstructionCUDAIncludes.h"
+#include "GPUReconstructionCUDAIncludesHost.h"
 
 #include <cuda_profiler_api.h>
 

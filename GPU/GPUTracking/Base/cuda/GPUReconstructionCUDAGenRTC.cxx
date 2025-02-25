@@ -32,7 +32,9 @@ QGET_LD_BINARY_SYMBOLS(GPUReconstructionCUDArtc_command_arch);
 
 int32_t GPUReconstructionCUDA::genRTC(std::string& filename, uint32_t& nCompile)
 {
-  std::string rtcparam = std::string(mProcessingSettings.rtc.optSpecialCode ? "#define GPUCA_RTC_SPECIAL_CODE(...) __VA_ARGS__\n" : "#define GPUCA_RTC_SPECIAL_CODE(...)\n") + GPUParamRTC::generateRTCCode(param(), mProcessingSettings.rtc.optConstexpr);
+  std::string rtcparam = std::string("#define GPUCA_RTC_CODE\n") +
+                         std::string(mProcessingSettings.rtc.optSpecialCode ? "#define GPUCA_RTC_SPECIAL_CODE(...) __VA_ARGS__\n" : "#define GPUCA_RTC_SPECIAL_CODE(...)\n") +
+                         GPUParamRTC::generateRTCCode(param(), mProcessingSettings.rtc.optConstexpr);
   if (filename == "") {
     filename = "/tmp/o2cagpu_rtc_";
   }

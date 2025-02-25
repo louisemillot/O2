@@ -32,4 +32,8 @@
 #include <sm_20_atomic_functions.h>
 #include <cuda_fp16.h>
 
+#ifndef GPUCA_RTC_CODE
+#include "GPUReconstructionCUDADef.h"
+#endif
+
 #endif
