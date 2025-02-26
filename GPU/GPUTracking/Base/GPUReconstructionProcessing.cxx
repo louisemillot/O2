@@ -51,7 +51,9 @@ void GPUReconstructionProcessing::runParallelOuterLoop(bool doGPU, uint32_t nThr
       tbb::parallel_for<uint32_t>(0, nThreads, lambda, tbb::simple_partitioner());
     });
   } else {
-    lambda(0);
+    for (uint32_t i = 0; i < nThreads; i++) {
+      lambda(i);
+    }
   }
 }
 
