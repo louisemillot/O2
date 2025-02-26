@@ -568,7 +568,7 @@ size_t GPUReconstruction::AllocateRegisteredMemoryHelper(GPUMemoryResource* res,
     memorypool = (void*)((char*)memorypool + GPUProcessor::getAlignment<GPUCA_MEMALIGN>(memorypool));
   }
   if (memorypoolend ? (memorypool > memorypoolend) : ((size_t)ptrDiff(memorypool, memorybase) > memorysize)) {
-    std::cerr << "Memory pool size exceeded (" << device << ") (" << res->mName << ": " << (memorypoolend ? (memorysize + ptrDiff(memorypool, memorypoolend)) : ptrDiff(memorypool, memorybase)) << " < " << memorysize << "\n";
+    std::cerr << "Memory pool size exceeded (" << device << ") (" << res->mName << ": " << (memorypoolend ? (memorysize + ptrDiff(memorypool, memorypoolend)) : ptrDiff(memorypool, memorybase)) << " > " << memorysize << "\n";
     throw std::bad_alloc();
   }
   if (mProcessingSettings.allocDebugLevel >= 2) {
