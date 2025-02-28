@@ -142,6 +142,10 @@ else
   elif [[ $BEAMTYPE == "PbPb" ]]; then
     ITS_CONFIG_KEY+="ITSVertexerParam.lowMultBeamDistCut=0;ITSCATrackerParam.nROFsPerIterations=12;ITSCATrackerParam.perPrimaryVertexProcessing=true;"
   fi
+
+  if [[ $IS_SIMULATED_DATA == 0 && $CTFINPUT == 1 ]]; then # Enable fixes to the MCH readout mapping for async processing of real data
+    MCH_CONFIG_KEY+="MCHDigitModifier.updateST1=true;MCHDigitModifier.updateST2=true;"
+  fi
 fi
 [[ $CTFINPUT == 1 ]] && GPU_CONFIG_KEY+="GPU_proc.tpcInputWithClusterRejection=1;"
 [[ ! -z $NTRDTRKTHREADS ]] && TRD_CONFIG_KEY+="GPU_proc.ompThreads=$NTRDTRKTHREADS;"
