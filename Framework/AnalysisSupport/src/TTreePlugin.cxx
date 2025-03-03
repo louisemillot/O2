@@ -627,13 +627,13 @@ arrow::Result<arrow::RecordBatchGenerator> TTreeFileFormat::ScanBatchesAsync(
         throw runtime_error_f("Cannot find physical field associated to %s. Possible fields: %s",
                               dataset_field->name().c_str(), physical_schema->ToString().c_str());
       }
-      if (physicalFieldIdx > 1 && physical_schema->field(physicalFieldIdx - 1)->name().ends_with("_size")) {
+      if (physicalFieldIdx > 0 && physical_schema->field(physicalFieldIdx - 1)->name().ends_with("_size")) {
         O2_SIGNPOST_EVENT_EMIT(root_arrow_fs, tid, "Generator", "Field %{public}s has sizes in %{public}s.", dataset_field->name().c_str(),
                                physical_schema->field(physicalFieldIdx - 1)->name().c_str());
         mappings.push_back({physicalFieldIdx, physicalFieldIdx - 1, fi});
         opsCount += 2;
       } else {
-        if (physicalFieldIdx > 1) {
+        if (physicalFieldIdx > 0) {
           O2_SIGNPOST_EVENT_EMIT(root_arrow_fs, tid, "Generator", "Field %{public}s previous field is %{public}s.", dataset_field->name().c_str(),
                                  physical_schema->field(physicalFieldIdx - 1)->name().c_str());
         }
