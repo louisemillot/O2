@@ -413,8 +413,10 @@ bool DataInputDescriptor::readTree(DataAllocator& outputs, header::DataHeader dh
     }
   }
 
+  // FIXME: we should distinguish between an actually missing object and one which has a non compatible
+  // format.
   if (!format) {
-    throw std::runtime_error(fmt::format(R"(Cannot find a viable format for object {}!)", fullpath.path()));
+    throw std::runtime_error(fmt::format(R"(Couldn't get TTree "{}" from "{}". Please check https://aliceo2group.github.io/analysis-framework/docs/troubleshooting/#tree-not-found for more information.)", fullpath.path(), rootFS->GetFile()->GetName()));
   }
 
   auto schemaOpt = format->Inspect(fullpath);
