@@ -416,6 +416,18 @@ bool DataInputDescriptor::readTree(DataAllocator& outputs, header::DataHeader dh
   // FIXME: we should distinguish between an actually missing object and one which has a non compatible
   // format.
   if (!format) {
+    LOGP(debug, "Could not find tree {}. Trying in parent file.", fullpath.path());
+    auto parentFile = getParentFile(counter, numTF, treename);
+    if (parentFile != nullptr) {
+      int parentNumTF = parentFile->findDFNumber(0, folder.path());
+      if (parentNumTF == -1) {
+        auto parentRootFS = std::dynamic_pointer_cast<TFileFileSystem>(parentFile->mCurrentFilesystem);
+        throw std::runtime_error(fmt::format(R"(DF {} listed in parent file map but not found in the corresponding file "{}")", folder.path(), parentRootFS->GetFile()->GetName()));
+      }
+      // first argument is 0 as the parent file object contains only 1 file
+      return parentFile->readTree(outputs, dh, 0, parentNumTF, treename, totalSizeCompressed, totalSizeUncompressed);
+    }
+    auto rootFS = std::dynamic_pointer_cast<TFileFileSystem>(mCurrentFilesystem);
     throw std::runtime_error(fmt::format(R"(Couldn't get TTree "{}" from "{}". Please check https://aliceo2group.github.io/analysis-framework/docs/troubleshooting/#tree-not-found for more information.)", fullpath.path(), rootFS->GetFile()->GetName()));
   }
 
@@ -431,22 +443,6 @@ bool DataInputDescriptor::readTree(DataAllocator& outputs, header::DataHeader dh
   auto datasetSchema = std::make_shared<arrow::Schema>(fields);
 
   auto fragment = format->MakeFragment(fullpath, {}, *physicalSchema);
-
-  if (!fragment.ok()) {
-    LOGP(debug, "Could not find tree {}. Trying in parent file.", fullpath.path());
-    auto parentFile = getParentFile(counter, numTF, treename);
-    if (parentFile != nullptr) {
-      int parentNumTF = parentFile->findDFNumber(0, folder.path());
-      if (parentNumTF == -1) {
-        auto parentRootFS = std::dynamic_pointer_cast<TFileFileSystem>(parentFile->mCurrentFilesystem);
-        throw std::runtime_error(fmt::format(R"(DF {} listed in parent file map but not found in the corresponding file "{}")", folder.path(), parentRootFS->GetFile()->GetName()));
-      }
-      // first argument is 0 as the parent file object contains only 1 file
-      return parentFile->readTree(outputs, dh, 0, parentNumTF, treename, totalSizeCompressed, totalSizeUncompressed);
-    }
-    auto rootFS = std::dynamic_pointer_cast<TFileFileSystem>(mCurrentFilesystem);
-    throw std::runtime_error(fmt::format(R"(Couldn't get TTree "{}" from "{}". Please check https://aliceo2group.github.io/analysis-framework/docs/troubleshooting/#tree-not-found for more information.)", fullpath.path(), rootFS->GetFile()->GetName()));
-  }
 
   // create table output
   auto o = Output(dh);
