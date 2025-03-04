@@ -702,7 +702,7 @@ arrow::Result<arrow::RecordBatchGenerator> TTreeFileFormat::ScanBatchesAsync(
       if ((datasetField->type() == arrow::boolean())) {
         valueOp.kind = ReadOpKind::Booleans;
         valueOp.listSize = 1;
-        valueOp.targetBuffer = treeFragment->GetPlaceholderForOp((valueOp.rootBranchEntries) / 8 + 1);
+        valueOp.targetBuffer = treeFragment->GetPlaceholderForOp((valueOp.rootBranchEntries + 7) / 8);
       } else if (listType && datasetField->type()->field(0)->type() == arrow::boolean()) {
         valueOp.typeSize = physicalField->type()->field(0)->type()->byte_width();
         valueOp.listSize = listType->list_size();
