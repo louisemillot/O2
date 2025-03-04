@@ -635,7 +635,7 @@ int32_t GPUChainTracking::RunTPCClusterizer(bool synchronizeOutput)
     if (mWaitForFinalInputs) {
       GPUFatal("Cannot use waitForFinalInput callback without delayed output");
     }
-    if (!GetProcessingSettings().tpcApplyDebugClusterFilter) {
+    if (!GetProcessingSettings().tpcApplyClusterFilterOnCPU) {
       AllocateRegisteredMemory(mInputsHost->mResourceClusterNativeOutput, mSubOutputControls[GPUTrackingOutputs::getIndex(&GPUTrackingOutputs::clustersNative)]);
       tmpNativeClusters = mInputsHost->mPclusterNativeOutput;
     } else {
@@ -1021,7 +1021,7 @@ int32_t GPUChainTracking::RunTPCClusterizer(bool synchronizeOutput)
     tmpNativeAccess->clustersMCTruth = mcLabelsConstView;
     tmpNativeAccess->setOffsetPtrs();
     mIOPtrs.clustersNative = tmpNativeAccess;
-    if (GetProcessingSettings().tpcApplyDebugClusterFilter) {
+    if (GetProcessingSettings().tpcApplyClusterFilterOnCPU) {
       auto allocator = [this, &tmpNativeClusters](size_t size) {
         this->mInputsHost->mNClusterNative = size;
         this->AllocateRegisteredMemory(this->mInputsHost->mResourceClusterNativeOutput, this->mSubOutputControls[GPUTrackingOutputs::getIndex(&GPUTrackingOutputs::clustersNative)]);

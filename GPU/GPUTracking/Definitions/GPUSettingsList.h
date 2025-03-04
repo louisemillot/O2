@@ -291,7 +291,7 @@ AddOption(tpcDownscaledEdx, uint8_t, 0, "", 0, "If != 0, downscale dEdx processi
 AddOption(tpcMaxAttachedClustersPerSectorRow, uint32_t, 51000, "", 0, "Maximum number of TPC attached clusters which can be decoded per SectorRow")
 AddOption(tpcUseOldCPUDecoding, bool, false, "", 0, "Enable old CPU-based TPC decoding")
 AddOption(tpcApplyCFCutsAtDecoding, bool, false, "", 0, "Apply cluster cuts from clusterization during decoding of compressed clusters")
-AddOption(tpcApplyDebugClusterFilter, bool, false, "", 0, "Apply custom cluster filter of GPUTPCClusterFilter class")
+AddOption(tpcApplyClusterFilterOnCPU, uint8_t, 0, "", 0, "Apply custom cluster filter of GPUTPCClusterFilter class, 0: off, 1: debug, 2: PbPb23")
 AddOption(RTCcacheFolder, std::string, "./rtccache/", "", 0, "Folder in which the cache file is stored")
 AddOption(RTCprependCommand, std::string, "", "", 0, "Prepend RTC compilation commands by this string")
 AddOption(RTCoverrideArchitecture, std::string, "", "", 0, "Override arhcitecture part of RTC compilation command line")

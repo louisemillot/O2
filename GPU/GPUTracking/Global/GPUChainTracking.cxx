@@ -294,16 +294,12 @@ bool GPUChainTracking::ValidateSettings()
       return false;
     }
   }
-  if ((GetRecoSteps() & GPUDataTypes::RecoStep::TPCDecompression) && GetProcessingSettings().tpcApplyCFCutsAtDecoding && !GetProcessingSettings().tpcUseOldCPUDecoding) {
-    GPUError("tpcApplyCFCutsAtDecoding currently requires tpcUseOldCPUDecoding");
-    return false;
-  }
   if ((GetRecoStepsGPU() & GPUDataTypes::RecoStep::TPCCompression) && !(GetRecoStepsGPU() & GPUDataTypes::RecoStep::TPCCompression) && (GetProcessingSettings().tpcCompressionGatherMode == 1 || GetProcessingSettings().tpcCompressionGatherMode == 3)) {
     GPUError("Invalid tpcCompressionGatherMode for compression on CPU");
     return false;
   }
-  if (GetProcessingSettings().tpcApplyDebugClusterFilter == 1 && (GetRecoStepsGPU() & GPUDataTypes::RecoStep::TPCClusterFinding || GetProcessingSettings().delayedOutput || GetProcessingSettings().runMC)) {
-    GPUError("tpcApplyDebugClusterFilter cannot be used with GPU clusterization or with delayedOutput for GPU or with MC labels");
+  if (GetProcessingSettings().tpcApplyClusterFilterOnCPU > 0 && (GetRecoStepsGPU() & GPUDataTypes::RecoStep::TPCClusterFinding || GetProcessingSettings().delayedOutput || GetProcessingSettings().runMC)) {
+    GPUError("tpcApplyClusterFilterOnCPU cannot be used with GPU clusterization or with delayedOutput for GPU or with MC labels");
     return false;
   }
   if (GetRecoSteps() & RecoStep::TRDTracking) {
@@ -815,7 +811,7 @@ int32_t GPUChainTracking::RunChainFinalize()
 
   PrintDebugOutput();
 
-  //PrintMemoryRelations();
+  // PrintMemoryRelations();
 
   if (GetProcessingSettings().eventDisplay) {
     if (!mDisplayRunning) {

@@ -201,6 +201,11 @@ int32_t GPUChainTracking::RunTPCCompression()
 
 int32_t GPUChainTracking::RunTPCDecompression()
 {
+  const bool runFiltering = GetProcessingSettings().tpcApplyCFCutsAtDecoding || (GetProcessingSettings().tpcApplyClusterFilterOnCPU > 0) || (param().tpcCutTimeBin > 0);
+  if (runFiltering && !GetProcessingSettings().tpcUseOldCPUDecoding) {
+    GPUFatal("tpcApplyCFCutsAtDecoding, tpcApplyClusterFilterOnCPU and tpcCutTimeBin currently require tpcUseOldCPUDecoding");
+  }
+
   if (GetProcessingSettings().tpcUseOldCPUDecoding) {
     const auto& threadContext = GetThreadContext();
     TPCClusterDecompressor decomp;
@@ -214,7 +219,6 @@ int32_t GPUChainTracking::RunTPCDecompression()
       return ((tmpBuffer = std::make_unique<ClusterNative[]>(size))).get();
     };
     auto& decompressTimer = getTimer<TPCClusterDecompressor>("TPCDecompression", 0);
-    bool runFiltering = GetProcessingSettings().tpcApplyCFCutsAtDecoding;
     auto allocatorUse = runFiltering ? std::function<ClusterNative*(size_t)>{allocatorTmp} : std::function<ClusterNative*(size_t)>{allocatorFinal};
     decompressTimer.Start();
     if (decomp.decompress(mIOPtrs.tpcCompressedClusters, *mClusterNativeAccess, allocatorUse, param(), GetProcessingSettings().deterministicGPUReconstruction)) {
