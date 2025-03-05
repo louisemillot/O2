@@ -40,7 +40,7 @@ class ClusterAccumulator
   GPUd() tpccf::Charge updateInner(PackedCharge, tpccf::Delta2);
   GPUd() tpccf::Charge updateOuter(PackedCharge, tpccf::Delta2);
 
-  GPUd() void finalize(const ChargePos&, tpccf::Charge, tpccf::TPCTime, const GPUTPCGeometry&);
+  GPUd() void finalize(const ChargePos&, tpccf::Charge, tpccf::TPCTime, const GPUTPCGeometry&, tpccf::Charge*);
   GPUd() bool toNative(const ChargePos&, tpccf::Charge, tpc::ClusterNative&, const GPUParam&) const;
 
  private:
