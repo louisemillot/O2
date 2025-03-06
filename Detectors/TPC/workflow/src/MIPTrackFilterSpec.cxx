@@ -106,6 +106,7 @@ void MIPTrackFilterDevice::init(framework::InitContext& ic)
 
 void MIPTrackFilterDevice::run(ProcessingContext& pc)
 {
+  o2::base::GRPGeomHelper::instance().checkUpdates(pc);
   const auto currentTF = processing_helpers::getCurrentTF(pc);
   if ((mTFCounter++ % mProcessEveryNthTF) && (currentTF >= mProcessNFirstTFs)) {
     LOGP(info, "Skipping TF {}", currentTF);
@@ -115,7 +116,6 @@ void MIPTrackFilterDevice::run(ProcessingContext& pc)
     }
     return;
   }
-  o2::base::GRPGeomHelper::instance().checkUpdates(pc);
 
   const auto tracks = pc.inputs().get<gsl::span<TrackTPC>>("tracks");
   const auto nTracks = tracks.size();
