@@ -416,7 +416,7 @@ int32_t GPUReconstructionCUDA::InitDevice_Runtime()
     mInternals = master->mInternals;
     GPUFailedMsg(cudaSetDevice(mDeviceId));
 
-    GPUInfo("CUDA Initialized from master");
+    GPUInfo("CUDA Initialisation successfull (from master)");
   }
 
   for (uint32_t i = 0; i < mEvents.size(); i++) {

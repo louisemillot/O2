@@ -114,6 +114,7 @@ class GPUTPCGMMergedTrack
   float mLastY;                  //* outer Y
   float mLastZ;                  //* outer Z
   uint32_t mFirstClusterRef;     //* index of the first track cluster in corresponding cluster arrays
+  // TODO: Change to 8 bit
   uint32_t mNClusters;           //* number of track clusters
   uint32_t mNClustersFitted;     //* number of clusters used in fit
   uint8_t mFlags;

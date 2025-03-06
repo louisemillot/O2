@@ -21,7 +21,7 @@
 #include <hip/hip_ext.h>
 #include <hipcub/hipcub.hpp>
 #pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wshadow"
+#pragma GCC diagnostic ignored "-Wshadow" // FIXME: Is this still needed?
 #include <thrust/sort.h>
 #include <thrust/execution_policy.h>
 #include <thrust/device_ptr.h>
