@@ -201,12 +201,14 @@ int32_t GPUChainTracking::RunTPCCompression()
 
 int32_t GPUChainTracking::RunTPCDecompression()
 {
-  const bool runFullFiltering = GetProcessingSettings().tpcApplyCFCutsAtDecoding || (GetProcessingSettings().tpcApplyClusterFilterOnCPU > 0) || (param().tpcCutTimeBin > 0);
-  if (runFullFiltering && !GetProcessingSettings().tpcUseOldCPUDecoding) {
+  const bool needFullFiltering = GetProcessingSettings().tpcApplyCFCutsAtDecoding || (GetProcessingSettings().tpcApplyClusterFilterOnCPU > 0);
+  const bool runTimeBinCutFiltering = param().tpcCutTimeBin > 0;
+  if (needFullFiltering && !GetProcessingSettings().tpcUseOldCPUDecoding) {
     GPUFatal("tpcApplyCFCutsAtDecoding, tpcApplyClusterFilterOnCPU and tpcCutTimeBin currently require tpcUseOldCPUDecoding");
   }
 
   if (GetProcessingSettings().tpcUseOldCPUDecoding) {
+    const bool runFiltering = needFullFiltering || runTimeBinCutFiltering;
     const auto& threadContext = GetThreadContext();
     TPCClusterDecompressor decomp;
     auto allocatorFinal = [this](size_t size) {
@@ -219,13 +221,13 @@ int32_t GPUChainTracking::RunTPCDecompression()
       return ((tmpBuffer = std::make_unique<ClusterNative[]>(size))).get();
     };
     auto& decompressTimer = getTimer<TPCClusterDecompressor>("TPCDecompression", 0);
-    auto allocatorUse = runFullFiltering ? std::function<ClusterNative*(size_t)>{allocatorTmp} : std::function<ClusterNative*(size_t)>{allocatorFinal};
+    auto allocatorUse = runFiltering ? std::function<ClusterNative*(size_t)>{allocatorTmp} : std::function<ClusterNative*(size_t)>{allocatorFinal};
     decompressTimer.Start();
     if (decomp.decompress(mIOPtrs.tpcCompressedClusters, *mClusterNativeAccess, allocatorUse, param(), GetProcessingSettings().deterministicGPUReconstruction)) {
       GPUError("Error decompressing clusters");
       return 1;
     }
-    if (runFullFiltering) {
+    if (runFiltering) {
       RunTPCClusterFilter(mClusterNativeAccess.get(), allocatorFinal, GetProcessingSettings().tpcApplyCFCutsAtDecoding);
     }
     decompressTimer.Stop();
@@ -245,7 +247,6 @@ int32_t GPUChainTracking::RunTPCDecompression()
     mRec->PushNonPersistentMemory(qStr2Tag("TPCDCMPR"));
     RecoStep myStep = RecoStep::TPCDecompression;
     bool doGPU = GetRecoStepsGPU() & RecoStep::TPCDecompression;
-    bool runTimeBinCutFiltering = param().tpcCutTimeBin > 0;
     GPUTPCDecompression& Decompressor = processors()->tpcDecompressor;
     GPUTPCDecompression& DecompressorShadow = doGPU ? processorsShadow()->tpcDecompressor : Decompressor;
     const auto& threadContext = GetThreadContext();
