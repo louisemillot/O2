@@ -250,7 +250,6 @@ add_executable(o2-test-framework-core
               test/test_Variants.cxx
               test/test_WorkflowHelpers.cxx
               test/test_WorkflowSerialization.cxx
-              test/test_TreeToTable.cxx
               test/test_DataOutputDirector.cxx
               test/unittest_SimpleOptionsRetriever.cxx
               test/unittest_DataSpecUtils.cxx
@@ -348,7 +347,6 @@ foreach(b
         EventMixing
         HistogramRegistry
         TableToTree
-        TreeToTable
         ExternalFairMQDeviceProxies
         )
   o2_add_executable(benchmark-${b}
