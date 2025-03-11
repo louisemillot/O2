@@ -30,12 +30,6 @@
 #include <fstream>
 
 #define GPUCA_GPUReconstructionUpdateDefaults()                                             \
-  if (mProcessingSettings.trackletConstructorInPipeline < 0) {                              \
-    mProcessingSettings.trackletConstructorInPipeline = GPUCA_CONSTRUCTOR_IN_PIPELINE;      \
-  }                                                                                         \
-  if (mProcessingSettings.trackletSelectorSectors < 0) {                                    \
-    mProcessingSettings.trackletSelectorSectors = GPUCA_TRACKLET_SELECTOR_SECTOR_COUNT;     \
-  }                                                                                         \
   if (mProcessingSettings.alternateBorderSort < 0) {                                        \
     mProcessingSettings.alternateBorderSort = GPUCA_ALTERNATE_BORDER_SORT;                  \
   }                                                                                         \

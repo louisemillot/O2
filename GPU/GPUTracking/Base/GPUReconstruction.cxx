@@ -270,12 +270,6 @@ int32_t GPUReconstruction::InitPhaseBeforeDevice()
   }
   if (mProcessingSettings.deterministicGPUReconstruction && mProcessingSettings.debugLevel >= 6) {
     mProcessingSettings.nTPCClustererLanes = 1;
-    if (mProcessingSettings.trackletConstructorInPipeline < 0) {
-      mProcessingSettings.trackletConstructorInPipeline = 1;
-    }
-    if (mProcessingSettings.trackletSelectorSectors < 0) {
-      mProcessingSettings.trackletSelectorSectors = 1;
-    }
   }
   if (mProcessingSettings.createO2Output > 1 && mProcessingSettings.runQA && mProcessingSettings.qcRunFraction == 100.f) {
     mProcessingSettings.createO2Output = 1;

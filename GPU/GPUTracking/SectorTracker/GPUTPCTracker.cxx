@@ -93,7 +93,7 @@ void* GPUTPCTracker::SetPointersCommon(void* mem)
 void GPUTPCTracker::RegisterMemoryAllocation()
 {
   AllocateAndInitializeLate();
-  bool reuseCondition = !mRec->GetProcessingSettings().keepDisplayMemory && mRec->GetProcessingSettings().trackletConstructorInPipeline && ((mRec->GetRecoStepsGPU() & GPUDataTypes::RecoStep::TPCSectorTracking) || mRec->GetProcessingSettings().inKernelParallel == 1 || mRec->GetProcessingSettings().nHostThreads == 1);
+  bool reuseCondition = !mRec->GetProcessingSettings().keepDisplayMemory && ((mRec->GetRecoStepsGPU() & GPUDataTypes::RecoStep::TPCSectorTracking) || mRec->GetProcessingSettings().inKernelParallel == 1 || mRec->GetProcessingSettings().nHostThreads == 1);
   GPUMemoryReuse reLinks{reuseCondition, GPUMemoryReuse::REUSE_1TO1, GPUMemoryReuse::TrackerDataLinks, (uint16_t)(mISector % mRec->GetProcessingSettings().nStreams)};
   mMemoryResLinks = mRec->RegisterMemoryAllocation(this, &GPUTPCTracker::SetPointersDataLinks, GPUMemoryResource::MEMORY_SCRATCH | GPUMemoryResource::MEMORY_STACK, "TPCSectorLinks", reLinks);
   mMemoryResSectorScratch = mRec->RegisterMemoryAllocation(this, &GPUTPCTracker::SetPointersDataScratch, GPUMemoryResource::MEMORY_SCRATCH | GPUMemoryResource::MEMORY_STACK | GPUMemoryResource::MEMORY_CUSTOM, "TPCSectorScratch");

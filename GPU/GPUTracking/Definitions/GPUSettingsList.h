@@ -257,8 +257,6 @@ AddOption(autoAdjustHostThreads, bool, true, "", 0, "Auto-adjust number of OMP t
 AddOption(nStreams, int8_t, 8, "", 0, "Number of GPU streams / command queues")
 AddOption(nTPCClustererLanes, int8_t, -1, "", 0, "Number of TPC clusterers that can run in parallel (-1 = autoset)")
 AddOption(overrideClusterizerFragmentLen, int32_t, -1, "", 0, "Force the cluster max fragment len to a certain value (-1 = autodetect)")
-AddOption(trackletSelectorSectors, int8_t, -1, "", 0, "Number of sectors to processes in parallel at max")
-AddOption(trackletConstructorInPipeline, int8_t, -1, "", 0, "Run tracklet constructor in the pipeline")
 AddOption(delayedOutput, bool, true, "", 0, "Delay output to be parallel to track fit")
 AddOption(mergerSortTracks, int8_t, -1, "", 0, "Sort track indizes for GPU track fit")
 AddOption(alternateBorderSort, int8_t, -1, "", 0, "Alternative implementation for sorting of border tracks")
