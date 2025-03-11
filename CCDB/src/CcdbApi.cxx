@@ -1989,7 +1989,7 @@ bool CcdbApi::loadLocalContentToMemory(o2::pmr::vector<char>& dest, std::string&
 {
   if (url.find("alien:/", 0) != std::string::npos) {
     std::map<std::string, std::string> localHeaders;
-    loadFileToMemory(dest, url, &localHeaders);
+    loadFileToMemory(dest, url, &localHeaders, false);
     auto it = localHeaders.find("Error");
     if (it != localHeaders.end() && it->second == "An error occurred during retrieval") {
       return false;
@@ -2001,7 +2001,7 @@ bool CcdbApi::loadLocalContentToMemory(o2::pmr::vector<char>& dest, std::string&
     std::string path = url.substr(7);
     if (std::filesystem::exists(path)) {
       std::map<std::string, std::string> localHeaders;
-      loadFileToMemory(dest, url, &localHeaders);
+      loadFileToMemory(dest, url, &localHeaders, o2::utils::Str::endsWith(path, ".root"));
       auto it = localHeaders.find("Error");
       if (it != localHeaders.end() && it->second == "An error occurred during retrieval") {
         return false;
@@ -2013,7 +2013,7 @@ bool CcdbApi::loadLocalContentToMemory(o2::pmr::vector<char>& dest, std::string&
   return false;
 }
 
-void CcdbApi::loadFileToMemory(o2::pmr::vector<char>& dest, const std::string& path, std::map<std::string, std::string>* localHeaders) const
+void CcdbApi::loadFileToMemory(o2::pmr::vector<char>& dest, const std::string& path, std::map<std::string, std::string>* localHeaders, bool fetchLocalMetaData) const
 {
   // Read file to memory as vector. For special case of the locally cached file retriev metadata stored directly in the file
   constexpr size_t MaxCopySize = 0x1L << 25;
@@ -2061,7 +2061,7 @@ void CcdbApi::loadFileToMemory(o2::pmr::vector<char>& dest, const std::string& p
     totalread += nread;
   } while (nread == (long)MaxCopySize);
 
-  if (localHeaders) {
+  if (localHeaders && fetchLocalMetaData) {
     TMemFile memFile("name", const_cast<char*>(dest.data()), dest.size(), "READ");
     auto storedmeta = (std::map<std::string, std::string>*)extractFromTFile(memFile, TClass::GetClass("std::map<std::string, std::string>"), CCDBMETA_ENTRY);
     if (storedmeta) {
