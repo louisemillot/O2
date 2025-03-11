@@ -328,11 +328,6 @@ o2_add_executable(dpl-run
                   PUBLIC_LINK_LIBRARIES O2::Framework
                   )
 
-o2_add_executable(verify-aod-file
-                  SOURCES src/verifyAODFile.cxx
-                  PUBLIC_LINK_LIBRARIES O2::Framework ROOT::TreePlayer
-                  COMPONENT_NAME Framework)
-
 # benchmarks
 
 foreach(b
