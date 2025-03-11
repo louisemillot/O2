@@ -120,17 +120,15 @@ void ITSTrackingInterface::initialise()
   for (auto& params : trackParams) {
     params.CorrType = o2::base::PropagatorImpl<float>::MatCorrType::USEMatCorrLUT;
   }
-
   // adjust pT settings to actual mag. field
   for (size_t ip = 0; ip < trackParams.size(); ip++) {
     auto& param = trackParams[ip];
+    param.TrackletMinPt *= bFactor;
     for (int ilg = trackConf.MaxTrackLenght; ilg >= trackConf.MinTrackLenght; ilg--) {
       int lslot = trackConf.MaxTrackLenght - ilg;
       param.MinPt[lslot] *= bFactor;
-      param.TrackletMinPt *= bFactor;
     }
   }
-
   mTracker->setParameters(trackParams);
   mVertexer->setParameters(vertParams);
 }
