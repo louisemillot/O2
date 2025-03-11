@@ -273,9 +273,6 @@ int32_t GPUReconstruction::InitPhaseBeforeDevice()
     if (mProcessingSettings.trackletConstructorInPipeline < 0) {
       mProcessingSettings.trackletConstructorInPipeline = 1;
     }
-    if (mProcessingSettings.trackletSelectorInPipeline < 0) {
-      mProcessingSettings.trackletSelectorInPipeline = 1;
-    }
     if (mProcessingSettings.trackletSelectorSectors < 0) {
       mProcessingSettings.trackletSelectorSectors = 1;
     }
@@ -296,9 +293,6 @@ int32_t GPUReconstruction::InitPhaseBeforeDevice()
 
   UpdateAutomaticProcessingSettings();
   GPUCA_GPUReconstructionUpdateDefaults();
-  if (!mProcessingSettings.trackletConstructorInPipeline) {
-    mProcessingSettings.trackletSelectorInPipeline = false;
-  }
   if (!mProcessingSettings.rtc.enable) {
     mProcessingSettings.rtc.optConstexpr = false;
   }

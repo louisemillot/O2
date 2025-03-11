@@ -33,7 +33,7 @@ o2_gpu_add_kernel("GPUTPCStartHitsFinder"                             "= TPCTRAC
 o2_gpu_add_kernel("GPUTPCStartHitsSorter"                             "= TPCTRACKER"                                          LB      single)
 o2_gpu_add_kernel("GPUTPCTrackletConstructor, singleSector"           "= TPCTRACKER"                                          LB      single)
 o2_gpu_add_kernel("GPUTPCTrackletConstructor, allSectors"             "= TPCTRACKER"                                          LB      single)
-o2_gpu_add_kernel("GPUTPCTrackletSelector"                            "= TPCTRACKER"                                          LB      both)
+o2_gpu_add_kernel("GPUTPCTrackletSelector"                            "= TPCTRACKER"                                          LB      single)
 o2_gpu_add_kernel("GPUMemClean16"                                     "GPUGeneralKernels"                                     NO      "simple, REG, (GPUCA_THREAD_COUNT, 1)" void* ptr "uint64_t" size)
 o2_gpu_add_kernel("GPUitoa"                                           "GPUGeneralKernels"                                     NO      "simple, REG, (GPUCA_THREAD_COUNT, 1)" int32_t* ptr "uint64_t" size)
 o2_gpu_add_kernel("GPUTPCExtrapolationTrackingCopyNumbers"            "GPUTPCExtrapolationTracking TPCTRACKER"                NO      single int32_t n)
