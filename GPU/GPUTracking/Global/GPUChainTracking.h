@@ -220,7 +220,6 @@ class GPUChainTracking : public GPUChain
 
   GPUChainTracking(GPUReconstruction* rec, uint32_t maxTPCHits = GPUCA_MAX_CLUSTERS, uint32_t maxTRDTracklets = GPUCA_MAX_TRD_TRACKLETS);
 
-  int32_t ReadEvent(uint32_t iSector, int32_t threadId);
   void WriteOutput(int32_t iSector, int32_t threadId);
   int32_t ExtrapolationTracking(uint32_t iSector, int32_t threadId, bool synchronizeOutput = true);
 

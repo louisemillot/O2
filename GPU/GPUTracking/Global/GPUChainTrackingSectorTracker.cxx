@@ -158,17 +158,9 @@ int32_t GPUChainTracking::RunTPCTrackingSectors_internal()
     if (GetProcessingSettings().debugLevel >= 3) {
       GPUInfo("Creating Sector Data (Sector %d)", iSector);
     }
-    if (doGPU) {
-      TransferMemoryResourcesToGPU(RecoStep::TPCSectorTracking, &trk, useStream);
-      runKernel<GPUTPCCreateTrackingData>({GetGridBlk(GPUCA_ROW_COUNT, useStream), {iSector}, {nullptr, streamInit[useStream] ? nullptr : &mEvents->init}});
-      streamInit[useStream] = true;
-    } else {
-      if (ReadEvent(iSector, 0)) {
-        GPUError("Error reading event");
-        error = 1;
-        return;
-      }
-    }
+    TransferMemoryResourcesToGPU(RecoStep::TPCSectorTracking, &trk, useStream);
+    runKernel<GPUTPCCreateTrackingData>({doGPU ? GetGridBlk(GPUCA_ROW_COUNT, useStream) : GetGridAuto(0), {iSector}, {nullptr, streamInit[useStream] ? nullptr : &mEvents->init}}); // TODO: Check why GetGridAuto(0) is much fast on CPU
+    streamInit[useStream] = true;
     if (GetProcessingSettings().deterministicGPUReconstruction) {
       runKernel<GPUTPCSectorDebugSortKernels, GPUTPCSectorDebugSortKernels::hitData>({GetGridBlk(GPUCA_ROW_COUNT, useStream), {iSector}});
     }
@@ -379,18 +371,6 @@ int32_t GPUChainTracking::RunTPCTrackingSectors_internal()
   }
   mRec->PopNonPersistentMemory(RecoStep::TPCSectorTracking, qStr2Tag("TPCSLTRK"));
   return 0;
-}
-
-int32_t GPUChainTracking::ReadEvent(uint32_t iSector, int32_t threadId)
-{
-  if (GetProcessingSettings().debugLevel >= 5) {
-    GPUInfo("Running ReadEvent for sector %d on thread %d\n", iSector, threadId);
-  }
-  runKernel<GPUTPCCreateTrackingData>({{GetGridAuto(0, GPUReconstruction::krnlDeviceType::CPU)}, {iSector}});
-  if (GetProcessingSettings().debugLevel >= 5) {
-    GPUInfo("Finished ReadEvent for sector %d on thread %d\n", iSector, threadId);
-  }
-  return (0);
 }
 
 void GPUChainTracking::WriteOutput(int32_t iSector, int32_t threadId)
