@@ -17,6 +17,7 @@
 
 #include "clusterFinderDefs.h"
 #include "PackedCharge.h"
+#include "Array2D.h"
 
 namespace o2
 {
@@ -40,8 +41,7 @@ class ClusterAccumulator
   GPUd() tpccf::Charge updateInner(PackedCharge, tpccf::Delta2);
   GPUd() tpccf::Charge updateOuter(PackedCharge, tpccf::Delta2);
 
-  GPUd() void finalize(const ChargePos&, tpccf::Charge, tpccf::TPCTime, const GPUTPCGeometry&, tpccf::Charge*);
-  GPUd() bool toNative(const ChargePos&, tpccf::Charge, tpc::ClusterNative&, const GPUParam&) const;
+  GPUd() bool toNative(const ChargePos&, tpccf::Charge, tpc::ClusterNative&, const GPUParam&, tpccf::TPCTime, const Array2D<PackedCharge>&);
 
  private:
   float mQtot = 0;

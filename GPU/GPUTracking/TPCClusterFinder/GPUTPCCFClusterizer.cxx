@@ -58,8 +58,6 @@ GPUdii() void GPUTPCCFClusterizer::computeClustersImpl(int32_t nBlocks, int32_t 
   ChargePos pos = filteredPeakPositions[CAMath::Min(idx, clusternum - 1)];
   Charge charge = chargeMap[pos].unpack();
 
-  Charge padBoundaryCharges[2] = {chargeMap[pos.delta({-1, 0})].unpack(), chargeMap[pos.delta({1, 0})].unpack()};
-
   ClusterAccumulator pc;
   CPU_ONLY(labelAcc->collect(pos, charge));
 
@@ -82,10 +80,8 @@ GPUdii() void GPUTPCCFClusterizer::computeClustersImpl(int32_t nBlocks, int32_t 
     }
     return;
   }
-  pc.finalize(pos, charge, fragment.start, clusterer.Param().tpcGeometry, padBoundaryCharges);
-
   tpc::ClusterNative myCluster;
-  bool rejectCluster = !pc.toNative(pos, charge, myCluster, clusterer.Param());
+  bool rejectCluster = !pc.toNative(pos, charge, myCluster, clusterer.Param(), fragment.start, chargeMap);
 
   if (rejectCluster) {
     if (clusterPosInRow) {
