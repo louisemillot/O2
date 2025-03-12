@@ -53,12 +53,12 @@ class GPUCommonMath
   GPUd() static float2 MakeFloat2(float x, float y); // TODO: Find better appraoch that is constexpr
 
   template <class T>
-  GPUhd() static T Min(const T x, const T y)
+  GPUhd() constexpr static T Min(const T x, const T y)
   {
     return GPUCA_CHOICE(std::min(x, y), min(x, y), min(x, y));
   }
   template <class T>
-  GPUhd() static T Max(const T x, const T y)
+  GPUhd() constexpr static T Max(const T x, const T y)
   {
     return GPUCA_CHOICE(std::max(x, y), max(x, y), max(x, y));
   }
@@ -69,51 +69,51 @@ class GPUCommonMath
   template <class T, class S, class R>
   GPUd() static T MaxWithRef(T x, T y, T z, T w, S refX, S refY, S refZ, S refW, R& r);
   template <class T>
-  GPUdi() static T Clamp(const T v, const T lo, const T hi)
+  GPUdi() constexpr static T Clamp(const T v, const T lo, const T hi)
   {
     return Max(lo, Min(v, hi));
   }
-  GPUhdni() static float Sqrt(float x);
+  GPUhdni() constexpr static float Sqrt(float x);
   GPUd() static float InvSqrt(float x);
   template <class T>
-  GPUhd() static T Abs(T x);
-  GPUd() static float ASin(float x);
-  GPUd() static float ACos(float x);
-  GPUd() static float ATan(float x);
-  GPUhd() static float ATan2(float y, float x);
-  GPUd() static float Sin(float x);
-  GPUd() static float Cos(float x);
+  GPUhd() constexpr static T Abs(T x);
+  GPUd() constexpr static float ASin(float x);
+  GPUd() constexpr static float ACos(float x);
+  GPUd() constexpr static float ATan(float x);
+  GPUhd() constexpr static float ATan2(float y, float x);
+  GPUd() constexpr static float Sin(float x);
+  GPUd() constexpr static float Cos(float x);
   GPUhdni() static void SinCos(float x, float& s, float& c);
   GPUhdni() static void SinCosd(double x, double& s, double& c);
-  GPUd() static float Tan(float x);
-  GPUd() static float Pow(float x, float y);
-  GPUd() static float Log(float x);
-  GPUd() static float Exp(float x);
-  GPUhdni() static float Copysign(float x, float y) { return GPUCA_CHOICE(std::copysignf(x, y), copysignf(x, y), copysign(x, y)); }
-  GPUd() static constexpr float TwoPi() { return 6.2831853f; }
-  GPUd() static constexpr float Pi() { return 3.1415927f; }
-  GPUd() static float Round(float x);
-  GPUd() static float Floor(float x) { return GPUCA_CHOICE(floorf(x), floorf(x), floor(x)); }
-  GPUd() static uint32_t Float2UIntReint(const float& x);
-  GPUd() static uint32_t Float2UIntRn(float x) { return (uint32_t)(int32_t)(x + 0.5f); }
-  GPUd() static int32_t Float2IntRn(float x);
-  GPUd() static float Modf(float x, float y);
-  GPUd() static bool Finite(float x) { return GPUCA_CHOICE(std::isfinite(x), isfinite(x), isfinite(x)); }
-  GPUd() static bool IsNaN(float x) { return GPUCA_CHOICE(std::isnan(x), isnan(x), isnan(x)); }
-  GPUd() static bool FiniteRelaxed(float x); // always true if not using NO_FAST_MATH
-  GPUd() static bool IsNaNRelaxed(float x);  // always true if not using NO_FAST_MATH
-  GPUd() static float QuietNaN() { return GPUCA_CHOICE(std::numeric_limits<float>::quiet_NaN(), __builtin_nanf(""), nan(0u)); }
-  GPUd() static uint32_t Clz(uint32_t val);
-  GPUd() static uint32_t Popcount(uint32_t val);
+  GPUd() constexpr static float Tan(float x);
+  GPUd() constexpr static float Pow(float x, float y);
+  GPUd() constexpr static float Log(float x);
+  GPUd() constexpr static float Exp(float x);
+  GPUhdni() constexpr static float Copysign(float x, float y) { return GPUCA_CHOICE(std::copysignf(x, y), copysignf(x, y), copysign(x, y)); }
+  GPUd() constexpr static float TwoPi() { return 6.2831853f; }
+  GPUd() constexpr static float Pi() { return 3.1415927f; }
+  GPUd() constexpr static float Round(float x);
+  GPUd() constexpr static float Floor(float x) { return GPUCA_CHOICE(floorf(x), floorf(x), floor(x)); }
+  GPUd() static uint32_t Float2UIntReint(float x);
+  GPUd() constexpr static uint32_t Float2UIntRn(float x) { return (uint32_t)(int32_t)(x + 0.5f); }
+  GPUd() constexpr static int32_t Float2IntRn(float x);
+  GPUd() constexpr static float Modf(float x, float y);
+  GPUd() constexpr static bool Finite(float x) { return GPUCA_CHOICE(std::isfinite(x), isfinite(x), isfinite(x)); }
+  GPUd() constexpr static bool IsNaN(float x) { return GPUCA_CHOICE(std::isnan(x), isnan(x), isnan(x)); }
+  GPUd() constexpr static bool FiniteRelaxed(float x); // always true if not using NO_FAST_MATH
+  GPUd() constexpr static bool IsNaNRelaxed(float x);  // always true if not using NO_FAST_MATH
+  GPUd() constexpr static float QuietNaN() { return GPUCA_CHOICE(std::numeric_limits<float>::quiet_NaN(), __builtin_nanf(""), nan(0u)); }
+  GPUd() constexpr static uint32_t Clz(uint32_t val);
+  GPUd() constexpr static uint32_t Popcount(uint32_t val);
 
   GPUd() static void memcpy(void* dst, const void* src, size_t size);
 
-  GPUhdi() static float Hypot(float x, float y) { return Sqrt(x * x + y * y); }
-  GPUhdi() static float Hypot(float x, float y, float z) { return Sqrt(x * x + y * y + z * z); }
-  GPUhdi() static float Hypot(float x, float y, float z, float w) { return Sqrt(x * x + y * y + z * z + w * w); }
+  GPUhdi() constexpr static float Hypot(float x, float y) { return Sqrt(x * x + y * y); }
+  GPUhdi() constexpr static float Hypot(float x, float y, float z) { return Sqrt(x * x + y * y + z * z); }
+  GPUhdi() constexpr static float Hypot(float x, float y, float z, float w) { return Sqrt(x * x + y * y + z * z + w * w); }
 
   template <typename T>
-  GPUhd() static void Swap(T& a, T& b);
+  GPUhd() constexpr static void Swap(T& a, T& b);
 
   template <class T>
   GPUdi() static T AtomicExch(GPUglobalref() GPUgeneric() GPUAtomic(T) * addr, T val)
@@ -162,14 +162,14 @@ class GPUCommonMath
   {
     GPUCommonMath::AtomicMinInternal(addr, val);
   }
-  GPUd() static int32_t Mul24(int32_t a, int32_t b);
-  GPUd() static float FMulRZ(float a, float b);
+  GPUd() constexpr static int32_t Mul24(int32_t a, int32_t b);
+  GPUd() constexpr static float FMulRZ(float a, float b);
 
   template <int32_t I, class T>
   GPUd() constexpr static T nextMultipleOf(T val);
 
   template <typename... Args>
-  GPUhdni() static float Sum2(float w, Args... args);
+  GPUhdni() constexpr static float Sum2(float w, Args... args);
 
  private:
   template <class S, class T>
@@ -187,7 +187,7 @@ class GPUCommonMath
 typedef GPUCommonMath CAMath;
 
 template <typename... Args>
-GPUhdi() float GPUCommonMath::Sum2(float w, Args... args)
+GPUhdi() constexpr float GPUCommonMath::Sum2(float w, Args... args)
 {
   if constexpr (sizeof...(Args) == 0) {
     return w * w;
@@ -239,9 +239,9 @@ GPUdi() float2 GPUCommonMath::MakeFloat2(float x, float y)
 #endif // GPUCA_GPUCODE
 }
 
-GPUdi() float GPUCommonMath::Modf(float x, float y) { return GPUCA_CHOICE(fmodf(x, y), fmodf(x, y), fmod(x, y)); }
+GPUdi() constexpr float GPUCommonMath::Modf(float x, float y) { return GPUCA_CHOICE(fmodf(x, y), fmodf(x, y), fmod(x, y)); }
 
-GPUdi() uint32_t GPUCommonMath::Float2UIntReint(const float& x)
+GPUdi() uint32_t GPUCommonMath::Float2UIntReint(float x)
 {
 #if defined(GPUCA_GPUCODE_DEVICE) && (defined(__CUDACC__) || defined(__HIPCC__))
   return __float_as_uint(x);
@@ -253,37 +253,37 @@ GPUdi() uint32_t GPUCommonMath::Float2UIntReint(const float& x)
 }
 
 #ifdef GPUCA_NO_FAST_MATH
-GPUdi() float GPUCommonMath::Round(float x) { return GPUCA_CHOICE(roundf(x), roundf(x), round(x)); }
-GPUdi() int32_t GPUCommonMath::Float2IntRn(float x) { return (int32_t)Round(x); }
-GPUhdi() float GPUCommonMath::Sqrt(float x) { return GPUCA_CHOICE(sqrtf(x), (float)sqrt((double)x), sqrt(x)); }
-GPUdi() float GPUCommonMath::ATan(float x) { return GPUCA_CHOICE((float)atan((double)x), (float)atan((double)x), atan(x)); }
-GPUhdi() float GPUCommonMath::ATan2(float y, float x) { return GPUCA_CHOICE((float)atan2((double)y, (double)x), (float)atan2((double)y, (double)x), atan2(y, x)); }
-GPUdi() float GPUCommonMath::Sin(float x) { return GPUCA_CHOICE((float)sin((double)x), (float)sin((double)x), sin(x)); }
-GPUdi() float GPUCommonMath::Cos(float x) { return GPUCA_CHOICE((float)cos((double)x), (float)cos((double)x), cos(x)); }
-GPUdi() float GPUCommonMath::Tan(float x) { return GPUCA_CHOICE((float)tanf((double)x), (float)tanf((double)x), tan(x)); }
-GPUdi() float GPUCommonMath::Pow(float x, float y) { return GPUCA_CHOICE((float)pow((double)x, (double)y), pow((double)x, (double)y), pow(x, y)); }
-GPUdi() float GPUCommonMath::ASin(float x) { return GPUCA_CHOICE((float)asin((double)x), (float)asin((double)x), asin(x)); }
-GPUdi() float GPUCommonMath::ACos(float x) { return GPUCA_CHOICE((float)acos((double)x), (float)acos((double)x), acos(x)); }
-GPUdi() float GPUCommonMath::Log(float x) { return GPUCA_CHOICE((float)log((double)x), (float)log((double)x), log(x)); }
-GPUdi() float GPUCommonMath::Exp(float x) { return GPUCA_CHOICE((float)exp((double)x), (float)exp((double)x), exp(x)); }
-GPUdi() bool GPUCommonMath::FiniteRelaxed(float x) { return Finite(x); }
-GPUdi() bool GPUCommonMath::IsNaNRelaxed(float x) { return IsNaN(x); }
+GPUdi() constexpr float GPUCommonMath::Round(float x) { return GPUCA_CHOICE(roundf(x), roundf(x), round(x)); }
+GPUdi() constexpr int32_t GPUCommonMath::Float2IntRn(float x) { return (int32_t)Round(x); }
+GPUhdi() constexpr float GPUCommonMath::Sqrt(float x) { return GPUCA_CHOICE(sqrtf(x), (float)sqrt((double)x), sqrt(x)); }
+GPUdi() constexpr float GPUCommonMath::ATan(float x) { return GPUCA_CHOICE((float)atan((double)x), (float)atan((double)x), atan(x)); }
+GPUhdi() constexpr float GPUCommonMath::ATan2(float y, float x) { return GPUCA_CHOICE((float)atan2((double)y, (double)x), (float)atan2((double)y, (double)x), atan2(y, x)); }
+GPUdi() constexpr float GPUCommonMath::Sin(float x) { return GPUCA_CHOICE((float)sin((double)x), (float)sin((double)x), sin(x)); }
+GPUdi() constexpr float GPUCommonMath::Cos(float x) { return GPUCA_CHOICE((float)cos((double)x), (float)cos((double)x), cos(x)); }
+GPUdi() constexpr float GPUCommonMath::Tan(float x) { return GPUCA_CHOICE((float)tanf((double)x), (float)tanf((double)x), tan(x)); }
+GPUdi() constexpr float GPUCommonMath::Pow(float x, float y) { return GPUCA_CHOICE((float)pow((double)x, (double)y), pow((double)x, (double)y), pow(x, y)); }
+GPUdi() constexpr float GPUCommonMath::ASin(float x) { return GPUCA_CHOICE((float)asin((double)x), (float)asin((double)x), asin(x)); }
+GPUdi() constexpr float GPUCommonMath::ACos(float x) { return GPUCA_CHOICE((float)acos((double)x), (float)acos((double)x), acos(x)); }
+GPUdi() constexpr float GPUCommonMath::Log(float x) { return GPUCA_CHOICE((float)log((double)x), (float)log((double)x), log(x)); }
+GPUdi() constexpr float GPUCommonMath::Exp(float x) { return GPUCA_CHOICE((float)exp((double)x), (float)exp((double)x), exp(x)); }
+GPUdi() constexpr bool GPUCommonMath::FiniteRelaxed(float x) { return Finite(x); }
+GPUdi() constexpr bool GPUCommonMath::IsNaNRelaxed(float x) { return IsNaN(x); }
 #else
-GPUdi() float GPUCommonMath::Round(float x) { return GPUCA_CHOICE(roundf(x), rintf(x), rint(x)); }
-GPUdi() int32_t GPUCommonMath::Float2IntRn(float x) { return GPUCA_CHOICE((int32_t)Round(x), __float2int_rn(x), (int32_t)Round(x)); }
-GPUhdi() float GPUCommonMath::Sqrt(float x) { return GPUCA_CHOICE(sqrtf(x), sqrtf(x), sqrt(x)); }
-GPUdi() float GPUCommonMath::ATan(float x) { return GPUCA_CHOICE(atanf(x), atanf(x), atan(x)); }
-GPUhdi() float GPUCommonMath::ATan2(float y, float x) { return GPUCA_CHOICE(atan2f(y, x), atan2f(y, x), atan2(y, x)); }
-GPUdi() float GPUCommonMath::Sin(float x) { return GPUCA_CHOICE(sinf(x), sinf(x), sin(x)); }
-GPUdi() float GPUCommonMath::Cos(float x) { return GPUCA_CHOICE(cosf(x), cosf(x), cos(x)); }
-GPUdi() float GPUCommonMath::Tan(float x) { return GPUCA_CHOICE(tanf(x), tanf(x), tan(x)); }
-GPUdi() float GPUCommonMath::Pow(float x, float y) { return GPUCA_CHOICE(powf(x, y), powf(x, y), pow(x, y)); }
-GPUdi() float GPUCommonMath::ASin(float x) { return GPUCA_CHOICE(asinf(x), asinf(x), asin(x)); }
-GPUdi() float GPUCommonMath::ACos(float x) { return GPUCA_CHOICE(acosf(x), acosf(x), acos(x)); }
-GPUdi() float GPUCommonMath::Log(float x) { return GPUCA_CHOICE(logf(x), logf(x), log(x)); }
-GPUdi() float GPUCommonMath::Exp(float x) { return GPUCA_CHOICE(expf(x), expf(x), exp(x)); }
-GPUdi() bool GPUCommonMath::FiniteRelaxed(float x) { return true; }
-GPUdi() bool GPUCommonMath::IsNaNRelaxed(float x) { return false; }
+GPUdi() constexpr float GPUCommonMath::Round(float x) { return GPUCA_CHOICE(roundf(x), rintf(x), rint(x)); }
+GPUdi() constexpr int32_t GPUCommonMath::Float2IntRn(float x) { return GPUCA_CHOICE((int32_t)Round(x), __float2int_rn(x), (int32_t)Round(x)); }
+GPUhdi() constexpr float GPUCommonMath::Sqrt(float x) { return GPUCA_CHOICE(sqrtf(x), sqrtf(x), sqrt(x)); }
+GPUdi() constexpr float GPUCommonMath::ATan(float x) { return GPUCA_CHOICE(atanf(x), atanf(x), atan(x)); }
+GPUhdi() constexpr float GPUCommonMath::ATan2(float y, float x) { return GPUCA_CHOICE(atan2f(y, x), atan2f(y, x), atan2(y, x)); }
+GPUdi() constexpr float GPUCommonMath::Sin(float x) { return GPUCA_CHOICE(sinf(x), sinf(x), sin(x)); }
+GPUdi() constexpr float GPUCommonMath::Cos(float x) { return GPUCA_CHOICE(cosf(x), cosf(x), cos(x)); }
+GPUdi() constexpr float GPUCommonMath::Tan(float x) { return GPUCA_CHOICE(tanf(x), tanf(x), tan(x)); }
+GPUdi() constexpr float GPUCommonMath::Pow(float x, float y) { return GPUCA_CHOICE(powf(x, y), powf(x, y), pow(x, y)); }
+GPUdi() constexpr float GPUCommonMath::ASin(float x) { return GPUCA_CHOICE(asinf(x), asinf(x), asin(x)); }
+GPUdi() constexpr float GPUCommonMath::ACos(float x) { return GPUCA_CHOICE(acosf(x), acosf(x), acos(x)); }
+GPUdi() constexpr float GPUCommonMath::Log(float x) { return GPUCA_CHOICE(logf(x), logf(x), log(x)); }
+GPUdi() constexpr float GPUCommonMath::Exp(float x) { return GPUCA_CHOICE(expf(x), expf(x), exp(x)); }
+GPUdi() constexpr bool GPUCommonMath::FiniteRelaxed(float x) { return true; }
+GPUdi() constexpr bool GPUCommonMath::IsNaNRelaxed(float x) { return false; }
 #endif
 
 GPUhdi() void GPUCommonMath::SinCos(float x, float& s, float& c)
@@ -311,7 +311,7 @@ GPUhdi() void GPUCommonMath::SinCosd(double x, double& s, double& c)
 #endif
 }
 
-GPUdi() uint32_t GPUCommonMath::Clz(uint32_t x)
+GPUdi() constexpr uint32_t GPUCommonMath::Clz(uint32_t x)
 {
 #if (defined(__GNUC__) || defined(__clang__) || defined(__CUDACC__) || defined(__HIPCC__))
   return x == 0 ? 32 : GPUCA_CHOICE(__builtin_clz(x), __clz(x), __builtin_clz(x)); // use builtin if available
@@ -325,7 +325,7 @@ GPUdi() uint32_t GPUCommonMath::Clz(uint32_t x)
 #endif
 }
 
-GPUdi() uint32_t GPUCommonMath::Popcount(uint32_t x)
+GPUdi() constexpr uint32_t GPUCommonMath::Popcount(uint32_t x)
 {
 #if (defined(__GNUC__) || defined(__clang__) || defined(__CUDACC__) || defined(__HIPCC__)) && !defined(__OPENCL__) // TODO: remove OPENCL when reported SPIR-V bug is fixed
   // use builtin if available
@@ -338,7 +338,7 @@ GPUdi() uint32_t GPUCommonMath::Popcount(uint32_t x)
 }
 
 template <typename T>
-GPUhdi() void GPUCommonMath::Swap(T& a, T& b)
+GPUhdi() constexpr void GPUCommonMath::Swap(T& a, T& b)
 {
 #ifndef GPUCA_GPUCODE_DEVICE
   std::swap(a, b);
@@ -413,19 +413,19 @@ GPUdi() float GPUCommonMath::InvSqrt(float _x)
 }
 
 template <>
-GPUhdi() float GPUCommonMath::Abs<float>(float x)
+GPUhdi() constexpr float GPUCommonMath::Abs<float>(float x)
 {
   return GPUCA_CHOICE(fabsf(x), fabsf(x), fabs(x));
 }
 
 template <>
-GPUhdi() double GPUCommonMath::Abs<double>(double x)
+GPUhdi() constexpr double GPUCommonMath::Abs<double>(double x)
 {
   return GPUCA_CHOICE(fabs(x), fabs(x), fabs(x));
 }
 
 template <>
-GPUhdi() int32_t GPUCommonMath::Abs<int32_t>(int32_t x)
+GPUhdi() constexpr int32_t GPUCommonMath::Abs<int32_t>(int32_t x)
 {
   return GPUCA_CHOICE(abs(x), abs(x), abs(x));
 }
