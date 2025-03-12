@@ -82,6 +82,7 @@ class GPUCommonMath
   GPUd() static int32_t Float2IntRn(float x);
   GPUd() static float Modf(float x, float y);
   GPUd() static bool Finite(float x);
+  GPUd() static bool IsNaN(float x);
   GPUd() static uint32_t Clz(uint32_t val);
   GPUd() static uint32_t Popcount(uint32_t val);
 
@@ -224,7 +225,8 @@ GPUdi() float GPUCommonMath::Floor(float x) { return CHOICE(floorf(x), floorf(x)
 #ifdef GPUCA_NO_FAST_MATH
 GPUdi() float GPUCommonMath::Round(float x) { return CHOICE(roundf(x), roundf(x), round(x)); }
 GPUdi() int32_t GPUCommonMath::Float2IntRn(float x) { return (int32_t)Round(x); }
-GPUdi() bool GPUCommonMath::Finite(float x) { return CHOICE(std::isfinite(x), isfinite(x), true); }
+GPUdi() bool GPUCommonMath::Finite(float x) { return CHOICE(std::isfinite(x), isfinite(x), true); } // Fixme: fix these 2 for OpenCL
+GPUdi() bool GPUCommonMath::IsNaN(float x) { return CHOICE(std::isnan(x), isnan(x), false); }
 GPUhdi() float GPUCommonMath::Sqrt(float x) { return CHOICE(sqrtf(x), (float)sqrt((double)x), sqrt(x)); }
 GPUdi() float GPUCommonMath::ATan(float x) { return CHOICE((float)atan((double)x), (float)atan((double)x), atan(x)); }
 GPUhdi() float GPUCommonMath::ATan2(float y, float x) { return CHOICE((float)atan2((double)y, (double)x), (float)atan2((double)y, (double)x), atan2(y, x)); }
