@@ -31,7 +31,6 @@
 #include "GPUOutputControl.h"
 #include "GPUMemoryResource.h"
 #include "GPUConstantMem.h"
-#include "GPUTPCSectorOutput.h"
 #include "GPULogging.h"
 
 namespace o2::its

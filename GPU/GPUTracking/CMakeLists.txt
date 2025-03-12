@@ -37,7 +37,6 @@ set(SRCS
     SectorTracker/GPUTPCNeighboursCleaner.cxx
     SectorTracker/GPUTPCTracker.cxx
     SectorTracker/GPUTPCTrackingData.cxx
-    SectorTracker/GPUTPCSectorOutput.cxx
     SectorTracker/GPUTPCTrackletConstructor.cxx
     SectorTracker/GPUTPCSectorDebugSortKernels.cxx
     SectorTracker/GPUTPCCreateOccupancyMap.cxx

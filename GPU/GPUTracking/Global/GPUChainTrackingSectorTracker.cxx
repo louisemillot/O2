@@ -242,9 +242,9 @@ int32_t GPUChainTracking::RunTPCTrackingSectors_internal()
 
     std::array<bool, NSECTORS> transferRunning;
     transferRunning.fill(true);
-    if ((GetRecoStepsOutputs() & GPUDataTypes::InOutType::TPCSectorTracks) || (doGPU && !(GetRecoStepsGPU() & RecoStep::TPCMerging))) {
+    if (doGPU && !(GetRecoStepsGPU() & RecoStep::TPCMerging)) { // TODO: This seems pretty obsolete code path, can probably be removed.
       if (param().rec.tpc.extrapolationTracking) {
-        mWriteOutputDone.fill(0);
+        mExtrapolationTrackingDone.fill(0);
       }
 
       uint32_t tmpSector = 0;
@@ -288,18 +288,15 @@ int32_t GPUChainTracking::RunTPCTrackingSectors_internal()
             uint32_t sectorLeft, sectorRight;
             GPUTPCExtrapolationTracking::ExtrapolationTrackingSectorLeftRight(tmpSector2, sectorLeft, sectorRight);
 
-            if (tmpSector2 <= iSector && sectorLeft <= iSector && sectorRight <= iSector && mWriteOutputDone[tmpSector2] == 0) {
+            if (tmpSector2 <= iSector && sectorLeft <= iSector && sectorRight <= iSector && mExtrapolationTrackingDone[tmpSector2] == 0) {
               ExtrapolationTracking(tmpSector2, 0);
-              WriteOutput(tmpSector2, 0);
-              mWriteOutputDone[tmpSector2] = 1;
+              mExtrapolationTrackingDone[tmpSector2] = 1;
             }
           }
-        } else {
-          WriteOutput(iSector, 0);
         }
       }
     }
-    if (!(GetRecoStepsOutputs() & GPUDataTypes::InOutType::TPCSectorTracks) && param().rec.tpc.extrapolationTracking) {
+    if (param().rec.tpc.extrapolationTracking) {
       std::vector<bool> blocking(NSECTORS * mRec->NStreams());
       for (int32_t i = 0; i < NSECTORS; i++) {
         for (int32_t j = 0; j < mRec->NStreams(); j++) {
@@ -308,7 +305,7 @@ int32_t GPUChainTracking::RunTPCTrackingSectors_internal()
       }
       for (uint32_t iSector = 0; iSector < NSECTORS; iSector++) {
         uint32_t tmpSector = GPUTPCExtrapolationTracking::ExtrapolationTrackingSectorOrder(iSector);
-        if (!((GetRecoStepsOutputs() & GPUDataTypes::InOutType::TPCSectorTracks) || (doGPU && !(GetRecoStepsGPU() & RecoStep::TPCMerging)))) {
+        if (!(doGPU && !(GetRecoStepsGPU() & RecoStep::TPCMerging))) {
           uint32_t sectorLeft, sectorRight;
           GPUTPCExtrapolationTracking::ExtrapolationTrackingSectorLeftRight(tmpSector, sectorLeft, sectorRight);
           if (doGPU && !blocking[tmpSector * mRec->NStreams() + sectorLeft % mRec->NStreams()]) {
@@ -334,9 +331,6 @@ int32_t GPUChainTracking::RunTPCTrackingSectors_internal()
       if (param().rec.tpc.extrapolationTracking) {
         ExtrapolationTracking(iSector, 0);
       }
-      if (GetRecoStepsOutputs() & GPUDataTypes::InOutType::TPCSectorTracks) {
-        WriteOutput(iSector, 0);
-      }
     });
     mRec->SetNActiveThreadsOuterLoop(1);
   }
@@ -345,12 +339,6 @@ int32_t GPUChainTracking::RunTPCTrackingSectors_internal()
     for (uint32_t iSector = 0; iSector < NSECTORS; iSector++) {
       GPUInfo("Sector %d - Tracks: Local %d Extrapolated %d - Hits: Local %d Extrapolated %d", iSector,
               processors()->tpcTrackers[iSector].CommonMemory()->nLocalTracks, processors()->tpcTrackers[iSector].CommonMemory()->nTracks, processors()->tpcTrackers[iSector].CommonMemory()->nLocalTrackHits, processors()->tpcTrackers[iSector].CommonMemory()->nTrackHits);
-    }
-  }
-
-  if (GetProcessingSettings().debugMask & 1024 && !GetProcessingSettings().deterministicGPUReconstruction) {
-    for (uint32_t i = 0; i < NSECTORS; i++) {
-      processors()->tpcTrackers[i].DumpOutput(*mDebugFile);
     }
   }
 
@@ -371,16 +359,4 @@ int32_t GPUChainTracking::RunTPCTrackingSectors_internal()
   }
   mRec->PopNonPersistentMemory(RecoStep::TPCSectorTracking, qStr2Tag("TPCSLTRK"));
   return 0;
-}
-
-void GPUChainTracking::WriteOutput(int32_t iSector, int32_t threadId)
-{
-  if (GetProcessingSettings().debugLevel >= 5) {
-    GPUInfo("Running WriteOutput for sector %d on thread %d\n", iSector, threadId);
-  }
-  processors()->tpcTrackers[iSector].WriteOutputPrepare();
-  processors()->tpcTrackers[iSector].WriteOutput();
-  if (GetProcessingSettings().debugLevel >= 5) {
-    GPUInfo("Finished WriteOutput for sector %d on thread %d\n", iSector, threadId);
-  }
 }

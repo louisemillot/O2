@@ -220,7 +220,6 @@ class GPUChainTracking : public GPUChain
 
   GPUChainTracking(GPUReconstruction* rec, uint32_t maxTPCHits = GPUCA_MAX_CLUSTERS, uint32_t maxTRDTracklets = GPUCA_MAX_TRD_TRACKLETS);
 
-  void WriteOutput(int32_t iSector, int32_t threadId);
   int32_t ExtrapolationTracking(uint32_t iSector, int32_t threadId, bool synchronizeOutput = true);
 
   int32_t PrepareProfile();
@@ -280,7 +279,7 @@ class GPUChainTracking : public GPUChain
   // Synchronization and Locks
   eventStruct* mEvents = nullptr;
   volatile int32_t mSectorSelectorReady = 0;
-  std::array<int8_t, NSECTORS> mWriteOutputDone;
+  std::array<int8_t, NSECTORS> mExtrapolationTrackingDone;
 
   std::vector<outputQueueEntry> mOutputQueue;
 
