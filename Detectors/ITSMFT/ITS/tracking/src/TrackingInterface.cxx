@@ -38,6 +38,9 @@ void ITSTrackingInterface::initialise()
   std::vector<TrackingParameters> trackParams;
   const auto& trackConf = o2::its::TrackerParamConfig::Instance();
   float bFactor = std::abs(o2::base::Propagator::Instance()->getNominalBz()) / 5.0066791;
+  if (bFactor < 0.01) {
+    bFactor = 1.;
+  }
   if (mMode == TrackingMode::Unset) {
     mMode = (TrackingMode)(trackConf.trackingMode);
     LOGP(info, "Tracking mode not set, trying to fetch it from configurable params to: {}", asString(mMode));
