@@ -260,7 +260,7 @@ if [[ $GPUTYPE == "HIP" ]]; then
     GPU_CONFIG+=" --environment \"ROCR_VISIBLE_DEVICES={timeslice${TIMESLICEOFFSET}}\""
   fi
   [[ ${EPN_NODE_MI100:-} != "1" ]] && export HSA_NO_SCRATCH_RECLAIM=1
-  [[ $EPNSYNCMODE == 1 && ${EPN_NODE_MI100:-} == "1" ]] && GPU_CONFIG_KEY+="GPU_proc.serializeGPU=3;"
+  [[ $EPNSYNCMODE == 1 || ! -z ${OPTIMIZED_PARALLEL_ASYNC:-} ]] && [[ ${EPN_NODE_MI100:-} == "1" ]] && GPU_CONFIG_KEY+="GPU_proc.serializeGPU=3;"
   #export HSA_TOOLS_LIB=/opt/rocm/lib/librocm-debug-agent.so.2
 else
   GPU_CONFIG_KEY+="GPU_proc.deviceNum=-2;"
