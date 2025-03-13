@@ -24,12 +24,18 @@
 
 using namespace o2::gpu;
 
-int32_t GPUChainTracking::ExtrapolationTracking(uint32_t iSector, int32_t threadId, bool synchronizeOutput)
+uint32_t GPUChainTracking::StreamForSector(uint32_t sector) const
 {
-  runKernel<GPUTPCExtrapolationTracking>({GetGridBlk(256, iSector % mRec->NStreams()), {iSector}});
-  TransferMemoryResourceLinkToHost(RecoStep::TPCSectorTracking, processors()->tpcTrackers[iSector].MemoryResCommon(), iSector % mRec->NStreams());
-  if (synchronizeOutput) {
-    SynchronizeStream(iSector % mRec->NStreams());
+  return sector % mRec->NStreams();
+}
+
+int32_t GPUChainTracking::ExtrapolationTracking(uint32_t iSector, bool blocking)
+{
+  const uint32_t stream = StreamForSector(iSector);
+  runKernel<GPUTPCExtrapolationTracking>({GetGridBlk(256, stream), {iSector}});
+  TransferMemoryResourceLinkToHost(RecoStep::TPCSectorTracking, processors()->tpcTrackers[iSector].MemoryResCommon(), stream);
+  if (blocking) {
+    SynchronizeStream(stream);
   }
   return (0);
 }
@@ -153,7 +159,7 @@ int32_t GPUChainTracking::RunTPCTrackingSectors_internal()
   mRec->runParallelOuterLoop(doGPU, NSECTORS, [&](uint32_t iSector) {
     GPUTPCTracker& trk = processors()->tpcTrackers[iSector];
     GPUTPCTracker& trkShadow = doGPU ? processorsShadow()->tpcTrackers[iSector] : trk;
-    int32_t useStream = (iSector % mRec->NStreams());
+    int32_t useStream = StreamForSector(iSector);
 
     if (GetProcessingSettings().debugLevel >= 3) {
       GPUInfo("Creating Sector Data (Sector %d)", iSector);
@@ -234,102 +240,38 @@ int32_t GPUChainTracking::RunTPCTrackingSectors_internal()
   }
 
   if (doGPU || GetProcessingSettings().debugLevel >= 1) {
-    if (doGPU) {
-      ReleaseEvent(mEvents->init);
-    }
-
-    mSectorSelectorReady = 0;
-
-    std::array<bool, NSECTORS> transferRunning;
-    transferRunning.fill(true);
-    if (doGPU && !(GetRecoStepsGPU() & RecoStep::TPCMerging)) { // TODO: This seems pretty obsolete code path, can probably be removed.
-      if (param().rec.tpc.extrapolationTracking) {
-        mExtrapolationTrackingDone.fill(0);
-      }
-
-      uint32_t tmpSector = 0;
-      for (uint32_t iSector = 0; iSector < NSECTORS; iSector++) {
-        if (GetProcessingSettings().debugLevel >= 3) {
-          GPUInfo("Transfering Tracks from GPU to Host");
-        }
-
-        if (tmpSector == iSector) {
-          SynchronizeEvents(&mEvents->sector[iSector]);
-        }
-        while (tmpSector < NSECTORS && (tmpSector == iSector || IsEventDone(&mEvents->sector[tmpSector]))) {
-          ReleaseEvent(mEvents->sector[tmpSector]);
-          if (*processors()->tpcTrackers[tmpSector].NTracks() > 0) {
-            TransferMemoryResourceLinkToHost(RecoStep::TPCSectorTracking, processors()->tpcTrackers[tmpSector].MemoryResOutput(), streamMap[tmpSector], &mEvents->sector[tmpSector]);
-          } else {
-            transferRunning[tmpSector] = false;
-          }
-          tmpSector++;
-        }
-
-        if (GetProcessingSettings().keepAllMemory) {
-          TransferMemoryResourcesToHost(RecoStep::TPCSectorTracking, &processors()->tpcTrackers[iSector], -1, true);
-        }
-
-        if (transferRunning[iSector]) {
-          SynchronizeEvents(&mEvents->sector[iSector]);
-        }
-        if (GetProcessingSettings().debugLevel >= 3) {
-          GPUInfo("Tracks Transfered: %d / %d", *processors()->tpcTrackers[iSector].NTracks(), *processors()->tpcTrackers[iSector].NTrackHits());
-        }
-
-        if (GetProcessingSettings().debugLevel >= 3) {
-          GPUInfo("Data ready for sector %d", iSector);
-        }
-        mSectorSelectorReady = iSector;
-
-        if (param().rec.tpc.extrapolationTracking) {
-          for (uint32_t tmpSector2a = 0; tmpSector2a <= iSector; tmpSector2a++) {
-            uint32_t tmpSector2 = GPUTPCExtrapolationTracking::ExtrapolationTrackingSectorOrder(tmpSector2a);
-            uint32_t sectorLeft, sectorRight;
-            GPUTPCExtrapolationTracking::ExtrapolationTrackingSectorLeftRight(tmpSector2, sectorLeft, sectorRight);
-
-            if (tmpSector2 <= iSector && sectorLeft <= iSector && sectorRight <= iSector && mExtrapolationTrackingDone[tmpSector2] == 0) {
-              ExtrapolationTracking(tmpSector2, 0);
-              mExtrapolationTrackingDone[tmpSector2] = 1;
-            }
-          }
-        }
-      }
-    }
     if (param().rec.tpc.extrapolationTracking) {
       std::vector<bool> blocking(NSECTORS * mRec->NStreams());
-      for (int32_t i = 0; i < NSECTORS; i++) {
-        for (int32_t j = 0; j < mRec->NStreams(); j++) {
-          blocking[i * mRec->NStreams() + j] = i % mRec->NStreams() == j;
+      for (uint32_t iSector = 0; iSector < NSECTORS; iSector++) {
+        for (uint32_t iStream = 0; iStream < mRec->NStreams(); iStream++) {
+          blocking[iSector * mRec->NStreams() + iStream] = StreamForSector(iSector) == iStream;
         }
       }
       for (uint32_t iSector = 0; iSector < NSECTORS; iSector++) {
         uint32_t tmpSector = GPUTPCExtrapolationTracking::ExtrapolationTrackingSectorOrder(iSector);
-        if (!(doGPU && !(GetRecoStepsGPU() & RecoStep::TPCMerging))) {
-          uint32_t sectorLeft, sectorRight;
-          GPUTPCExtrapolationTracking::ExtrapolationTrackingSectorLeftRight(tmpSector, sectorLeft, sectorRight);
-          if (doGPU && !blocking[tmpSector * mRec->NStreams() + sectorLeft % mRec->NStreams()]) {
-            StreamWaitForEvents(tmpSector % mRec->NStreams(), &mEvents->sector[sectorLeft]);
-            blocking[tmpSector * mRec->NStreams() + sectorLeft % mRec->NStreams()] = true;
-          }
-          if (doGPU && !blocking[tmpSector * mRec->NStreams() + sectorRight % mRec->NStreams()]) {
-            StreamWaitForEvents(tmpSector % mRec->NStreams(), &mEvents->sector[sectorRight]);
-            blocking[tmpSector * mRec->NStreams() + sectorRight % mRec->NStreams()] = true;
-          }
+        uint32_t sectorLeft, sectorRight;
+        GPUTPCExtrapolationTracking::ExtrapolationTrackingSectorLeftRight(tmpSector, sectorLeft, sectorRight);
+        if (doGPU && !blocking[tmpSector * mRec->NStreams() + StreamForSector(sectorLeft)]) {
+          StreamWaitForEvents(StreamForSector(tmpSector), &mEvents->sector[sectorLeft]);
+          blocking[tmpSector * mRec->NStreams() + StreamForSector(sectorLeft)] = true;
         }
-        ExtrapolationTracking(tmpSector, 0, false);
+        if (doGPU && !blocking[tmpSector * mRec->NStreams() + StreamForSector(sectorRight)]) {
+          StreamWaitForEvents(StreamForSector(tmpSector), &mEvents->sector[sectorRight]);
+          blocking[tmpSector * mRec->NStreams() + StreamForSector(sectorRight)] = true;
+        }
+        ExtrapolationTracking(tmpSector, false);
       }
     }
-    for (uint32_t iSector = 0; iSector < NSECTORS; iSector++) {
-      if (doGPU && transferRunning[iSector]) {
+    if (doGPU) {
+      ReleaseEvent(mEvents->init);
+      for (uint32_t iSector = 0; iSector < NSECTORS; iSector++) {
         ReleaseEvent(mEvents->sector[iSector]);
       }
     }
   } else {
-    mSectorSelectorReady = NSECTORS;
     mRec->runParallelOuterLoop(doGPU, NSECTORS, [&](uint32_t iSector) {
       if (param().rec.tpc.extrapolationTracking) {
-        ExtrapolationTracking(iSector, 0);
+        ExtrapolationTracking(iSector, true);
       }
     });
     mRec->SetNActiveThreadsOuterLoop(1);
