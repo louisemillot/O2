@@ -1078,6 +1078,21 @@ int32_t GPUReconstruction::CheckErrorCodes(bool cpuOnly, bool forceShowErrors, s
   return retVal;
 }
 
+int32_t GPUReconstruction::GPUFailedMsgA(const int64_t error, const char* file, int32_t line, bool failOnError)
+{
+  if (error == 0 || !GPUFailedMsgInternal(error, file, line)) {
+    return 0;
+  }
+  if (failOnError) {
+    if (mInitialized && mInErrorHandling == false) {
+      mInErrorHandling = true;
+      CheckErrorCodes(false, true);
+    }
+    throw std::runtime_error("GPU Backend Failure");
+  }
+  return 1;
+}
+
 void GPUReconstruction::DumpSettings(const char* dir)
 {
   std::string f;

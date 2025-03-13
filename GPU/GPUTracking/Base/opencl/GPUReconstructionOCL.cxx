@@ -48,26 +48,15 @@ GPUReconstructionOCLBackend::~GPUReconstructionOCLBackend()
   }
 }
 
-int32_t GPUReconstructionOCLBackend::GPUFailedMsgAI(const int64_t error, const char* file, int32_t line)
+static_assert(sizeof(cl_int) <= sizeof(int64_t) && CL_SUCCESS == 0);
+int32_t GPUReconstructionOCLBackend::GPUFailedMsgInternal(const int64_t error, const char* file, int32_t line) const
 {
   // Check for OPENCL Error and in the case of an error display the corresponding error string
   if (error == CL_SUCCESS) {
     return (0);
   }
-  GPUError("OCL Error: %ld / %s (%s:%d)", error, convertErrorToString(error), file, line);
+  GPUError("OpenCL Error: %ld / %s (%s:%d)", error, convertErrorToString(error), file, line);
   return 1;
-}
-
-void GPUReconstructionOCLBackend::GPUFailedMsgA(const int64_t error, const char* file, int32_t line)
-{
-  if (GPUFailedMsgAI(error, file, line)) {
-    static bool runningCallbacks = false;
-    if (IsInitialized() && runningCallbacks == false) {
-      runningCallbacks = true;
-      CheckErrorCodes(false, true);
-    }
-    throw std::runtime_error("OpenCL Failure");
-  }
 }
 
 void GPUReconstructionOCLBackend::UpdateAutomaticProcessingSettings()

@@ -143,6 +143,7 @@ class GPUReconstruction
   virtual void* getGPUPointer(void* ptr) { return ptr; }
   virtual void startGPUProfiling() {}
   virtual void endGPUProfiling() {}
+  int32_t GPUFailedMsgA(const int64_t error, const char* file, int32_t line, bool failOnError);
   int32_t CheckErrorCodes(bool cpuOnly = false, bool forceShowErrors = false, std::vector<std::array<uint32_t, 4>>* fillErrors = nullptr);
   void RunPipelineWorker();
   void TerminatePipelineWorker();
@@ -246,6 +247,7 @@ class GPUReconstruction
   void UpdateMaxMemoryUsed();
   int32_t EnqueuePipeline(bool terminate = false);
   GPUChain* GetNextChainInQueue();
+  virtual int32_t GPUFailedMsgInternal(const int64_t error, const char* file, int32_t line) const { return 0; }
 
   virtual int32_t registerMemoryForGPU_internal(const void* ptr, size_t size) = 0;
   virtual int32_t unregisterMemoryForGPU_internal(const void* ptr) = 0;
@@ -327,6 +329,7 @@ class GPUReconstruction
 
   // Others
   bool mInitialized = false;
+  bool mInErrorHandling = false;
   uint32_t mStatNEvents = 0;
   uint32_t mNEventsProcessed = 0;
   double mStatKernelTime = 0.;

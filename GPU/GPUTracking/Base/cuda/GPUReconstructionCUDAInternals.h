@@ -22,12 +22,10 @@
 #include <vector>
 #include <memory>
 #include <string>
+#include "GPUCommonChkErr.h"
 
 namespace o2::gpu
 {
-
-#define GPUFailedMsg(x) GPUFailedMsgA(x, __FILE__, __LINE__)
-#define GPUFailedMsgI(x) GPUFailedMsgAI(x, __FILE__, __LINE__)
 
 struct GPUReconstructionCUDAInternals {
   std::vector<std::unique_ptr<CUmodule>> kernelModules;     // module for RTC compilation
