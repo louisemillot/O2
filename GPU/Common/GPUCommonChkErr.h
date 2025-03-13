@@ -12,10 +12,19 @@
 /// \file GPUCommonChkErr.h
 /// \author David Rohr
 
+// GPUChkErr and GPUChkErrI will both check x for an error, using the loaded backend of GPUReconstruction (requiring GPUReconstruction.h to be included by the user).
+// In case of an error, it will print out the corresponding CUDA / HIP / OpenCL error code
+// GPUChkErr will download GPUReconstruction error values from GPU, print them, and terminate the application with an exception if an error occured.
+// GPUChkErrI will return 0 or 1, depending on whether an error has occurred.
+// The Macros must be called ona GPUReconstruction instance, e.g.:
+// if (mRec->GPUChkErrI(cudaMalloc(...))) { exit(1); }
+// gpuRecObj.GPUChkErr(cudaMalloc(...));
+
 #ifndef GPUCOMMONCHKERR_H
 #define GPUCOMMONCHKERR_H
 
-#define GPUFailedMsg(x) GPUFailedMsgA(x, __FILE__, __LINE__, true)
-#define GPUFailedMsgI(x) GPUFailedMsgA(x, __FILE__, __LINE__, false)
+// Please #include "GPUReconstruction.h" in your code, if you use these 2!
+#define GPUChkErr(x) GPUChkErrA(x, __FILE__, __LINE__, true)
+#define GPUChkErrI(x) GPUChkErrA(x, __FILE__, __LINE__, false)
 
 #endif
