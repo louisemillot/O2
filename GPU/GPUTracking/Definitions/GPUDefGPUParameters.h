@@ -477,6 +477,9 @@
   #ifndef GPUCA_LB_GPUTPCCFClusterizer
     #define GPUCA_LB_GPUTPCCFClusterizer 512
   #endif
+  #ifndef GPUCA_LB_GPUTPCNNClusterizerKernels
+    #define GPUCA_LB_GPUTPCNNClusterizerKernels 512
+  #endif
   #ifndef GPUCA_LB_GPUTrackingRefitKernel_mode0asGPU
     #define GPUCA_LB_GPUTrackingRefitKernel_mode0asGPU 256
   #endif
@@ -495,6 +498,16 @@
 
 #define GPUCA_LB_GPUTPCCFNoiseSuppression_noiseSuppression GPUCA_LB_GPUTPCCFNoiseSuppression
 #define GPUCA_LB_GPUTPCCFNoiseSuppression_updatePeaks GPUCA_LB_GPUTPCCFNoiseSuppression
+
+#ifdef GPUCA_HAS_ONNX
+#define GPUCA_LB_GPUTPCNNClusterizerKernels_runCfClusterizer GPUCA_LB_GPUTPCNNClusterizerKernels
+#define GPUCA_LB_GPUTPCNNClusterizerKernels_fillInputNN GPUCA_LB_GPUTPCNNClusterizerKernels
+#define GPUCA_LB_GPUTPCNNClusterizerKernels_determineClass1Labels GPUCA_LB_GPUTPCNNClusterizerKernels
+#define GPUCA_LB_GPUTPCNNClusterizerKernels_determineClass2Labels GPUCA_LB_GPUTPCNNClusterizerKernels
+#define GPUCA_LB_GPUTPCNNClusterizerKernels_publishClass1Regression GPUCA_LB_GPUTPCNNClusterizerKernels
+#define GPUCA_LB_GPUTPCNNClusterizerKernels_publishClass2Regression GPUCA_LB_GPUTPCNNClusterizerKernels
+#endif
+
 #define GPUCA_LB_GPUTPCCFStreamCompaction_scanStart GPUCA_THREAD_COUNT_SCAN
 #define GPUCA_LB_GPUTPCCFStreamCompaction_scanUp GPUCA_THREAD_COUNT_SCAN
 #define GPUCA_LB_GPUTPCCFStreamCompaction_scanTop GPUCA_THREAD_COUNT_SCAN

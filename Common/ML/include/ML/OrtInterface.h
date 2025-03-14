@@ -41,6 +41,7 @@ class OrtModel
   OrtModel(std::unordered_map<std::string, std::string> optionsMap) { reset(optionsMap); }
   void init(std::unordered_map<std::string, std::string> optionsMap) { reset(optionsMap); }
   void reset(std::unordered_map<std::string, std::string>);
+  bool isInitialized() { return mInitialized; }
 
   virtual ~OrtModel() = default;
 
@@ -54,6 +55,9 @@ class OrtModel
 
   template <class I, class O> // class I is the input data type, e.g. float, class O is the output data type, e.g. O2::gpu::OrtDataType::Float16_t from O2/GPU/GPUTracking/ML/convert_float16.h
   std::vector<O> inference(std::vector<std::vector<I>>&);
+
+  template <class I, class O> // class I is the input data type, e.g. float, class O is the output data type, e.g. OrtDataType::Float16_t from O2/Common/ML/include/ML/GPUORTFloat16.h
+  void inference(I*, size_t, O*);
 
   // template<class I, class T, class O> // class I is the input data type, e.g. float, class T the throughput data type and class O is the output data type
   // std::vector<O> inference(std::vector<I>&);
@@ -79,8 +83,9 @@ class OrtModel
   std::vector<std::vector<int64_t>> mInputShapes, mOutputShapes;
 
   // Environment settings
-  std::string modelPath, device = "cpu", dtype = "float"; // device options should be cpu, rocm, migraphx, cuda
-  int intraOpNumThreads = 0, deviceId = 0, enableProfiling = 0, loggingLevel = 0, allocateDeviceMemory = 0, enableOptimizations = 0;
+  bool mInitialized = false;
+  std::string modelPath, device = "cpu", dtype = "float", thread_affinity = ""; // device options should be cpu, rocm, migraphx, cuda
+  int intraOpNumThreads = 1, interOpNumThreads = 1, deviceId = 0, enableProfiling = 0, loggingLevel = 0, allocateDeviceMemory = 0, enableOptimizations = 0;
 
   std::string printShape(const std::vector<int64_t>&);
 };

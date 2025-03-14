@@ -41,6 +41,17 @@ class ClusterAccumulator
   GPUd() tpccf::Charge updateInner(PackedCharge, tpccf::Delta2);
   GPUd() tpccf::Charge updateOuter(PackedCharge, tpccf::Delta2);
 
+  GPUd() void setFull(float qtot, float padMean, float padSigma, float timeMean, float timeSigma, uint8_t splitInPad, uint8_t splitInTime)
+  {
+    mQtot = qtot;
+    mPadMean = padMean;
+    mPadSigma = padSigma;
+    mTimeMean = timeMean;
+    mTimeSigma = timeSigma;
+    mSplitInPad = splitInPad;
+    mSplitInTime = splitInTime;
+  }
+
   GPUd() void finalize(const ChargePos&, const tpccf::Charge, tpccf::TPCTime);
   GPUd() bool toNative(const ChargePos&, const tpccf::Charge, tpc::ClusterNative&, const GPUParam&, const Array2D<PackedCharge>&);
 
