@@ -22,7 +22,7 @@
 #include <vector>
 #include <memory>
 #include <string>
-#include "GPUCommonChkErr.h"
+#include "GPUCommonHelpers.h"
 
 namespace o2::gpu
 {

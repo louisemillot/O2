@@ -22,6 +22,7 @@
 #include "CUDAThrustHelpers.h"
 #include "GPUReconstructionIncludes.h"
 #include "GPUParamRTC.h"
+#include "GPUReconstructionCUDAHelpers.inc"
 
 #if defined(GPUCA_KERNEL_COMPILE_MODE) && GPUCA_KERNEL_COMPILE_MODE == 1
 #include "utils/qGetLdBinarySymbols.h"
@@ -62,13 +63,9 @@ GPUReconstructionCUDABackend::~GPUReconstructionCUDABackend()
 }
 
 static_assert(sizeof(cudaError_t) <= sizeof(int64_t) && cudaSuccess == 0);
-int32_t GPUReconstructionCUDABackend::GPUChkErrStatic(const int64_t error, const char* file, int32_t line)
+int32_t GPUReconstructionCUDABackend::GPUChkErrInternal(const int64_t error, const char* file, int32_t line) const
 {
-  if (error == cudaSuccess) {
-    return (0);
-  }
-  GPUError("CUDA Error: %ld / %s (%s:%d)", error, cudaGetErrorString((cudaError_t)error), file, line);
-  return 1;
+  return internal::GPUReconstructionCUDAChkErr(error, file, line);
 }
 
 GPUReconstructionCUDA::GPUReconstructionCUDA(const GPUSettingsDeviceBackend& cfg) : GPUReconstructionKernels(cfg)

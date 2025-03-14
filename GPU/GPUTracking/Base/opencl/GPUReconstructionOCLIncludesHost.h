@@ -28,7 +28,7 @@
 
 #include "GPUReconstructionOCL.h"
 #include "GPUReconstructionIncludes.h"
-#include "GPUCommonChkErr.h"
+#include "GPUCommonHelpers.h"
 
 using namespace o2::gpu;
 

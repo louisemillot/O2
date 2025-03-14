@@ -52,11 +52,10 @@ static_assert(sizeof(cl_int) <= sizeof(int64_t) && CL_SUCCESS == 0);
 int32_t GPUReconstructionOCLBackend::GPUChkErrInternal(const int64_t error, const char* file, int32_t line) const
 {
   // Check for OPENCL Error and in the case of an error display the corresponding error string
-  if (error == CL_SUCCESS) {
-    return (0);
+  if (error != CL_SUCCESS) {
+    GPUError("OpenCL Error: %ld / %s (%s:%d)", error, convertErrorToString(error), file, line);
   }
-  GPUError("OpenCL Error: %ld / %s (%s:%d)", error, convertErrorToString(error), file, line);
-  return 1;
+  return error != CL_SUCCESS;
 }
 
 void GPUReconstructionOCLBackend::UpdateAutomaticProcessingSettings()

@@ -138,7 +138,7 @@ void GPUReconstructionCUDABackend::getRTCKernelCalls(std::vector<std::string>& k
 #ifndef GPUCA_NO_CONSTANT_MEMORY
 static GPUReconstructionDeviceBase::deviceConstantMemRegistration registerConstSymbol([]() {
   void* retVal = nullptr;
-  if (GPUReconstructionCUDA::GPUChkErrStatic(cudaGetSymbolAddress(&retVal, gGPUConstantMemBuffer), __FILE__, __LINE__)) {
+  if (GPUChkErrS(cudaGetSymbolAddress(&retVal, gGPUConstantMemBuffer))) {
     throw std::runtime_error("Could not obtain GPU constant memory symbol");
   }
   return retVal;
