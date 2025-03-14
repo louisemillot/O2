@@ -52,7 +52,7 @@ namespace gpu_reconstruction_kernels
 {
 struct deviceEvent;
 class threadContext;
-}
+} // namespace gpu_reconstruction_kernels
 
 class GPUReconstruction
 {
@@ -193,7 +193,7 @@ class GPUReconstruction
   bool IsInitialized() const { return mInitialized; }
   void SetSettings(float solenoidBzNominalGPU, const GPURecoStepConfiguration* workflow = nullptr);
   void SetSettings(const GPUSettingsGRP* grp, const GPUSettingsRec* rec = nullptr, const GPUSettingsProcessing* proc = nullptr, const GPURecoStepConfiguration* workflow = nullptr);
-  void SetResetTimers(bool reset) { mProcessingSettings.resetTimers = reset; } // May update also after Init()
+  void SetResetTimers(bool reset) { mProcessingSettings.resetTimers = reset; }     // May update also after Init()
   void SetDebugLevelTmp(int32_t level) { mProcessingSettings.debugLevel = level; } // Temporarily, before calling SetSettings()
   void UpdateSettings(const GPUSettingsGRP* g, const GPUSettingsProcessing* p = nullptr, const GPUSettingsRecDynamic* d = nullptr);
   void UpdateDynamicSettings(const GPUSettingsRecDynamic* d);

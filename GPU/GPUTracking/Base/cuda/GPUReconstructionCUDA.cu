@@ -496,7 +496,7 @@ size_t GPUReconstructionCUDA::GPUMemCpy(void* dst, const void* src, size_t size,
     for (int32_t k = 0; k < nEvents; k++) {
       GPUChkErr(cudaStreamWaitEvent(mInternals->Streams[stream], evList[k].get<cudaEvent_t>(), 0));
     }
-    GPUChkErr(cudaMemcpyAsync(dst, src, size, toGPU == -2 ? cudaMemcpyDeviceToDevice : toGPU ? cudaMemcpyHostToDevice : cudaMemcpyDeviceToHost, mInternals->Streams[stream]));
+    GPUChkErr(cudaMemcpyAsync(dst, src, size, toGPU == -2 ? cudaMemcpyDeviceToDevice : (toGPU ? cudaMemcpyHostToDevice : cudaMemcpyDeviceToHost), mInternals->Streams[stream]));
   }
   if (ev) {
     GPUChkErr(cudaEventRecord(ev->get<cudaEvent_t>(), mInternals->Streams[stream == -1 ? 0 : stream]));

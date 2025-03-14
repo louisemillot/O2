@@ -2140,7 +2140,7 @@ GPUd() void GPUTPCGMMerger::MergeLoopersMain(int32_t nBlocks, int32_t nThreads, 
       }
       const float d2xy = CAMath::Sum2(params[i].x - params[j].x, params[i].y - params[j].y);
       if (d2xy > 15.f) {
-        //bs |= 1;
+        // bs |= 1;
         continue;
       }
       const auto& trk1 = mOutputTracks[params[i].id];
@@ -2148,7 +2148,7 @@ GPUd() void GPUTPCGMMerger::MergeLoopersMain(int32_t nBlocks, int32_t nThreads, 
       const auto& param1 = trk1.GetParam();
       const auto& param2 = trk2.GetParam();
       if (CAMath::Abs(param1.GetDzDs()) > 0.03f && CAMath::Abs(param2.GetDzDs()) > 0.03f && param1.GetDzDs() * param2.GetDzDs() * param1.GetQPt() * param2.GetQPt() < 0) {
-        //bs |= 2;
+        // bs |= 2;
         continue;
       }
 
@@ -2170,7 +2170,7 @@ GPUd() void GPUTPCGMMerger::MergeLoopersMain(int32_t nBlocks, int32_t nThreads, 
         }
       }
       if (!dzcorrok) {
-        //bs |= 4;
+        // bs |= 4;
         continue;
       }
 
