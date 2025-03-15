@@ -154,6 +154,20 @@ std::string getTime(uint64_t ts)
 }
 
 //----------------------------------------------------------------------------
+std::string getDuration(uint64_t tStart, uint64_t tStop)
+{
+  /// get the duration (dd hh:mm:ss) between the two time stamps (ms)
+
+  auto dt = ms2s(tStop - tStart);
+  auto s = dt % 60;
+  auto m = (dt / 60) % 60;
+  auto h = (dt / 3600) % 24;
+  auto d = dt / 86400;
+
+  return fmt::format("{:02}d {:02}:{:02}:{:02}", d, h, m, s);
+}
+
+//----------------------------------------------------------------------------
 std::set<int> getRuns(std::string runList)
 {
   /// read the runList from an ASCII file, or a comma separated run list, or a single run
@@ -283,15 +297,17 @@ void drawRunBoudaries(const RBMAP& runBoundaries, TCanvas* c)
 }
 
 //----------------------------------------------------------------------------
-DPBMAP getDPBoundaries(ccdb::CcdbApi const& api, std::string what, uint64_t tStart, uint64_t tStop)
+DPBMAP getDPBoundaries(ccdb::CcdbApi const& api, std::string what,
+                       uint64_t tStart, uint64_t tStop, uint64_t timeInterval)
 {
   /// get the time boundaries of every HV/LV files found in the time range
 
-  // add extra margin (ms) of ± 1 min to the creation time, which occurs every 30 min
-  static const uint64_t timeMarging[2] = {60000, 1860000};
+  // add an extra margin (ms) of ± 1 min to the creation time,
+  // which corresponds to the end of the time interval covered by the file
+  static const uint64_t timeMarging = 60000;
 
   std::istringstream fileInfo(api.list(what.c_str(), false, "text/plain",
-                                       tStop + timeMarging[1], tStart - timeMarging[0]));
+                                       tStop + timeInterval + timeMarging, tStart - timeMarging));
 
   DPBMAP dpBoundaries{};
   std::string dummy{};
@@ -357,7 +373,7 @@ void checkDPBoundaries(const DPBMAP& dpBoundaries, bool scanHV, uint64_t tStart,
 }
 
 //----------------------------------------------------------------------------
-void printDPBoundaries(const DPBMAP& dpBoundaries, bool scanHV)
+void printDPBoundaries(const DPBMAP& dpBoundaries, bool scanHV, uint64_t timeInterval)
 {
   /// print the time boundaries of every HV/LV files found in the full time range
 
@@ -365,7 +381,13 @@ void printDPBoundaries(const DPBMAP& dpBoundaries, bool scanHV)
   printf("------------------------------------\n");
 
   for (auto [tStart, tStop] : dpBoundaries) {
-    printf("%llu - %llu (%s - %s)\n", tStart, tStop, getTime(tStart).c_str(), getTime(tStop).c_str());
+    printf("%llu - %llu (%s - %s)", tStart, tStop, getTime(tStart).c_str(), getTime(tStop).c_str());
+    if (tStop - tStart < 60000 * (timeInterval - 1) || tStop - tStart > 60000 * (timeInterval + 1)) {
+      printf("\e[0;31m ! warning: validity range %s != %llu±1 min\e[0m\n",
+             getDuration(tStart, tStop).c_str(), timeInterval);
+    } else {
+      printf("\n");
+    }
   }
 
   printf("------------------------------------\n");
@@ -398,20 +420,6 @@ void drawLimit(double limit, TCanvas* c)
   l->SetLineWidth(1);
   l->SetLineStyle(2);
   l->Draw();
-}
-
-//----------------------------------------------------------------------------
-std::string getDuration(uint64_t tStart, uint64_t tStop)
-{
-  /// get the duration (dd hh:mm:ss) between the two time stamps (ms)
-
-  auto dt = ms2s(tStop - tStart);
-  auto s = dt % 60;
-  auto m = (dt / 60) % 60;
-  auto h = (dt / 3600) % 24;
-  auto d = dt / 86400;
-
-  return fmt::format("{:02}d {:02}:{:02}:{:02}", d, h, m, s);
 }
 
 //----------------------------------------------------------------------------
@@ -943,6 +951,7 @@ int main(int argc, char** argv)
   std::string what = "";
   std::string config = "";
   uint64_t minDuration = 0;
+  uint64_t timeInterval = 30;
   int warningLevel = 1;
   int printLevel = 1;
   std::string outFileName = "";
@@ -955,6 +964,7 @@ int main(int argc, char** argv)
       ("channels,c",po::value<std::string>(&what)->default_value(""),R"(channel(s) to scan ("HV" or "LV" or comma separated list of (part of) DCS aliases))")
       ("configKeyValues",po::value<std::string>(&config)->default_value(""),"Semicolon separated key=value strings to change HV thresholds")
       ("duration,d",po::value<uint64_t>(&minDuration)->default_value(0),"minimum duration (ms) of HV/LV issues to consider")
+      ("interval,i",po::value<uint64_t>(&timeInterval)->default_value(30),"creation time interval (minutes) between CCDB files")
       ("warning,w",po::value<int>(&warningLevel)->default_value(1),"warning level (0, 1 or 2)")
       ("print,p",po::value<int>(&printLevel)->default_value(1),"print level (0, 1, 2 or 3)")
       ("output,o",po::value<std::string>(&outFileName)->default_value("scan.root"),"output root file name")
@@ -1021,9 +1031,9 @@ int main(int argc, char** argv)
 
   // extract the time boundaries for each HV/LV file in the full time range
   auto dpBoundaries = getDPBoundaries(api, path.c_str(), runBoundaries.begin()->second.first,
-                                      runBoundaries.rbegin()->second.second);
+                                      runBoundaries.rbegin()->second.second, timeInterval * 60000);
   if (printLevel > 0) {
-    printDPBoundaries(dpBoundaries, scanHV);
+    printDPBoundaries(dpBoundaries, scanHV, timeInterval);
   }
   checkDPBoundaries(dpBoundaries, scanHV, runBoundaries.begin()->second.first,
                     runBoundaries.rbegin()->second.second);
