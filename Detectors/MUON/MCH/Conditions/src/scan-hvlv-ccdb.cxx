@@ -56,6 +56,7 @@ using DPBMAP = std::map<uint64_t, uint64_t>;
 using ISSUE = std::tuple<uint64_t, uint64_t, double, double, std::string>;
 using ISSUELIST = std::vector<ISSUE>;
 using ISSUEMAP = std::map<std::string, ISSUELIST>;
+using ULL = unsigned long long;
 
 //----------------------------------------------------------------------------
 bool containsAKey(std::string data, const std::set<std::string>& Keys)
@@ -238,14 +239,14 @@ void checkRunBoundaries(const RBMAP& runBoundaries)
   for (const auto& [run, boundaries] : runBoundaries) {
     if (boundaries.second <= boundaries.first) {
       printf("error: run %d EOR <= SOR: %llu - %llu (%s - %s)\n",
-             run, boundaries.first, boundaries.second,
+             run, (ULL)boundaries.first, (ULL)boundaries.second,
              getTime(boundaries.first).c_str(), getTime(boundaries.second).c_str());
       error = true;
     }
     if (boundaries.first <= endOfPreviousRun) {
       printf("error: SOR run %d <= EOR run %d: %llu (%s) <= %llu (%s)\n",
-             run, previousRun, boundaries.first, getTime(boundaries.first).c_str(),
-             endOfPreviousRun, getTime(endOfPreviousRun).c_str());
+             run, previousRun, (ULL)boundaries.first, getTime(boundaries.first).c_str(),
+             (ULL)endOfPreviousRun, getTime(endOfPreviousRun).c_str());
       error = true;
     }
     previousRun = run;
@@ -266,7 +267,7 @@ void printRunBoundaries(const RBMAP& runBoundaries)
   printf("------------------------------------\n");
 
   for (const auto& [run, boundaries] : runBoundaries) {
-    printf("%d: %llu - %llu (%s - %s)\n", run, boundaries.first, boundaries.second,
+    printf("%d: %llu - %llu (%s - %s)\n", run, (ULL)boundaries.first, (ULL)boundaries.second,
            getTime(boundaries.first).c_str(), getTime(boundaries.second).c_str());
   }
 
@@ -324,7 +325,7 @@ DPBMAP getDPBoundaries(ccdb::CcdbApi const& api, std::string what,
 
   if (dpBoundaries.empty()) {
     printf("\e[0;31merror: no file found in %s in time range %llu - %llu (%s - %s) --> use the default one\e[0m\n",
-           what.c_str(), tStart, tStop, getTime(tStart).c_str(), getTime(tStop).c_str());
+           what.c_str(), (ULL)tStart, (ULL)tStop, getTime(tStart).c_str(), getTime(tStop).c_str());
     dpBoundaries.emplace(1, 9999999999999);
   }
 
@@ -340,13 +341,13 @@ void checkDPBoundaries(const DPBMAP& dpBoundaries, bool scanHV, uint64_t tStart,
 
   if (dpBoundaries.begin()->first > tStart) {
     printf("error: the beginning of the time range is not covered: %llu > %llu (%s > %s)\n",
-           dpBoundaries.begin()->first, tStart,
+           (ULL)dpBoundaries.begin()->first, (ULL)tStart,
            getTime(dpBoundaries.begin()->first).c_str(), getTime(tStart).c_str());
     error = true;
   }
   if (dpBoundaries.rbegin()->second < tStop) {
     printf("error: the end of the time range is not covered: %llu < %llu (%s < %s)\n",
-           dpBoundaries.rbegin()->second, tStop,
+           (ULL)dpBoundaries.rbegin()->second, (ULL)tStop,
            getTime(dpBoundaries.rbegin()->second).c_str(), getTime(tStop).c_str());
     error = true;
   }
@@ -355,13 +356,13 @@ void checkDPBoundaries(const DPBMAP& dpBoundaries, bool scanHV, uint64_t tStart,
   for (auto [tStart, tStop] : dpBoundaries) {
     if (tStop <= tStart) {
       printf("error: EOF <= SOF: %llu - %llu (%s - %s)\n",
-             tStart, tStop, getTime(tStart).c_str(), getTime(tStop).c_str());
+             (ULL)tStart, (ULL)tStop, getTime(tStart).c_str(), getTime(tStop).c_str());
       error = true;
     }
     if (tStart != previousTStop) {
       printf("error: end of %s file != start of next %s file: %llu (%s) != %llu (%s))\n",
              scanHV ? "HV" : "LV", scanHV ? "HV" : "LV",
-             previousTStop, getTime(previousTStop).c_str(), tStart, getTime(tStart).c_str());
+             (ULL)previousTStop, getTime(previousTStop).c_str(), (ULL)tStart, getTime(tStart).c_str());
       error = true;
     }
     previousTStop = tStop;
@@ -381,10 +382,10 @@ void printDPBoundaries(const DPBMAP& dpBoundaries, bool scanHV, uint64_t timeInt
   printf("------------------------------------\n");
 
   for (auto [tStart, tStop] : dpBoundaries) {
-    printf("%llu - %llu (%s - %s)", tStart, tStop, getTime(tStart).c_str(), getTime(tStop).c_str());
+    printf("%llu - %llu (%s - %s)", (ULL)tStart, (ULL)tStop, getTime(tStart).c_str(), getTime(tStop).c_str());
     if (tStop - tStart < 60000 * (timeInterval - 1) || tStop - tStart > 60000 * (timeInterval + 1)) {
       printf("\e[0;31m ! warning: validity range %s != %llu±1 min\e[0m\n",
-             getDuration(tStart, tStop).c_str(), timeInterval);
+             getDuration(tStart, tStop).c_str(), (ULL)timeInterval);
     } else {
       printf("\n");
     }
@@ -478,14 +479,15 @@ void fillDataPoints(const std::vector<DPVAL>& dps, std::map<uint64_t, double>& d
     auto previousTS = dps2.rbegin()->first;
     if (ts != previousTS || getValue(*itDP) != dps2.rbegin()->second) {
       if (ts <= previousTS) {
-        printf("error: wrong data point order (%llu <= %llu)\n", ts, previousTS);
+        printf("error: wrong data point order (%llu <= %llu)\n", (ULL)ts, (ULL)previousTS);
         exit(1);
       }
       if (printWarning) {
         printf("%s%s missing the previous data point (dt = %s%llu ms)", color.c_str(), header.c_str(),
-               (previousTS < tMin) ? "-" : "+", (previousTS < tMin) ? tMin - previousTS : previousTS - tMin);
+               (previousTS < tMin) ? "-" : "+",
+               (ULL)((previousTS < tMin) ? tMin - previousTS : previousTS - tMin));
         if (ts <= tMin) {
-          printf(" but get one at dt = -%llu ms\e[0m\n", tMin - ts);
+          printf(" but get one at dt = -%llu ms\e[0m\n", (ULL)(tMin - ts));
         } else {
           printf("\e[0m\n");
         }
@@ -496,11 +498,11 @@ void fillDataPoints(const std::vector<DPVAL>& dps, std::map<uint64_t, double>& d
 
   // add the first data point (should be before the start of validity of the file)
   if (ts >= tMax) {
-    printf("error: first data point exceeding file validity range (dt = +%llu ms)\n", ts - tMax);
+    printf("error: first data point exceeding file validity range (dt = +%llu ms)\n", (ULL)(ts - tMax));
     exit(1);
   } else if (ts > tMin && printWarning) {
     printf("%s%s missing data point prior file start of validity (dt = +%llu ms)\e[0m\n",
-           color.c_str(), header.c_str(), ts - tMin);
+           color.c_str(), header.c_str(), (ULL)(ts - tMin));
     header = "        ";
   }
   dps2.emplace(ts, getValue(*itDP));
@@ -510,15 +512,15 @@ void fillDataPoints(const std::vector<DPVAL>& dps, std::map<uint64_t, double>& d
   for (++itDP; itDP < dps.end(); ++itDP) {
     ts = itDP->get_epoch_time();
     if (ts <= previousTS) {
-      printf("error: wrong data point order (%llu <= %llu)\n", ts, previousTS);
+      printf("error: wrong data point order (%llu <= %llu)\n", (ULL)ts, (ULL)previousTS);
       exit(1);
     }
     if (ts < tMin && (warningLevel > 1 || (warningLevel == 1 && ts + tolerance < tMin))) {
       printf("%s%s data point outside of file validity range (dt = -%llu ms)\e[0m\n",
-             (ts + tolerance < tMin) ? "\e[0;31m" : "\e[0;34m", header.c_str(), tMin - ts);
+             (ts + tolerance < tMin) ? "\e[0;31m" : "\e[0;34m", header.c_str(), (ULL)(tMin - ts));
     } else if (ts >= tMax && warningLevel >= 1) {
       printf("\e[0;31m%s data point outside of file validity range (dt = +%llu ms)\e[0m\n",
-             header.c_str(), ts - tMax);
+             header.c_str(), (ULL)(ts - tMax));
     }
     dps2.emplace(ts, getValue(*itDP));
     previousTS = ts;
@@ -580,13 +582,13 @@ void printDataPoints(const DPMAP2 dpsMapsPerCh[10], std::string hvlvFormat, bool
 
     for (const auto& [alias, dps] : dpsMapsPerCh[ch]) {
 
-      printf("- %s: %lu values", alias.c_str(), dps.size());
+      printf("- %s: %zu values", alias.c_str(), dps.size());
 
       if (all) {
 
         printf("\n");
         for (const auto& [ts, val] : dps) {
-          printf(format1.c_str(), ts, getTime(ts).c_str(), val);
+          printf(format1.c_str(), (ULL)ts, getTime(ts).c_str(), val);
         }
 
       } else if (!dps.empty()) {
@@ -594,8 +596,8 @@ void printDataPoints(const DPMAP2 dpsMapsPerCh[10], std::string hvlvFormat, bool
         const auto firstdt = dps.begin();
         const auto lastdt = dps.rbegin();
         printf(format2.c_str(),
-               firstdt->first, getTime(firstdt->first).c_str(), firstdt->second,
-               lastdt->first, getTime(lastdt->first).c_str(), lastdt->second);
+               (ULL)firstdt->first, getTime(firstdt->first).c_str(), firstdt->second,
+               (ULL)lastdt->first, getTime(lastdt->first).c_str(), lastdt->second);
 
       } else {
         printf("\n");
@@ -719,7 +721,7 @@ void fillO2Issues(const std::vector<mch::HVStatusCreator::TimeRange>& o2issues, 
     // exclude issues fully outside of the DP file boudaries
     if (itIssue->end <= tMin || itIssue->begin >= tMax) {
       printf("\e[0;35mwarning: skipping O2 issue outside of file boundaries (%llu - %llu)\e[0m\n",
-             itIssue->begin, itIssue->end);
+             (ULL)itIssue->begin, (ULL)itIssue->end);
       continue;
     }
 
@@ -727,14 +729,14 @@ void fillO2Issues(const std::vector<mch::HVStatusCreator::TimeRange>& o2issues, 
     if (itIssue->begin < tMin - mch::StatusMapCreatorParam::Instance().timeMargin &&
         (itIssue != o2issues.begin() || itIssue->begin != 0)) {
       printf("\e[0;35mwarning: O2 returns an issue with uncommon start time (%llu < %llu)\e[0m\n",
-             itIssue->begin, tMin - mch::StatusMapCreatorParam::Instance().timeMargin);
+             (ULL)itIssue->begin, (ULL)(tMin - mch::StatusMapCreatorParam::Instance().timeMargin));
     }
 
     // only the last issue could in principle extend beyond the end of the DP file, to infinity
     if (itIssue->end >= tMax + mch::StatusMapCreatorParam::Instance().timeMargin &&
         (itIssue != std::prev(o2issues.end()) || itIssue->end != std::numeric_limits<uint64_t>::max())) {
       printf("\e[0;35mwarning: O2 returns an issue with uncommon end time (%llu >= %llu)\e[0m\n",
-             itIssue->end, tMax + mch::StatusMapCreatorParam::Instance().timeMargin);
+             (ULL)itIssue->end, (ULL)(tMax + mch::StatusMapCreatorParam::Instance().timeMargin));
     }
 
     // extend the last issue in case of continuity accross the DP files or add a new one,
@@ -897,7 +899,7 @@ void printIssues(const ISSUEMAP issuesPerCh[10], const ISSUEMAP o2IssuesPerCh[10
   auto printIssue = [&format](ISSUE issue, std::string color) {
     const auto& [tStart, tStop, min, mean, runs] = issue;
     printf("%s", color.c_str());
-    printf(format.c_str(), tStart, tStop,
+    printf(format.c_str(), (ULL)tStart, (ULL)tStop,
            getTime(tStart).c_str(), getDuration(tStart, tStop).c_str(), min, mean, runs.c_str());
     printf("\e[0m");
   };
