@@ -236,6 +236,9 @@ int32_t GPUReconstructionCPU::RunChains()
         return retVal;
       }
     }
+    if (GetProcessingSettings().tpcFreeAllocatedMemoryAfterProcessing) {
+      ClearAllocatedMemory();
+    }
   }
   mTimerTotal.Stop();
   mStatCPUTime += (double)(std::clock() - cpuTimerStart) / CLOCKS_PER_SEC;
