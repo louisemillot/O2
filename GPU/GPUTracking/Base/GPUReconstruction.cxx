@@ -811,11 +811,9 @@ void GPUReconstruction::PopNonPersistentMemory(RecoStep step, uint64_t tag)
     GPUFatal("Tag mismatch when popping non persistent memory from stack : pop %s vs on stack %s", qTag2Str(tag).c_str(), qTag2Str(std::get<3>(mNonPersistentMemoryStack.back())).c_str());
   }
   if ((mProcessingSettings.debugLevel >= 3 || mProcessingSettings.allocDebugLevel) && (IsGPU() || mProcessingSettings.forceHostMemoryPoolSize)) {
-    if (IsGPU()) {
-      printf("Allocated Device memory after %30s (%8s): %'13zd (non temporary %'13zd, blocked %'13zd)\n", GPUDataTypes::RECO_STEP_NAMES[getRecoStepNum(step, true)], qTag2Str(std::get<3>(mNonPersistentMemoryStack.back())).c_str(), ptrDiff(mDeviceMemoryPool, mDeviceMemoryBase) + ptrDiff((char*)mDeviceMemoryBase + mDeviceMemorySize, mDeviceMemoryPoolEnd), ptrDiff(mDeviceMemoryPool, mDeviceMemoryBase), mDeviceMemoryPoolBlocked ? ptrDiff((char*)mDeviceMemoryBase + mDeviceMemorySize, mDeviceMemoryPoolBlocked) : 0);
-    }
-    printf("Allocated Host memory after   %30s (%8s): %'13zd (non temporary %'13zd, blocked %'13zd)\n", GPUDataTypes::RECO_STEP_NAMES[getRecoStepNum(step, true)], qTag2Str(std::get<3>(mNonPersistentMemoryStack.back())).c_str(), ptrDiff(mHostMemoryPool, mHostMemoryBase) + ptrDiff((char*)mHostMemoryBase + mHostMemorySize, mHostMemoryPoolEnd), ptrDiff(mHostMemoryPool, mHostMemoryBase), mHostMemoryPoolBlocked ? ptrDiff((char*)mHostMemoryBase + mHostMemorySize, mHostMemoryPoolBlocked) : 0);
-    printf("%16s", "");
+    printf("Allocated memory after %30s (%8s) (Stack %zu): ", GPUDataTypes::RECO_STEP_NAMES[getRecoStepNum(step, true)], qTag2Str(std::get<3>(mNonPersistentMemoryStack.back())).c_str(), mNonPersistentMemoryStack.size());
+    PrintMemoryOverview();
+    printf("%76s", "");
     PrintMemoryMax();
   }
   mHostMemoryPoolEnd = std::get<0>(mNonPersistentMemoryStack.back());
@@ -888,9 +886,10 @@ void GPUReconstruction::PrintMemoryMax()
 void GPUReconstruction::PrintMemoryOverview()
 {
   if (mProcessingSettings.memoryAllocationStrategy == GPUMemoryResource::ALLOCATION_GLOBAL) {
-    printf("Memory Allocation: Host %'zd / %'zu (Permanent %'zd), Device %'zd / %'zu, (Permanent %'zd) %zu chunks\n",
-           ptrDiff(mHostMemoryPool, mHostMemoryBase) + ptrDiff((char*)mHostMemoryBase + mHostMemorySize, mHostMemoryPoolEnd), mHostMemorySize, ptrDiff(mHostMemoryPermanent, mHostMemoryBase),
-           ptrDiff(mDeviceMemoryPool, mDeviceMemoryBase) + ptrDiff((char*)mDeviceMemoryBase + mDeviceMemorySize, mDeviceMemoryPoolEnd), mDeviceMemorySize, ptrDiff(mDeviceMemoryPermanent, mDeviceMemoryBase), mMemoryResources.size());
+    printf("Memory Allocation: Host %'13zd / %'13zu (Permanent %'13zd, Data %'13zd, Scratch %'13zd), Device %'13zd / %'13zu, (Permanent %'13zd, Data %'13zd, Scratch %'13zd) %zu chunks\n",
+           ptrDiff(mHostMemoryPool, mHostMemoryBase) + ptrDiff((char*)mHostMemoryBase + mHostMemorySize, mHostMemoryPoolEnd), mHostMemorySize, ptrDiff(mHostMemoryPermanent, mHostMemoryBase), ptrDiff(mHostMemoryPool, mHostMemoryPermanent), ptrDiff((char*)mHostMemoryBase + mHostMemorySize, mHostMemoryPoolEnd),
+           ptrDiff(mDeviceMemoryPool, mDeviceMemoryBase) + ptrDiff((char*)mDeviceMemoryBase + mDeviceMemorySize, mDeviceMemoryPoolEnd), mDeviceMemorySize, ptrDiff(mDeviceMemoryPermanent, mDeviceMemoryBase), ptrDiff(mDeviceMemoryPool, mDeviceMemoryPermanent), ptrDiff((char*)mDeviceMemoryBase + mDeviceMemorySize, mDeviceMemoryPoolEnd),
+           mMemoryResources.size());
   }
 }
 
