@@ -86,8 +86,6 @@ GPUReconstruction::GPUReconstruction(const GPUSettingsDeviceBackend& cfg) : mHos
     mMaster = cfg.master;
     cfg.master->mSlaves.emplace_back(this);
   }
-  new (&mProcessingSettings) GPUSettingsProcessing;
-  new (&mGRPSettings) GPUSettingsGRP;
   param().SetDefaults(&mGRPSettings);
   mMemoryScalers.reset(new GPUMemorySizeScalers);
   for (uint32_t i = 0; i < NSECTORS; i++) {
