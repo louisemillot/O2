@@ -22,6 +22,7 @@
 #include "GPUCommonAlgorithm.h"
 #include "TPCPadGainCalib.h"
 #include "TPCZSLinkMapping.h"
+#include "GPUTPCGeometry.h"
 
 using namespace o2::gpu;
 using namespace o2::gpu::tpccf;
@@ -57,8 +58,8 @@ GPUdii() void GPUTPCCFDecodeZS::decode(GPUTPCClusterFinder& clusterer, GPUShared
   const size_t nDigits = clusterer.mPzsOffsets[iBlock].offset;
   if (iThread == 0) {
     const int32_t region = endpoint / 2;
-    s.nRowsRegion = clusterer.Param().tpcGeometry.GetRegionRows(region);
-    s.regionStartRow = clusterer.Param().tpcGeometry.GetRegionStart(region);
+    s.nRowsRegion = GPUTPCGeometry::GetRegionRows(region);
+    s.regionStartRow = GPUTPCGeometry::GetRegionStart(region);
     s.nThreadsPerRow = CAMath::Max(1u, nThreads / ((s.nRowsRegion + (endpoint & 1)) / 2));
     s.rowStride = nThreads / s.nThreadsPerRow;
     s.rowOffsetCounter = 0;
@@ -524,7 +525,7 @@ GPUd() o2::tpc::PadPos GPUTPCCFDecodeZSLinkBase::GetPadAndRowFromFEC(processorTy
 {
 #ifdef GPUCA_TPC_GEOMETRY_O2
   // Ported from tpc::Mapper (Not available on GPU...)
-  const GPUTPCGeometry& geo = clusterer.Param().tpcGeometry;
+  constexpr GPUTPCGeometry geo;
 
   const int32_t regionIter = cru % 2;
   const int32_t istreamm = ((rawFECChannel % 10) / 2);
