@@ -33,7 +33,6 @@ o2_add_library(ITStrackingCUDA
                                      O2::SimulationDataFormat
                                      O2::ReconstructionDataFormats
                                      O2::GPUCommon
-                                     CUDA::nvToolsExt
                PRIVATE_LINK_LIBRARIES O2::GPUTrackingCUDAExternalProvider
                TARGETVARNAME targetName)
 
