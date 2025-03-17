@@ -98,10 +98,7 @@ GPUd() bool ClusterAccumulator::toNative(const ChargePos& pos, const Charge q, t
   if (cn.qTot <= param.rec.tpc.cfQTotCutoff) {
     return false;
   }
-  cn.qMax = q;
-  if (cn.qMax <= param.rec.tpc.cfQMaxCutoff) {
-    return false;
-  }
+  cn.qMax = q; // cfQMaxCutoff check already done at PeakFinder level
   if (mTimeMean < param.rec.tpc.clustersShiftTimebinsClusterizer) {
     return false;
   }
