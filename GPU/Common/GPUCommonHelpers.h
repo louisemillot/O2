@@ -33,6 +33,7 @@
 #define GPUChkErrSI(x) o2::gpu::internal::GPUReconstructionChkErr(x, __FILE__, __LINE__, false)
 
 #include "GPUCommonDef.h"
+#include "GPUCommonLogger.h"
 #include <cstdint>
 
 namespace o2::gpu::internal
@@ -43,7 +44,7 @@ extern int32_t GPUCOMMON_INTERNAL_CAT(GPUReconstruction, GPUCA_GPUTYPE, ChkErr)(
 inline int32_t GPUReconstructionCPUChkErr(const int64_t error, const char* file, int32_t line)
 {
   if (error) {
-    GPUError("GPUCommon Error Code %d (%s:%d)", error, file, line);
+    LOGF(error, "GPUCommon Error Code %ld (%s:%d)", (long)error, file, line);
   }
   return error != 0;
 }
