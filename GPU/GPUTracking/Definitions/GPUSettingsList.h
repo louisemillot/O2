@@ -521,7 +521,7 @@ AddOption(outputcontrolmem, uint64_t, 0, "outputMemory", 0, "Use predefined outp
 AddOption(inputcontrolmem, uint64_t, 0, "inputMemory", 0, "Use predefined input buffer of this size", min(0ul), message("Using %s bytes as input memory"))
 AddOption(cpuAffinity, int32_t, -1, "", 0, "Pin CPU affinity to this CPU core", min(-1))
 AddOption(fifoScheduler, bool, false, "", 0, "Use FIFO realtime scheduler", message("Setting FIFO scheduler: %s"))
-AddOption(fpe, bool, true, "", 0, "Trap on floating point exceptions")
+AddOption(fpe, int8_t, -1, "", 0, "Trap on floating point exceptions (-1 = if no ffast-math)")
 AddOption(flushDenormals, bool, true, "", 0, "Enable FTZ and DAZ (Flush all denormals to zero)")
 AddOption(solenoidBzNominalGPU, float, -1e6f, "", 0, "Field strength of solenoid Bz in kGaus")
 AddOption(constBz, bool, false, "", 0, "Force constand Bz")
