@@ -187,40 +187,33 @@ include_directories(${GPU_DIR}/Common
 # Create main targets
 add_subdirectory(../../ GPU)
 add_library(standalone_support SHARED ${GPUTRACKING_DIR}/utils/EmptyFile.cxx)
-
-target_link_libraries(GPUTracking PUBLIC TPCFastTransformation standalone_support dl)
-target_link_libraries(ca PUBLIC GPUTracking)
-target_link_libraries(standalone_support PUBLIC dl pthread)
-target_compile_definitions(ca PUBLIC $<TARGET_PROPERTY:O2::GPUTracking,COMPILE_DEFINITIONS>)
 target_compile_definitions(standalone_support PUBLIC $<TARGET_PROPERTY:O2::GPUTracking,COMPILE_DEFINITIONS>)
+
+target_link_libraries(standalone_support PUBLIC#
+                      dl
+                      pthread
+                      Microsoft.GSL::GSL
+                      TPCFastTransformation)
+target_link_libraries(GPUTracking PUBLIC TPCFastTransformation standalone_support)
+target_link_libraries(ca PUBLIC GPUTracking)
 
 # Add all sources and dependencies to to support based on Config File
 target_sources(standalone_support PRIVATE
-              ${O2_DIR}/Common/Field/src/MagFieldFast.cxx
-              ${O2_DIR}/DataFormats/Detectors/TPC/src/CompressedClusters.cxx
-              ${O2_DIR}/DataFormats/simulation/src/MCCompLabel.cxx
-              ${O2_DIR}/DataFormats/Reconstruction/src/TrackParametrization.cxx
-              ${O2_DIR}/DataFormats/Reconstruction/src/TrackParametrizationWithError.cxx
-              ${O2_DIR}/DataFormats/Reconstruction/src/Vertex.cxx
-              ${O2_DIR}/DataFormats/Reconstruction/src/TrackLTIntegral.cxx
-              ${O2_DIR}/DataFormats/Reconstruction/src/TrackParametrization.cxx
-              ${O2_DIR}/DataFormats/Reconstruction/src/TrackParametrizationWithError.cxx
-              ${O2_DIR}/Detectors/TRD/base/src/GeometryBase.cxx
-              ${O2_DIR}/Detectors/Base/src/MatLayerCylSet.cxx
-              ${O2_DIR}/Detectors/Base/src/MatLayerCyl.cxx
-              ${O2_DIR}/Detectors/Base/src/Ray.cxx
-              ${O2_DIR}/Detectors/Base/src/Propagator.cxx
-              ${O2_DIR}/Detectors/ITSMFT/ITS/tracking/src/Road.cxx)
-if(CONFIG_O2_ITS_TRAITS)
-  target_sources(standalone_support PRIVATE
-      ${O2_DIR}/Detectors/ITSMFT/ITS/tracking/src/PrimaryVertexContext.cxx
-      ${O2_DIR}/Detectors/ITSMFT/ITS/tracking/src/Cluster.cxx
-      ${O2_DIR}/Detectors/ITSMFT/ITS/tracking/src/ClusterLines.cxx
-      ${O2_DIR}/Detectors/ITSMFT/ITS/tracking/src/TrackerTraitsCPU.cxx
-      ${O2_DIR}/Detectors/ITSMFT/ITS/tracking/src/VertexerTraits.cxx
-      ${O2_DIR}/Detectors/ITSMFT/ITS/tracking/src/ROframe.cxx)
-  target_link_libraries(standalone_support PUBLIC Boost::boost)
-endif()
+               ${O2_DIR}/Common/Field/src/MagFieldFast.cxx
+               ${O2_DIR}/DataFormats/Detectors/TPC/src/CompressedClusters.cxx
+               ${O2_DIR}/DataFormats/simulation/src/MCCompLabel.cxx
+               ${O2_DIR}/DataFormats/Reconstruction/src/TrackParametrization.cxx
+               ${O2_DIR}/DataFormats/Reconstruction/src/TrackParametrizationWithError.cxx
+               ${O2_DIR}/DataFormats/Reconstruction/src/Vertex.cxx
+               ${O2_DIR}/DataFormats/Reconstruction/src/TrackLTIntegral.cxx
+               ${O2_DIR}/DataFormats/Reconstruction/src/TrackParametrization.cxx
+               ${O2_DIR}/DataFormats/Reconstruction/src/TrackParametrizationWithError.cxx
+               ${O2_DIR}/Detectors/TRD/base/src/GeometryBase.cxx
+               ${O2_DIR}/Detectors/Base/src/MatLayerCylSet.cxx
+               ${O2_DIR}/Detectors/Base/src/MatLayerCyl.cxx
+               ${O2_DIR}/Detectors/Base/src/Ray.cxx
+               ${O2_DIR}/Detectors/Base/src/Propagator.cxx
+               ${O2_DIR}/Detectors/ITSMFT/ITS/tracking/src/Road.cxx)
 
 if(GPUCA_CONFIG_FMT)
   target_link_libraries(standalone_support PUBLIC fmt::fmt)
@@ -232,23 +225,14 @@ if(GPUCA_CONFIG_VC)
   target_link_libraries(TPCFastTransformation PUBLIC Vc::Vc)
 endif()
 
-if(GPUCA_BUILD_EVENT_DISPLAY)
-  if(GPUCA_CONFIG_GL3W)
-    target_sources(GPUTrackingDisplay PRIVATE ${GPUTRACKING_DIR}/display/3rdparty/gl3w.c)
-  endif()
-  target_sources(GPUTracking PRIVATE ${GPUTRACKING_DIR}/display/3rdparty/HandMadeMath/HandMadeMathImpl.cxx)
-  target_include_directories(GPUTracking SYSTEM PUBLIC ${GPUTRACKING_DIR}/display/3rdparty)
-endif()
-
 if(GPUCA_CONFIG_ROOT)
   target_link_libraries(standalone_support PUBLIC
-                             ROOT::Core
-                             ROOT::RIO
-                             ROOT::Hist
-                             ROOT::Gui
-                             ROOT::Tree)
+                        ROOT::Core
+                        ROOT::RIO
+                        ROOT::Hist
+                        ROOT::Gui
+                        ROOT::Tree)
 endif()
-target_link_libraries(standalone_support PUBLIC Microsoft.GSL::GSL TPCFastTransformation)
 
 if (GPUCA_BUILD_DEBUG_SANITIZE AND CMAKE_CXX_COMPILER MATCHES "clang\\+\\+")
   execute_process(COMMAND ${CMAKE_CXX_COMPILER} -print-file-name=libclang_rt.asan-x86_64.so OUTPUT_VARIABLE CLANG_ASAN_SO_PATH OUTPUT_STRIP_TRAILING_WHITESPACE)

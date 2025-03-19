@@ -22,14 +22,14 @@ if(ALIGPU_BUILD_TYPE STREQUAL "O2")
                       TARGETVARNAME targetName
                       PUBLIC_LINK_LIBRARIES O2::GPUO2Interface O2::GPUTracking
                       SOURCES ${SRCS})
-
-    target_compile_definitions(${targetName} PUBLIC $<TARGET_PROPERTY:O2::GPUTracking,COMPILE_DEFINITIONS>)
 endif()
 
 if(ALIGPU_BUILD_TYPE STREQUAL "Standalone")
     add_executable(ca ${SRCS})
     set(targetName ca)
 endif()
+
+target_compile_definitions(${targetName} PUBLIC $<TARGET_PROPERTY:O2::GPUTracking,COMPILE_DEFINITIONS>)
 
 if(ROOT_FOUND)
   target_sources(${targetName} PRIVATE ../../qa/genEvents.cxx)
