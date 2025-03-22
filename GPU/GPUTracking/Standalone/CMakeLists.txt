@@ -128,7 +128,6 @@ find_package(O2GPU)
 add_subdirectory(../../ GPU)
 add_library(standalone_support SHARED ${O2_DIR}/Common/Field/src/MagFieldFast.cxx
             ${O2_DIR}/DataFormats/Detectors/TPC/src/CompressedClusters.cxx
-            ${O2_DIR}/DataFormats/simulation/src/MCCompLabel.cxx
             ${O2_DIR}/DataFormats/Reconstruction/src/TrackParametrization.cxx
             ${O2_DIR}/DataFormats/Reconstruction/src/TrackParametrizationWithError.cxx
             ${O2_DIR}/DataFormats/Reconstruction/src/Vertex.cxx
