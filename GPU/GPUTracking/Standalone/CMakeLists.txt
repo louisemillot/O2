@@ -112,6 +112,8 @@ endif()
 
 if(GPUCA_CONFIG_ROOT)
   find_package(ROOT CONFIG REQUIRED)
+elseif(GPUCA_BUILD_EVENT_DISPLAY)
+  message(FATAL_ERROR "Cannot build event display without ROOT")
 endif()
 find_package(Microsoft.GSL REQUIRED HINTS "$ENV{MS_GSL_ROOT}/share/cmake")
 
