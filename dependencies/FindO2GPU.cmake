@@ -64,9 +64,20 @@ function(set_target_hip_arch target)
   endif()
 endfunction()
 
-# Detect and enable CUDA
-STRING(REGEX REPLACE "\-std=[^ ]*" "" O2_GPU_CMAKE_CXX_FLAGS_NOSTD "${CMAKE_CXX_FLAGS}") # Need to strip c++17 imposed by alidist defaults
+# Need to strip c++17 imposed by alidist defaults
+STRING(REGEX REPLACE "\-std=[^ ]*" "" O2_GPU_CMAKE_CXX_FLAGS_NOSTD "${CMAKE_CXX_FLAGS}")
 
+# ---------------------------------- Fast Math / Deterministic Mode ----------------------------------
+if(GPUCA_NO_FAST_MATH_WHOLEO2)
+  set(GPUCA_NO_FAST_MATH 1)
+  add_definitions(-DGPUCA_NO_FAST_MATH)
+  set(CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE_UPPER} "${CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE_UPPER}} -fno-fast-math -ffp-contract=off")
+  set(CMAKE_C_FLAGS_${CMAKE_BUILD_TYPE_UPPER} "${CMAKE_C_FLAGS_${CMAKE_BUILD_TYPE_UPPER}} -fno-fast-math -ffp-contract=off")
+endif()
+set(GPUCA_CXX_NO_FAST_MATH_FLAGS "-fno-fast-math -ffp-contract=off")
+set(GPUCA_CUDA_NO_FAST_MATH_FLAGS "--ftz=false --prec-div=true --prec-sqrt=true --fmad false")
+
+# ---------------------------------- CUDA ----------------------------------
 if(ENABLE_CUDA)
   set(CMAKE_CUDA_STANDARD ${CMAKE_CXX_STANDARD})
   set(CMAKE_CUDA_STANDARD_REQUIRED TRUE)
@@ -124,7 +135,6 @@ if(ENABLE_CUDA)
     else()
       set(CMAKE_CUDA_FLAGS_${CMAKE_BUILD_TYPE_UPPER} "${CMAKE_CUDA_FLAGS_${CMAKE_BUILD_TYPE_UPPER}} -Xptxas -O4 -Xcompiler -O4")
     endif()
-    set(GPUCA_CUDA_NO_FAST_MATH_FLAGS "--ftz=false --prec-div=true --prec-sqrt=true --fmad false")
     if(DEFINED GPUCA_NO_FAST_MATH AND "${GPUCA_NO_FAST_MATH}")
       set(CMAKE_CUDA_FLAGS_${CMAKE_BUILD_TYPE_UPPER} "${CMAKE_CUDA_FLAGS_${CMAKE_BUILD_TYPE_UPPER}} ${GPUCA_CUDA_NO_FAST_MATH_FLAGS}")
     elseif(NOT CMAKE_BUILD_TYPE_UPPER STREQUAL "DEBUG")
@@ -146,7 +156,7 @@ if(ENABLE_CUDA)
   endif()
 endif()
 
-# Detect and enable OpenCL 1.2 from AMD
+# ---------------------------------- HIP ----------------------------------
 if(ENABLE_OPENCL)
   find_package(OpenCL)
   if(ENABLE_OPENCL AND NOT ENABLE_OPENCL STREQUAL "AUTO")
@@ -154,11 +164,6 @@ if(ENABLE_OPENCL)
   else()
     set_package_properties(OpenCL PROPERTIES TYPE OPTIONAL)
   endif()
-endif()
-
-# Detect and enable OpenCL 2.x
-if(ENABLE_OPENCL)
-  find_package(OpenCL)
   find_package(LLVM)
   if(LLVM_FOUND)
     find_package(Clang)
@@ -196,7 +201,7 @@ if(ENABLE_OPENCL)
   endif()
 endif()
 
-# Detect and enable HIP
+# ---------------------------------- HIP ----------------------------------
 if(ENABLE_HIP)
   if(NOT "$ENV{CMAKE_PREFIX_PATH}" MATCHES "rocm" AND NOT CMAKE_PREFIX_PATH MATCHES "rocm" AND EXISTS "/opt/rocm/lib/cmake/")
     list(APPEND CMAKE_PREFIX_PATH "/opt/rocm/lib/cmake")
@@ -303,7 +308,6 @@ if(ENABLE_HIP)
     endif()
     message(FATAL_ERROR "HIP requested but some of the above packages are not found")
   endif()
-
 endif()
 
 # if we end up here without a FATAL, it means we have found the "O2GPU" package
