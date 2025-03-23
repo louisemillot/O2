@@ -230,7 +230,7 @@ elseif(GPUCA_HIP_COMPILE_MODE STREQUAL "perkernel")
                               TARGET_DIRECTORY ${targetName}
                               PROPERTIES
                               COMPILE_FLAGS "${GPUCA_CXX_NO_FAST_MATH_FLAGS}"
-                              COMPILE_DEFINITIONS "GPUCA_NO_FAST_MATH")
+                              COMPILE_DEFINITIONS "GPUCA_DETERMINISTIC_MODE")
 elseif(GPUCA_HIP_COMPILE_MODE STREQUAL "rdc")
   message(FATAL_ERROR "HIP RDC compilation of GPUReconstruction ios not yet working!")
   target_compile_definitions(${targetName} PRIVATE GPUCA_KERNEL_COMPILE_MODE=2)

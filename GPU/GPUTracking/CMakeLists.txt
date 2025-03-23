@@ -14,8 +14,13 @@ set(MODULE GPUTracking)
 # set(CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE_UPPER} "${CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE_UPPER}} -O0") # to uncomment if needed, tired of typing this...
 # set(GPUCA_BUILD_DEBUG 1)
 
-if(NOT "${GPUCA_NO_FAST_MATH}" AND NOT CMAKE_BUILD_TYPE_UPPER STREQUAL "DEBUG")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ffast-math")
+if(GPUCA_DETERMINISTIC_MODE GREATER_EQUAL ${GPUCA_DETERMINISTIC_MODE_MAP_NO_FAST_MATH})
+  set(CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE_UPPER} "${CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE_UPPER}} ${GPUCA_CXX_NO_FAST_MATH_FLAGS}")
+  if(GPUCA_DETERMINISTIC_MODE GREATER_EQUAL ${GPUCA_DETERMINISTIC_MODE_MAP_OPTO2})
+    set(CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE_UPPER} "${CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE_UPPER}} -O2")
+  endif()
+elseif(NOT CMAKE_BUILD_TYPE_UPPER STREQUAL "DEBUG")
+  set(CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE_UPPER} "${CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE_UPPER}} -O3 -ffast-math")
 endif()
 
 include(cmake/helpers.cmake)
@@ -375,7 +380,7 @@ set_source_files_properties(DataCompression/GPUTPCCompressionTrackModel.cxx
                             TARGET_DIRECTORY ${targetName}
                             PROPERTIES
                             COMPILE_FLAGS "${GPUCA_CXX_NO_FAST_MATH_FLAGS}"
-                            COMPILE_DEFINITIONS "GPUCA_NO_FAST_MATH")
+                            COMPILE_DEFINITIONS "GPUCA_DETERMINISTIC_MODE")
 
 # GPUReconstructionLibrary needs to know which GPU backends are enabled for proper error messages
 configure_file(Base/GPUReconstructionAvailableBackends.template.h ${CMAKE_CURRENT_BINARY_DIR}/GPUReconstructionAvailableBackends.h)
@@ -417,6 +422,6 @@ if(ALIGPU_BUILD_TYPE STREQUAL "O2" OR ALIGPU_BUILD_TYPE STREQUAL "Standalone")
   endif()
 endif()
 
-if(${GPUCA_NO_FAST_MATH})
-  target_compile_definitions(${targetName} PUBLIC GPUCA_NO_FAST_MATH)
+if(GPUCA_DETERMINISTIC_MODE GREATER_EQUAL ${GPUCA_DETERMINISTIC_MODE_MAP_GPU})
+  target_compile_definitions(${targetName} PUBLIC GPUCA_DETERMINISTIC_MODE)
 endif()

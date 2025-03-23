@@ -723,13 +723,13 @@ GPUd() void GPUTPCGMMerger::MergeBorderTracks<1>(int32_t nBlocks, int32_t nThrea
 
   if (iThread == 0) {
     if (iBlock == 0) {
-#ifdef GPUCA_NO_FAST_MATH // TODO: Use a better define as swith
+#ifdef GPUCA_DETERMINISTIC_MODE
       GPUCommonAlgorithm::sortDeviceDynamic(range1, range1 + N1, [](const GPUTPCGMBorderRange& a, const GPUTPCGMBorderRange& b) { return (a.fMin != b.fMin) ? (a.fMin < b.fMin) : (a.fId < b.fId); });
 #else
       GPUCommonAlgorithm::sortDeviceDynamic(range1, range1 + N1, [](const GPUTPCGMBorderRange& a, const GPUTPCGMBorderRange& b) { return a.fMin < b.fMin; });
 #endif
     } else if (iBlock == 1) {
-#ifdef GPUCA_NO_FAST_MATH // TODO: Use a better define as swith
+#ifdef GPUCA_DETERMINISTIC_MODE
       GPUCommonAlgorithm::sortDeviceDynamic(range2, range2 + N2, [](const GPUTPCGMBorderRange& a, const GPUTPCGMBorderRange& b) { return (a.fMax != b.fMax) ? (a.fMax < b.fMax) : (a.fId < b.fId); });
 #else
       GPUCommonAlgorithm::sortDeviceDynamic(range2, range2 + N2, [](const GPUTPCGMBorderRange& a, const GPUTPCGMBorderRange& b) { return a.fMax < b.fMax; });
@@ -749,7 +749,7 @@ namespace // anonymous
 struct MergeBorderTracks_compMax {
   GPUd() bool operator()(const GPUTPCGMBorderRange& a, const GPUTPCGMBorderRange& b)
   {
-#ifdef GPUCA_NO_FAST_MATH // TODO: Use a better define as swith
+#ifdef GPUCA_DETERMINISTIC_MODE
     return (a.fMax != b.fMax) ? (a.fMax < b.fMax) : (a.fId < b.fId);
 #else
     return a.fMax < b.fMax;
@@ -759,7 +759,7 @@ struct MergeBorderTracks_compMax {
 struct MergeBorderTracks_compMin {
   GPUd() bool operator()(const GPUTPCGMBorderRange& a, const GPUTPCGMBorderRange& b)
   {
-#ifdef GPUCA_NO_FAST_MATH // TODO: Use a better define as swith
+#ifdef GPUCA_DETERMINISTIC_MODE
     return (a.fMin != b.fMin) ? (a.fMin < b.fMin) : (a.fId < b.fId);
 #else
     return a.fMin < b.fMin;
@@ -906,7 +906,7 @@ GPUd() void GPUTPCGMMerger::MergeBorderTracks<2>(int32_t nBlocks, int32_t nThrea
 
     mTrackLinks[b1.TrackID()] = iBest2;
     if (mergeMode > 0) {
-#if defined(GPUCA_NO_FAST_MATH) // TODO: Use a better define as swith
+#ifdef GPUCA_DETERMINISTIC_MODE
       CAMath::AtomicMax(&mTrackLinks[iBest2], b1.TrackID());
 #else
       mTrackLinks[iBest2] = b1.TrackID();
@@ -1469,7 +1469,7 @@ struct GPUTPCGMMerger_CompareClusterIdsLooper {
     if (a1.row != b1.row) {
       return ((a1.row > b1.row) ^ ((a.leg - leg) & 1) ^ outwards);
     }
-#ifdef GPUCA_NO_FAST_MATH // TODO: Use a better define as swith
+#ifdef GPUCA_DETERMINISTIC_MODE
     if (a1.id != b1.id) {
       return (a1.id > b1.id);
     }
@@ -1490,7 +1490,7 @@ struct GPUTPCGMMerger_CompareClusterIds {
     if (a.row != b.row) {
       return (a.row > b.row);
     }
-#ifdef GPUCA_NO_FAST_MATH // TODO: Use a better define as swith
+#ifdef GPUCA_DETERMINISTIC_MODE
     if (a.id != b.id) {
       return (a.id > b.id);
     }
@@ -1569,7 +1569,7 @@ GPUd() void GPUTPCGMMerger::CollectMergedTracks(int32_t nBlocks, int32_t nThread
     // unpack and sort clusters
     if (nParts > 1 && leg == 0) {
       GPUCommonAlgorithm::sort(trackParts, trackParts + nParts, [](const GPUTPCGMSectorTrack* a, const GPUTPCGMSectorTrack* b) {
-#ifdef GPUCA_NO_FAST_MATH // TODO: Use a better define as swith
+#ifdef GPUCA_DETERMINISTIC_MODE
         if (a->X() != b->X()) {
           return (a->X() > b->X());
         }
@@ -1834,7 +1834,7 @@ struct GPUTPCGMMergerSortTracks_comp {
     if (a.Legs() != b.Legs()) {
       return a.Legs() > b.Legs();
     }
-#ifdef GPUCA_NO_FAST_MATH // TODO: Use a better define as swith
+#ifdef GPUCA_DETERMINISTIC_MODE
     if (a.NClusters() != b.NClusters()) {
       return a.NClusters() > b.NClusters();
     }
@@ -1858,7 +1858,7 @@ struct GPUTPCGMMergerSortTracksQPt_comp {
   {
     const GPUTPCGMMergedTrack& GPUrestrict() a = mCmp[aa];
     const GPUTPCGMMergedTrack& GPUrestrict() b = mCmp[bb];
-#ifdef GPUCA_NO_FAST_MATH // TODO: Use a better define as swith
+#ifdef GPUCA_DETERMINISTIC_MODE
     if (CAMath::Abs(a.GetParam().GetQPt()) != CAMath::Abs(b.GetParam().GetQPt())) {
       return CAMath::Abs(a.GetParam().GetQPt()) > CAMath::Abs(b.GetParam().GetQPt());
     }
@@ -1907,7 +1907,7 @@ GPUd() void GPUTPCGMMerger::SortTracks(int32_t nBlocks, int32_t nThreads, int32_
     if (a.Legs() != b.Legs()) {
       return a.Legs() > b.Legs();
     }
-#ifdef GPUCA_NO_FAST_MATH // TODO: Use a better define as swith
+#ifdef GPUCA_DETERMINISTIC_MODE
     if (a.NClusters() != b.NClusters()) {
       return a.NClusters() > b.NClusters();
     }
@@ -1937,7 +1937,7 @@ GPUd() void GPUTPCGMMerger::SortTracksQPt(int32_t nBlocks, int32_t nThreads, int
   auto comp = [cmp = mOutputTracks](const int32_t aa, const int32_t bb) {
     const GPUTPCGMMergedTrack& GPUrestrict() a = cmp[aa];
     const GPUTPCGMMergedTrack& GPUrestrict() b = cmp[bb];
-#ifdef GPUCA_NO_FAST_MATH // TODO: Use a better define as swith
+#ifdef GPUCA_DETERMINISTIC_MODE
     if (CAMath::Abs(a.GetParam().GetQPt()) != CAMath::Abs(b.GetParam().GetQPt())) {
       return CAMath::Abs(a.GetParam().GetQPt()) > CAMath::Abs(b.GetParam().GetQPt());
     }

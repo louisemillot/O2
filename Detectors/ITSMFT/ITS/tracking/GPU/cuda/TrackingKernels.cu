@@ -43,7 +43,7 @@
 #define THRUST_NAMESPACE thrust::hip
 #endif
 
-#ifdef GPUCA_NO_FAST_MATH
+#ifdef GPUCA_DETERMINISTIC_MODE
 #define GPU_BLOCKS 1
 #define GPU_THREADS 1
 #else

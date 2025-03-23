@@ -250,7 +250,7 @@ GPUdi() uint32_t GPUCommonMath::Float2UIntReint(const float& x)
 #endif
 }
 
-#ifdef GPUCA_NO_FAST_MATH
+#ifdef GPUCA_DETERMINISTIC_MODE
 GPUdi() constexpr float GPUCommonMath::Round(float x) { return GPUCA_CHOICE(roundf(x), roundf(x), round(x)); }
 GPUdi() constexpr int32_t GPUCommonMath::Float2IntRn(float x) { return (int32_t)Round(x); }
 GPUhdi() constexpr float GPUCommonMath::Sqrt(float x) { return GPUCA_CHOICE(sqrtf(x), (float)sqrt((double)x), sqrt(x)); }
@@ -286,7 +286,7 @@ GPUdi() constexpr bool GPUCommonMath::IsNaN(float x) { return false; }
 
 GPUhdi() void GPUCommonMath::SinCos(float x, float& s, float& c)
 {
-#if defined(GPUCA_NO_FAST_MATH) && !defined(__OPENCL__)
+#if defined(GPUCA_DETERMINISTIC_MODE) && !defined(__OPENCL__)
   s = sin((double)x);
   c = cos((double)x);
 #elif !defined(GPUCA_GPUCODE_DEVICE) && defined(__APPLE__)
@@ -392,7 +392,7 @@ GPUdi() T GPUCommonMath::MaxWithRef(T x, T y, T z, T w, S refX, S refY, S refZ, 
 
 GPUdi() float GPUCommonMath::InvSqrt(float _x)
 {
-#if defined(GPUCA_NO_FAST_MATH) || defined(__OPENCL__)
+#if defined(GPUCA_DETERMINISTIC_MODE) || defined(__OPENCL__)
   return 1.f / Sqrt(_x);
 #elif defined(__CUDACC__) || defined(__HIPCC__)
   return __frsqrt_rn(_x);
