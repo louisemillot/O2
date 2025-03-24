@@ -32,8 +32,8 @@ void GPUChainTracking::RunTPCTrackingMerger_MergeBorderTracks(int8_t withinSecto
   }
   uint32_t n = withinSector == -1 ? NSECTORS / 2 : NSECTORS;
   if (GetProcessingSettings().alternateBorderSort && (!mRec->IsGPU() || doGPU)) {
-    TransferMemoryResourceLinkToHost(RecoStep::TPCMerging, Merger.MemoryResMemory(), 0, &mEvents->init);
     RecordMarker(&mEvents->single, 0);
+    TransferMemoryResourceLinkToHost(RecoStep::TPCMerging, Merger.MemoryResMemory(), 0, &mEvents->init);
     for (uint32_t i = 0; i < n; i++) {
       int32_t stream = i % mRec->NStreams();
       runKernel<GPUTPCGMMergerMergeBorders, 0>({GetGridAuto(stream, deviceType), krnlRunRangeNone, {nullptr, stream && i < (uint32_t)mRec->NStreams() ? &mEvents->single : nullptr}}, i, withinSector, mergeMode);
