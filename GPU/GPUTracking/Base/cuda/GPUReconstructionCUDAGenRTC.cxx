@@ -29,11 +29,13 @@ using namespace o2::gpu;
 QGET_LD_BINARY_SYMBOLS(GPUReconstructionCUDArtc_src);
 QGET_LD_BINARY_SYMBOLS(GPUReconstructionCUDArtc_command);
 QGET_LD_BINARY_SYMBOLS(GPUReconstructionCUDArtc_command_arch);
+QGET_LD_BINARY_SYMBOLS(GPUReconstructionCUDArtc_command_no_fast_math);
 
 int32_t GPUReconstructionCUDA::genRTC(std::string& filename, uint32_t& nCompile)
 {
   std::string rtcparam = std::string("#define GPUCA_RTC_CODE\n") +
                          std::string(mProcessingSettings.rtc.optSpecialCode ? "#define GPUCA_RTC_SPECIAL_CODE(...) __VA_ARGS__\n" : "#define GPUCA_RTC_SPECIAL_CODE(...)\n") +
+                         std::string(mProcessingSettings.rtc.deterministic ? "#define GPUCA_DETERMINISTIC_CODE(det, indet) det\n" : "#define GPUCA_DETERMINISTIC_CODE(det, indet) indet\n") +
                          GPUParamRTC::generateRTCCode(param(), mProcessingSettings.rtc.optConstexpr);
   if (filename == "") {
     filename = "/tmp/o2cagpu_rtc_";
@@ -52,6 +54,7 @@ int32_t GPUReconstructionCUDA::genRTC(std::string& filename, uint32_t& nCompile)
   std::string baseCommand = (mProcessingSettings.RTCprependCommand != "" ? (mProcessingSettings.RTCprependCommand + " ") : "");
   baseCommand += (getenv("O2_GPU_RTC_OVERRIDE_CMD") ? std::string(getenv("O2_GPU_RTC_OVERRIDE_CMD")) : std::string(_binary_GPUReconstructionCUDArtc_command_start, _binary_GPUReconstructionCUDArtc_command_len));
   baseCommand += std::string(" ") + (mProcessingSettings.RTCoverrideArchitecture != "" ? mProcessingSettings.RTCoverrideArchitecture : std::string(_binary_GPUReconstructionCUDArtc_command_arch_start, _binary_GPUReconstructionCUDArtc_command_arch_len));
+  baseCommand += mProcessingSettings.rtc.deterministic ? (std::string(" ") + std::string(_binary_GPUReconstructionCUDArtc_command_no_fast_math_start, _binary_GPUReconstructionCUDArtc_command_no_fast_math_len)) : std::string("");
 
   char shasource[21], shaparam[21], shacmd[21], shakernels[21];
   if (mProcessingSettings.rtc.cacheOutput) {

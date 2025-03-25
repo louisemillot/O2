@@ -123,8 +123,7 @@ add_custom_target(${MODULE}_HIP_SRC_CHK ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/
 add_custom_command(
     OUTPUT ${GPU_RTC_BIN}.command
     COMMAND echo -n "${CMAKE_HIP_COMPILER} ${GPU_RTC_FLAGS_SEPARATED} ${GPU_RTC_DEFINES} -x hip --cuda-device-only" > ${GPU_RTC_BIN}.command
-    COMMAND_EXPAND_LISTS
-    VERBATIM
+    COMMAND_EXPAND_LISTS VERBATIM
     COMMENT "Preparing HIP RTC command file ${GPU_RTC_BIN}.command"
 )
 create_binary_resource(${GPU_RTC_BIN}.command ${GPU_RTC_BIN}.command.o)
@@ -132,13 +131,20 @@ create_binary_resource(${GPU_RTC_BIN}.command ${GPU_RTC_BIN}.command.o)
 add_custom_command(
     OUTPUT ${GPU_RTC_BIN}.command.arch
     COMMAND echo -n "${GPU_RTC_FLAGS_ARCH}" > ${GPU_RTC_BIN}.command.arch
-    COMMAND_EXPAND_LISTS
-    VERBATIM
-    COMMENT "Preparing HIP RTC ARCH file ${GPU_RTC_BIN}.command.arch"
+    COMMAND_EXPAND_LISTS VERBATIM
+    COMMENT "Preparing HIP RTC ARCH command file ${GPU_RTC_BIN}.command.arch"
 )
 create_binary_resource(${GPU_RTC_BIN}.command.arch ${GPU_RTC_BIN}.command.arch.o)
 
-set(SRCS ${SRCS} ${GPU_RTC_BIN}.src.o ${GPU_RTC_BIN}.command.o ${GPU_RTC_BIN}.command.arch.o)
+add_custom_command(
+    OUTPUT ${GPU_RTC_BIN}.command.no_fast_math
+    COMMAND echo -n "${GPUCA_CXX_NO_FAST_MATH_FLAGS}" > ${GPU_RTC_BIN}.command.no_fast_math
+    COMMAND_EXPAND_LISTS VERBATIM
+    COMMENT "Preparing HIP RTC NO_FAST_MATH command file ${GPU_RTC_BIN}.command.no_fast_math"
+)
+create_binary_resource(${GPU_RTC_BIN}.command.no_fast_math ${GPU_RTC_BIN}.command.no_fast_math.o)
+
+set(SRCS ${SRCS} ${GPU_RTC_BIN}.src.o ${GPU_RTC_BIN}.command.o ${GPU_RTC_BIN}.command.arch.o ${GPU_RTC_BIN}.command.no_fast_math.o)
 # -------------------------------- End RTC -------------------------------------------------------
 
 if(ALIGPU_BUILD_TYPE STREQUAL "O2")

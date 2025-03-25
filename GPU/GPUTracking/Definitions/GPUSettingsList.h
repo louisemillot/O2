@@ -208,6 +208,7 @@ BeginSubConfig(GPUSettingsProcessingRTC, rtc, configStandalone.proc, "RTC", 0, "
 AddOption(cacheOutput, bool, false, "", 0, "Cache RTC compilation results")
 AddOption(optConstexpr, bool, true, "", 0, "Replace constant variables by static constexpr expressions")
 AddOption(optSpecialCode, int8_t, -1, "", 0, "Insert GPUCA_RTC_SPECIAL_CODE special code during RTC")
+AddOption(deterministic, bool, false, "", 0, "Compile RTC in deterministic mode, with NO_FAST_MATH flags and GPUCA_DETERMINISTIC_MODE define")
 AddOption(compilePerKernel, bool, true, "", 0, "Run one RTC compilation per kernel")
 AddOption(enable, bool, false, "", 0, "Use RTC to optimize GPU code")
 AddOption(runTest, int32_t, 0, "", 0, "Do not run the actual benchmark, but just test RTC compilation (1 full test, 2 test only compilation)")
