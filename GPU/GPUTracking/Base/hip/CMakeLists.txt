@@ -122,7 +122,7 @@ add_custom_target(${MODULE}_HIP_SRC_CHK ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/
 
 add_custom_command(
     OUTPUT ${GPU_RTC_BIN}.command
-    COMMAND echo -n "${CMAKE_HIP_COMPILER} ${GPU_RTC_FLAGS_SEPARATED} ${GPU_RTC_DEFINES} -x hip --cuda-device-only" > ${GPU_RTC_BIN}.command
+    COMMAND echo -n "${CMAKE_HIP_COMPILER} ${GPU_RTC_DEFINES} ${GPU_RTC_FLAGS_SEPARATED} -x hip --cuda-device-only" > ${GPU_RTC_BIN}.command
     COMMAND_EXPAND_LISTS VERBATIM
     COMMENT "Preparing HIP RTC command file ${GPU_RTC_BIN}.command"
 )
