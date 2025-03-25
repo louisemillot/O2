@@ -160,8 +160,6 @@ if(ALIGPU_BUILD_TYPE STREQUAL "O2")
       ${GPUCA_HIP_SOURCE_DIR}
     TARGETVARNAME targetName)
 
-  target_compile_definitions(${targetName} PUBLIC $<TARGET_PROPERTY:O2::GPUTracking,COMPILE_DEFINITIONS>)
-
   install(FILES ${HDRS} DESTINATION include/GPU)
 
 #  o2_add_test(GPUsortHIP NAME test_GPUsortHIP
@@ -175,10 +173,13 @@ if(ALIGPU_BUILD_TYPE STREQUAL "Standalone")
   set(targetName "${MODULE}")
   set(TMP_BASELIB GPUTracking)
   add_library(${MODULE} SHARED ${SRCS})
+  add_library(O2::${MODULE} ALIAS ${MODULE})
   target_link_libraries(${MODULE} PUBLIC ${TMP_BASELIB})
   install(TARGETS GPUTrackingHIP)
   include_directories(${GPUCA_HIP_SOURCE_DIR})
 endif()
+
+target_compile_definitions(${targetName} PRIVATE $<TARGET_PROPERTY:O2::GPUTracking,COMPILE_DEFINITIONS>)
 
 add_library(${MODULE}_CXX OBJECT ${SRCS_CXX}) # Adding a C++ library for the .cxx code of the HIP library, such that it does not link to HIP libraries, and CMake HIP Language doesn't add HIP compile flags.
 target_compile_definitions(${MODULE}_CXX PRIVATE $<TARGET_PROPERTY:${TMP_BASELIB},COMPILE_DEFINITIONS>)
@@ -228,15 +229,6 @@ elseif(GPUCA_HIP_COMPILE_MODE STREQUAL "perkernel")
   target_sources(${targetName} PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/GPUTrackingHIPKernelModules.o)
   set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/GPUTrackingHIPKernelModules.o PROPERTIES EXTERNAL_OBJECT true GENERATED true)
 
-  # Disable all non-deterministic floating point to make TPC track model encoding / decoding precise
-  set_source_files_properties(${O2_GPU_KERNEL_WRAPPER_FOLDER}/krnl_GPUTPCCompressionKernels_step0attached.hip
-                              ${O2_GPU_KERNEL_WRAPPER_FOLDER}/krnl_GPUTPCCompressionKernels_step1unattached.hip
-                              ${O2_GPU_KERNEL_WRAPPER_FOLDER}/krnl_GPUTPCDecompressionKernels_step0attached.hip
-                              ${O2_GPU_KERNEL_WRAPPER_FOLDER}/krnl_GPUTPCDecompressionKernels_step1unattached.hip
-                              TARGET_DIRECTORY ${targetName}
-                              PROPERTIES
-                              COMPILE_FLAGS "${GPUCA_CXX_NO_FAST_MATH_FLAGS}"
-                              COMPILE_DEFINITIONS "GPUCA_DETERMINISTIC_MODE")
 elseif(GPUCA_HIP_COMPILE_MODE STREQUAL "rdc")
   message(FATAL_ERROR "HIP RDC compilation of GPUReconstruction ios not yet working!")
   target_compile_definitions(${targetName} PRIVATE GPUCA_KERNEL_COMPILE_MODE=2)

@@ -142,3 +142,26 @@ function(o2_gpu_kernel_file_list list)
   list(REMOVE_DUPLICATES TMP_FILE_LIST)
   set_property(TARGET O2_GPU_KERNELS PROPERTY O2_GPU_KERNELS_FILE_LIST_${list} "${TMP_FILE_LIST}")
 endfunction()
+
+function(o2_gpu_kernel_set_deterministic)
+  if(NOT GPUCA_DETERMINISTIC_MODE GREATER_EQUAL ${GPUCA_DETERMINISTIC_MODE_MAP_GPU})
+    list(LENGTH ARGV n)
+    math(EXPR n "${n} - 1")
+    foreach(i RANGE 0 ${n})
+      if(CUDA_ENABLED AND (NOT DEFINED GPUCA_CUDA_COMPILE_MODE OR GPUCA_CUDA_COMPILE_MODE STREQUAL "perkernel"))
+        set_source_files_properties("${O2_GPU_KERNEL_WRAPPER_FOLDER}/krnl_${ARGV${i}}.cu"
+                                    TARGET_DIRECTORY O2::GPUTrackingCUDA
+                                    PROPERTIES
+                                    COMPILE_FLAGS "${GPUCA_CUDA_NO_FAST_MATH_FLAGS}"
+                                    COMPILE_DEFINITIONS "GPUCA_DETERMINISTIC_MODE")
+      endif()
+      if(HIP_ENABLED AND (NOT DEFINED GPUCA_HIP_COMPILE_MODE OR GPUCA_HIP_COMPILE_MODE STREQUAL "perkernel"))
+        set_source_files_properties("${O2_GPU_KERNEL_WRAPPER_FOLDER}/krnl_${ARGV${i}}.hip"
+                                    TARGET_DIRECTORY O2::GPUTrackingHIP
+                                    PROPERTIES
+                                    COMPILE_FLAGS "${GPUCA_CXX_NO_FAST_MATH_FLAGS}"
+                                    COMPILE_DEFINITIONS "GPUCA_DETERMINISTIC_MODE")
+      endif()
+    endforeach()
+  endif()
+endfunction()

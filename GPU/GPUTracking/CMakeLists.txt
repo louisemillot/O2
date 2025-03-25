@@ -372,16 +372,6 @@ if(ALIGPU_BUILD_TYPE STREQUAL "Standalone")
   endif()
 endif()
 
-# Disable all non-deterministic floating point to make TPC track model encoding / decoding precise
-set_source_files_properties(DataCompression/GPUTPCCompressionTrackModel.cxx
-                            DataCompression/GPUTPCCompressionKernels.cxx
-                            DataCompression/TPCClusterDecompressor.cxx
-                            DataCompression/GPUTPCDecompressionKernels.cxx
-                            TARGET_DIRECTORY ${targetName}
-                            PROPERTIES
-                            COMPILE_FLAGS "${GPUCA_CXX_NO_FAST_MATH_FLAGS}"
-                            COMPILE_DEFINITIONS "GPUCA_DETERMINISTIC_MODE")
-
 # GPUReconstructionLibrary needs to know which GPU backends are enabled for proper error messages
 configure_file(Base/GPUReconstructionAvailableBackends.template.h ${CMAKE_CURRENT_BINARY_DIR}/GPUReconstructionAvailableBackends.h)
 set_source_files_properties(Base/GPUReconstructionLibrary.cxx
@@ -423,5 +413,19 @@ if(ALIGPU_BUILD_TYPE STREQUAL "O2" OR ALIGPU_BUILD_TYPE STREQUAL "Standalone")
 endif()
 
 if(GPUCA_DETERMINISTIC_MODE GREATER_EQUAL ${GPUCA_DETERMINISTIC_MODE_MAP_GPU})
-  target_compile_definitions(${targetName} PUBLIC GPUCA_DETERMINISTIC_MODE)
+  target_compile_definitions(${targetName} PRIVATE GPUCA_DETERMINISTIC_MODE)
 endif()
+
+# Disable all non-deterministic floating point to make TPC track model encoding / decoding precise
+set_source_files_properties(DataCompression/GPUTPCCompressionTrackModel.cxx
+                            DataCompression/GPUTPCCompressionKernels.cxx
+                            DataCompression/TPCClusterDecompressor.cxx
+                            DataCompression/GPUTPCDecompressionKernels.cxx
+                            TARGET_DIRECTORY ${targetName}
+                            PROPERTIES
+                            COMPILE_FLAGS "${GPUCA_CXX_NO_FAST_MATH_FLAGS}"
+                            COMPILE_DEFINITIONS "GPUCA_DETERMINISTIC_MODE")
+o2_gpu_kernel_set_deterministic(GPUTPCCompressionKernels_step0attached
+                                GPUTPCCompressionKernels_step1unattached
+                                GPUTPCDecompressionKernels_step0attached
+                                GPUTPCDecompressionKernels_step1unattached)

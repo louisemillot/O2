@@ -131,7 +131,6 @@ if(ALIGPU_BUILD_TYPE STREQUAL "O2")
                  PUBLIC_INCLUDE_DIRECTORIES .
              SOURCES ${SRCS} ${SRCS_NO_H})
 
-  target_compile_definitions(${targetName} PRIVATE $<TARGET_PROPERTY:O2::GPUTracking,COMPILE_DEFINITIONS>)
   target_compile_definitions(${targetName} PRIVATE GPUCA_BUILD_EVENT_DISPLAY_GLFW GPUCA_DISPLAY_GL3W GPUCA_DISPLAY_OPENGL_CORE)
 
   install(FILES ${HDRS} ${HDRS_INSTALL} DESTINATION include/GPU)
@@ -157,6 +156,8 @@ if(ALIGPU_BUILD_TYPE STREQUAL "Standalone")
   configure_file(filterMacros/setinclude.sh.in setinclude.sh @ONLY)
   install(FILES ${CMAKE_CURRENT_BINARY_DIR}/setinclude.sh PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE DESTINATION displayTrackFilter)
 endif()
+
+target_compile_definitions(${targetName} PRIVATE $<TARGET_PROPERTY:O2::GPUTracking,COMPILE_DEFINITIONS>)
 
 message(STATUS "Building GPU Event Display (Vulkan ${GPUCA_EVENT_DISPLAY_VULKAN}, Wayland ${GPUCA_EVENT_DISPLAY_WAYLAND}, Freetype ${GPUCA_EVENT_DISPLAY_FREETYPE}, Fontconfig ${Fontconfig_FOUND}, Qt ${GPUCA_EVENT_DISPLAY_QT})")
 target_link_libraries(${targetName} PUBLIC ${GLFW_LIBRARIES} OpenGL::GL)

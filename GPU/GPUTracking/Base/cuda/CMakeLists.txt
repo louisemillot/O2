@@ -122,8 +122,6 @@ if(ALIGPU_BUILD_TYPE STREQUAL "O2")
       ${CMAKE_CURRENT_SOURCE_DIR}
     TARGETVARNAME targetName)
 
-  target_compile_definitions(${targetName} PUBLIC $<TARGET_PROPERTY:O2::GPUTracking,COMPILE_DEFINITIONS>)
-
   install(FILES ${HDRS} DESTINATION include/GPU)
 endif()
 
@@ -131,10 +129,13 @@ if(ALIGPU_BUILD_TYPE STREQUAL "Standalone")
   set(targetName "${MODULE}")
   set(TMP_BASELIB GPUTracking)
   add_library(${MODULE} SHARED ${SRCS})
+  add_library(O2::${MODULE} ALIAS ${MODULE})
   target_link_libraries(${MODULE} PUBLIC ${TMP_BASELIB})
   install(TARGETS GPUTrackingCUDA)
   include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 endif()
+
+target_compile_definitions(${targetName} PRIVATE $<TARGET_PROPERTY:O2::GPUTracking,COMPILE_DEFINITIONS>)
 
 # Setting target architecture and adding GPU libraries
 target_link_libraries(${targetName} PRIVATE cuda cudart nvrtc)
@@ -170,15 +171,6 @@ elseif(GPUCA_CUDA_COMPILE_MODE STREQUAL "perkernel")
   target_sources(${targetName} PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/GPUTrackingCUDAKernelModules.o)
   set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/GPUTrackingCUDAKernelModules.o PROPERTIES EXTERNAL_OBJECT true GENERATED true)
 
-  # Disable all non-deterministic floating point to make TPC track model encoding / decoding precise
-  set_source_files_properties(${O2_GPU_KERNEL_WRAPPER_FOLDER}/krnl_GPUTPCCompressionKernels_step0attached.cu
-                              ${O2_GPU_KERNEL_WRAPPER_FOLDER}/krnl_GPUTPCCompressionKernels_step1unattached.cu
-                              ${O2_GPU_KERNEL_WRAPPER_FOLDER}/krnl_GPUTPCDecompressionKernels_step0attached.cu
-                              ${O2_GPU_KERNEL_WRAPPER_FOLDER}/krnl_GPUTPCDecompressionKernels_step1unattached.cu
-                              TARGET_DIRECTORY ${targetName}
-                              PROPERTIES
-                              COMPILE_FLAGS "${GPUCA_CUDA_NO_FAST_MATH_FLAGS}"
-                              COMPILE_DEFINITIONS "GPUCA_DETERMINISTIC_MODE")
 elseif(GPUCA_CUDA_COMPILE_MODE STREQUAL "rdc")
   message(FATAL_ERROR "CUDA RDC compilation of GPUReconstruction ios not yet working!")
   target_compile_definitions(${targetName} PRIVATE GPUCA_KERNEL_COMPILE_MODE=2)

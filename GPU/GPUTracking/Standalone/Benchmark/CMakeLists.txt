@@ -28,10 +28,9 @@ if(ALIGPU_BUILD_TYPE STREQUAL "Standalone")
     add_executable(ca ${SRCS})
     set(targetName ca)
     target_link_libraries(${targetName} PUBLIC GPUTracking)
-
 endif()
 
-target_compile_definitions(${targetName} PUBLIC $<TARGET_PROPERTY:O2::GPUTracking,COMPILE_DEFINITIONS>)
+target_compile_definitions(${targetName} PRIVATE $<TARGET_PROPERTY:O2::GPUTracking,COMPILE_DEFINITIONS>)
 
 if(ROOT_FOUND)
   target_sources(${targetName} PRIVATE ../../qa/genEvents.cxx)
