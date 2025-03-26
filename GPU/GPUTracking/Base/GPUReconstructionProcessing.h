@@ -20,6 +20,7 @@
 
 #include "utils/timer.h"
 #include <functional>
+#include <atomic>
 
 namespace o2::gpu
 {
@@ -135,6 +136,8 @@ class GPUReconstructionProcessing : public GPUReconstruction
   uint32_t getNextTimerId();
   timerMeta* getTimerById(uint32_t id, bool increment = true);
   timerMeta* insertTimer(uint32_t id, std::string&& name, int32_t J, int32_t num, int32_t type, RecoStep step);
+
+  static std::atomic_flag mTimerFlag;
 };
 
 template <class T>

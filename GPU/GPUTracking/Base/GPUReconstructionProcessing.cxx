@@ -57,17 +57,24 @@ void GPUReconstructionProcessing::runParallelOuterLoop(bool doGPU, uint32_t nThr
   }
 }
 
-namespace o2::gpu
+uint32_t GPUReconstructionProcessing::SetAndGetNActiveThreadsOuterLoop(bool condition, uint32_t max)
 {
-namespace // anonymous
-{
-static std::atomic_flag timerFlag = ATOMIC_FLAG_INIT; // TODO: Should be a class member not global, but cannot be moved to header due to ROOT limitation
-} // anonymous namespace
-} // namespace o2::gpu
+  if (condition && mProcessingSettings.inKernelParallel != 1) {
+    mNActiveThreadsOuterLoop = mProcessingSettings.inKernelParallel == 2 ? std::min<uint32_t>(max, mMaxHostThreads) : mMaxHostThreads;
+  } else {
+    mNActiveThreadsOuterLoop = 1;
+  }
+  if (mProcessingSettings.debugLevel >= 5) {
+    printf("Running %d threads in outer loop\n", mNActiveThreadsOuterLoop);
+  }
+  return mNActiveThreadsOuterLoop;
+}
+
+std::atomic_flag GPUReconstructionProcessing::mTimerFlag = ATOMIC_FLAG_INIT;
 
 GPUReconstructionProcessing::timerMeta* GPUReconstructionProcessing::insertTimer(uint32_t id, std::string&& name, int32_t J, int32_t num, int32_t type, RecoStep step)
 {
-  while (timerFlag.test_and_set()) {
+  while (mTimerFlag.test_and_set()) {
   }
   if (mTimers.size() <= id) {
     mTimers.resize(id + 1);
@@ -81,20 +88,20 @@ GPUReconstructionProcessing::timerMeta* GPUReconstructionProcessing::insertTimer
     mTimers[id]->count++;
   }
   timerMeta* retVal = mTimers[id].get();
-  timerFlag.clear();
+  mTimerFlag.clear();
   return retVal;
 }
 
 GPUReconstructionProcessing::timerMeta* GPUReconstructionProcessing::getTimerById(uint32_t id, bool increment)
 {
   timerMeta* retVal = nullptr;
-  while (timerFlag.test_and_set()) {
+  while (mTimerFlag.test_and_set()) {
   }
   if (mTimers.size() > id && mTimers[id]) {
     retVal = mTimers[id].get();
     retVal->count += increment;
   }
-  timerFlag.clear();
+  mTimerFlag.clear();
   return retVal;
 }
 
@@ -102,19 +109,6 @@ uint32_t GPUReconstructionProcessing::getNextTimerId()
 {
   static std::atomic<uint32_t> id{0};
   return id.fetch_add(1);
-}
-
-uint32_t GPUReconstructionProcessing::SetAndGetNActiveThreadsOuterLoop(bool condition, uint32_t max)
-{
-  if (condition && mProcessingSettings.inKernelParallel != 1) {
-    mNActiveThreadsOuterLoop = mProcessingSettings.inKernelParallel == 2 ? std::min<uint32_t>(max, mMaxHostThreads) : mMaxHostThreads;
-  } else {
-    mNActiveThreadsOuterLoop = 1;
-  }
-  if (mProcessingSettings.debugLevel >= 5) {
-    printf("Running %d threads in outer loop\n", mNActiveThreadsOuterLoop);
-  }
-  return mNActiveThreadsOuterLoop;
 }
 
 std::unique_ptr<gpu_reconstruction_kernels::threadContext> GPUReconstructionProcessing::GetThreadContext()
