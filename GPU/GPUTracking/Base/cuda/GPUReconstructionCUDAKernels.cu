@@ -55,7 +55,7 @@ inline void GPUReconstructionCUDABackend::runKernelBackendInternal(const krnlSet
 #endif
     pArgs[arg_offset] = &y.index;
     GPUReconstructionCUDAInternals::getArgPtrs(&pArgs[arg_offset + 1], args...);
-    GPUChkErr(cuLaunchKernel(*mInternals->kernelFunctions[getRTCkernelNum<false, T, I>()], x.nBlocks, 1, 1, x.nThreads, 1, 1, 0, mInternals->Streams[x.stream], (void**)pArgs, nullptr));
+    GPUChkErr(cuLaunchKernel(*mInternals->kernelFunctions[getRTCkernelNum<T, I>()], x.nBlocks, 1, 1, x.nThreads, 1, 1, 0, mInternals->Streams[x.stream], (void**)pArgs, nullptr));
   }
 }
 
@@ -111,7 +111,7 @@ void GPUReconstructionCUDABackend::runKernelBackend(const krnlSetupArgs<T, I, Ar
 #include "GPUReconstructionKernelList.h"
 #undef GPUCA_KRNL
 
-template <bool multi, class T, int32_t I>
+template <class T, int32_t I>
 int32_t GPUReconstructionCUDABackend::getRTCkernelNum(int32_t k)
 {
   static int32_t num = k;
@@ -121,9 +121,7 @@ int32_t GPUReconstructionCUDABackend::getRTCkernelNum(int32_t k)
   return num;
 }
 
-#define GPUCA_KRNL(x_class, ...)                                                                                    \
-  template int32_t GPUReconstructionCUDABackend::getRTCkernelNum<false, GPUCA_M_KRNL_TEMPLATE(x_class)>(int32_t k); \
-  template int32_t GPUReconstructionCUDABackend::getRTCkernelNum<true, GPUCA_M_KRNL_TEMPLATE(x_class)>(int32_t k);
+#define GPUCA_KRNL(x_class, ...) template int32_t GPUReconstructionCUDABackend::getRTCkernelNum<GPUCA_M_KRNL_TEMPLATE(x_class)>(int32_t k);
 #include "GPUReconstructionKernelList.h"
 #undef GPUCA_KRNL
 

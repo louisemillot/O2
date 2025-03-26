@@ -618,7 +618,7 @@ void GPUReconstructionCUDA::loadKernelModules(bool perKernel)
 {
   uint32_t j = 0;
 #define GPUCA_KRNL(x_class, ...)                                                                                                                                                        \
-  getRTCkernelNum<false, GPUCA_M_KRNL_TEMPLATE(x_class)>(mInternals->kernelFunctions.size());                                                                                           \
+  getRTCkernelNum<GPUCA_M_KRNL_TEMPLATE(x_class)>(mInternals->kernelFunctions.size());                                                                                                  \
   mInternals->kernelFunctions.emplace_back(new CUfunction);                                                                                                                             \
   mInternals->kernelNames.emplace_back(GPUCA_M_STR(GPUCA_M_CAT(krnl_, GPUCA_M_KRNL_NAME(x_class))));                                                                                    \
   if (mProcessingSettings.debugLevel >= 3) {                                                                                                                                            \

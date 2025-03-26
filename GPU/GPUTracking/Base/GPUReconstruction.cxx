@@ -273,6 +273,7 @@ int32_t GPUReconstruction::InitPhaseBeforeDevice()
     if (mProcessingSettings.createO2Output > 1) {
       mProcessingSettings.createO2Output = 1;
     }
+    mProcessingSettings.rtc.deterministic = 1;
   }
   if (mProcessingSettings.deterministicGPUReconstruction && mProcessingSettings.debugLevel >= 6) {
     mProcessingSettings.nTPCClustererLanes = 1;

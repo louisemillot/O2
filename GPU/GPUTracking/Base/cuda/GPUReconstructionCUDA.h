@@ -49,7 +49,7 @@ class GPUReconstructionCUDABackend : public GPUReconstructionDeviceBase
   template <class T, int32_t I>
   class backendInternal;
 
-  template <bool multi, class T, int32_t I = 0>
+  template <class T, int32_t I = 0>
   static int32_t getRTCkernelNum(int32_t k = -1);
 
   void getRTCKernelCalls(std::vector<std::string>& kernels);
