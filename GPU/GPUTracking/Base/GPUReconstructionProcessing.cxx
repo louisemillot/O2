@@ -124,3 +124,39 @@ std::unique_ptr<gpu_reconstruction_kernels::threadContext> GPUReconstructionProc
 
 gpu_reconstruction_kernels::threadContext::threadContext() = default;
 gpu_reconstruction_kernels::threadContext::~threadContext() = default;
+
+template <class T, int32_t I>
+uint32_t GPUReconstructionProcessing::GetKernelNum(int32_t k)
+{
+  static int32_t num = k;
+  if (num < 0) {
+    throw std::runtime_error("Internal Error - Kernel Number not Set");
+  }
+  return num;
+}
+
+namespace o2::gpu::internal
+{
+static std::vector<std::string> initKernelNames()
+{
+  std::vector<std::string> retVal;
+#define GPUCA_KRNL(x_class, ...)                                                            \
+  GPUReconstructionProcessing::GetKernelNum<GPUCA_M_KRNL_TEMPLATE(x_class)>(retVal.size()); \
+  retVal.emplace_back(GPUCA_M_STR(GPUCA_M_KRNL_NAME(x_class)));
+#include "GPUReconstructionKernelList.h"
+#undef GPUCA_KRNL
+  return retVal;
+}
+} // namespace o2::gpu::internal
+
+const std::vector<std::string> GPUReconstructionProcessing::mKernelNames = o2::gpu::internal::initKernelNames();
+
+#define GPUCA_KRNL(x_class, ...)                                                                        \
+  template uint32_t GPUReconstructionProcessing::GetKernelNum<GPUCA_M_KRNL_TEMPLATE(x_class)>(int32_t); \
+  template <>                                                                                           \
+  const char* GPUReconstructionProcessing::GetKernelName<GPUCA_M_KRNL_TEMPLATE(x_class)>()              \
+  {                                                                                                     \
+    return GPUCA_M_STR(GPUCA_M_KRNL_NAME(x_class));                                                     \
+  }
+#include "GPUReconstructionKernelList.h"
+#undef GPUCA_KRNL
