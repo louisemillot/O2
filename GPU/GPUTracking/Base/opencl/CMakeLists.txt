@@ -27,7 +27,7 @@ set(OCL_FLAGS -Dcl_clang_storage_class_specifiers -cl-std=CLC++2021)
 if(NOT GPUCA_DETERMINISTIC_MODE GREATER_EQUAL ${GPUCA_DETERMINISTIC_MODE_MAP_NO_FAST_MATH})
   set(OCL_FLAGS ${OCL_FLAGS} -cl-denorms-are-zero -cl-mad-enable -cl-no-signed-zeros -cl-fast-relaxed-math)
 else()
-  set(OCL_FLAGS ${OCL_FLAGS} -cl-fp32-correctly-rounded-divide-sqrt)
+  set(OCL_FLAGS ${OCL_FLAGS} ${GPUCA_OCL_NO_FAST_MATH_FLAGS})
 endif()
 set(OCL_DEFINECL "-D$<JOIN:$<TARGET_PROPERTY:O2::GPUTracking,COMPILE_DEFINITIONS>,$<SEMICOLON>-D>"
             "-I$<JOIN:$<FILTER:$<TARGET_PROPERTY:O2::GPUTracking,INCLUDE_DIRECTORIES>,EXCLUDE,^/usr/include/?>,$<SEMICOLON>-I>"
