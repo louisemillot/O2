@@ -242,6 +242,10 @@ file(GENERATE
      OUTPUT include_gpu_onthefly/GPUReconstructionIncludesDeviceAll.h
      INPUT Base/GPUReconstructionIncludesDeviceAll.template.h
 )
+file(GENERATE
+     OUTPUT include_gpu_onthefly/GPUNoFastMathKernels.h
+     INPUT cmake/GPUNoFastMathKernels.template.h
+)
 if(NOT ALIGPU_BUILD_TYPE STREQUAL "O2")
   include_directories(${CMAKE_CURRENT_BINARY_DIR}/include_gpu_onthefly)
 endif()

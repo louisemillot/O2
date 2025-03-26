@@ -31,11 +31,12 @@ QGET_LD_BINARY_SYMBOLS(GPUReconstructionCUDArtc_command);
 QGET_LD_BINARY_SYMBOLS(GPUReconstructionCUDArtc_command_arch);
 QGET_LD_BINARY_SYMBOLS(GPUReconstructionCUDArtc_command_no_fast_math);
 
+#include "GPUNoFastMathKernels.h"
+
 int32_t GPUReconstructionCUDA::genRTC(std::string& filename, uint32_t& nCompile)
 {
   std::string rtcparam = std::string("#define GPUCA_RTC_CODE\n") +
                          std::string(mProcessingSettings.rtc.optSpecialCode ? "#define GPUCA_RTC_SPECIAL_CODE(...) __VA_ARGS__\n" : "#define GPUCA_RTC_SPECIAL_CODE(...)\n") +
-                         std::string(mProcessingSettings.rtc.deterministic ? "#define GPUCA_DETERMINISTIC_CODE(det, indet) det\n" : "#define GPUCA_DETERMINISTIC_CODE(det, indet) indet\n") +
                          GPUParamRTC::generateRTCCode(param(), mProcessingSettings.rtc.optConstexpr);
   if (filename == "") {
     filename = "/tmp/o2cagpu_rtc_";
@@ -54,7 +55,6 @@ int32_t GPUReconstructionCUDA::genRTC(std::string& filename, uint32_t& nCompile)
   std::string baseCommand = (mProcessingSettings.RTCprependCommand != "" ? (mProcessingSettings.RTCprependCommand + " ") : "");
   baseCommand += (getenv("O2_GPU_RTC_OVERRIDE_CMD") ? std::string(getenv("O2_GPU_RTC_OVERRIDE_CMD")) : std::string(_binary_GPUReconstructionCUDArtc_command_start, _binary_GPUReconstructionCUDArtc_command_len));
   baseCommand += std::string(" ") + (mProcessingSettings.RTCoverrideArchitecture != "" ? mProcessingSettings.RTCoverrideArchitecture : std::string(_binary_GPUReconstructionCUDArtc_command_arch_start, _binary_GPUReconstructionCUDArtc_command_arch_len));
-  baseCommand += mProcessingSettings.rtc.deterministic ? (std::string(" ") + std::string(_binary_GPUReconstructionCUDArtc_command_no_fast_math_start, _binary_GPUReconstructionCUDArtc_command_no_fast_math_len)) : std::string("");
 
   char shasource[21], shaparam[21], shacmd[21], shakernels[21];
   if (mProcessingSettings.rtc.cacheOutput) {
@@ -169,13 +169,20 @@ int32_t GPUReconstructionCUDA::genRTC(std::string& filename, uint32_t& nCompile)
       kernel += mProcessingSettings.rtc.compilePerKernel ? kernels[i] : kernelsall;
       kernel += "}";
 
-      if (fwrite(rtcparam.c_str(), 1, rtcparam.size(), fp) != rtcparam.size() ||
+      bool deterministic = mProcessingSettings.rtc.deterministic || o2::gpu::internal::noFastMathKernels.find(GetKernelName(i)) != o2::gpu::internal::noFastMathKernels.end();
+      const std::string deterministicStr = std::string(deterministic ? "#define GPUCA_DETERMINISTIC_CODE(det, indet) det\n" : "#define GPUCA_DETERMINISTIC_CODE(det, indet) indet\n");
+
+      if (fwrite(deterministicStr.c_str(), 1, deterministicStr.size(), fp) != deterministicStr.size() ||
+          fwrite(rtcparam.c_str(), 1, rtcparam.size(), fp) != rtcparam.size() ||
           fwrite(_binary_GPUReconstructionCUDArtc_src_start, 1, _binary_GPUReconstructionCUDArtc_src_len, fp) != _binary_GPUReconstructionCUDArtc_src_len ||
           fwrite(kernel.c_str(), 1, kernel.size(), fp) != kernel.size()) {
         throw std::runtime_error("Error writing file");
       }
       fclose(fp);
       std::string command = baseCommand;
+      if (deterministic) {
+        command += std::string(" ") + std::string(_binary_GPUReconstructionCUDArtc_command_no_fast_math_start, _binary_GPUReconstructionCUDArtc_command_no_fast_math_len);
+      }
       command += " -c " + filename + "_" + std::to_string(i) + mRtcSrcExtension + " -o " + filename + "_" + std::to_string(i) + mRtcBinExtension;
       if (mProcessingSettings.debugLevel < 0) {
         command += " &> /dev/null";
