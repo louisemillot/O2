@@ -1,0 +1,615 @@
+[WARN] Task mctracks-to-aod has no inputs
+[WARN] Task generator-task has no inputs
+[INFO] Initialising O2 Data Processing Layer. Driver PID: 8906.
+[INFO] Driver listening on port: 16986
+[INFO] Rate limiting set up at 500MB distributed over 1 readers
+[INFO] O2 Data Processing Layer initialised. We brake for nobody.
+[INFO] Optimised build. O2DEBUG / LOG(debug) / LOGF(debug) / assert statement will not be shown.
+[INFO] Redeployment of configuration asked.
+[INFO] Starting internal-dpl-clock on pid 8908
+[INFO] Starting internal-dpl-aod-reader on pid 8909
+[INFO] Starting generator-task on pid 8910
+[INFO] Starting mctracks-to-aod on pid 8911
+[INFO] Starting internal-dpl-aod-spawner on pid 8912
+[INFO] Starting jet-deriveddata-producer on pid 8913
+[INFO] Starting aod-consumer-test-task on pid 8914
+[INFO] Starting internal-dpl-aod-writer on pid 8915
+[INFO] Starting internal-dpl-aod-global-analysis-file-sink on pid 8916
+[INFO] Starting internal-dpl-injected-dummy-sink on pid 8917
+[INFO] Redeployment of configuration done.
+[8911:mctracks-to-aod]: [WARN] Task mctracks-to-aod has no inputs
+[8911:mctracks-to-aod]: [INFO] Instrumenting crash signals
+[8911:mctracks-to-aod]: [INFO] Spawing new device mctracks-to-aod in process with pid 8911
+[8911:mctracks-to-aod]: [15:54:56][INFO] 
+[8911:mctracks-to-aod]:       ______      _    _______  _________ 
+[8911:mctracks-to-aod]:      / ____/___ _(_)_______   |/  /_  __ \    version 1.9.1
+[8911:mctracks-to-aod]:     / /_  / __ `/ / ___/__  /|_/ /_  / / /    build RELWITHDEBINFO
+[8911:mctracks-to-aod]:    / __/ / /_/ / / /    _  /  / / / /_/ /     https://github.com/FairRootGroup/FairMQ
+[8911:mctracks-to-aod]:   /_/    \__,_/_/_/     /_/  /_/  \___\_\     LGPL-3.0  © 2012-2025 GSI
+[8911:mctracks-to-aod]: 
+[8911:mctracks-to-aod]: [15:54:56][STATE] Starting FairMQ state machine --> IDLE
+[8911:mctracks-to-aod]: [15:54:56][STATE] IDLE ---> INITIALIZING DEVICE
+[8911:mctracks-to-aod]: [15:54:56][WARN] No bunch filling provided, impose default one
+[8911:mctracks-to-aod]: [15:54:56][INFO] Deducing mu=1.54383e-05 per BC from IR=100 with 576 BCs
+[8908:internal-dpl-clock]: [WARN] Task generator-task has no inputs
+[8910:generator-task]: [WARN] Task generator-task has no inputs
+[8908:internal-dpl-clock]: [INFO] Instrumenting crash signals
+[8908:internal-dpl-clock]: [INFO] Spawing new device internal-dpl-clock in process with pid 8908
+[8908:internal-dpl-clock]: [15:54:56][INFO] 
+[8908:internal-dpl-clock]:       ______      _    _______  _________ 
+[8908:internal-dpl-clock]:      / ____/___ _(_)_______   |/  /_  __ \    version 1.9.1
+[8908:internal-dpl-clock]:     / /_  / __ `/ / ___/__  /|_/ /_  / / /    build RELWITHDEBINFO
+[8908:internal-dpl-clock]:    / __/ / /_/ / / /    _  /  / / / /_/ /     https://github.com/FairRootGroup/FairMQ
+[8908:internal-dpl-clock]:   /_/    \__,_/_/_/     /_/  /_/  \___\_\     LGPL-3.0  © 2012-2025 GSI
+[8908:internal-dpl-clock]: 
+[8908:internal-dpl-clock]: [15:54:56][STATE] Starting FairMQ state machine --> IDLE
+[8908:internal-dpl-clock]: [15:54:56][STATE] IDLE ---> INITIALIZING DEVICE
+[8910:generator-task]: [INFO] Instrumenting crash signals
+[8914:aod-consumer-test-task]: [INFO] Instrumenting crash signals
+[8917:internal-dpl-injected-dummy-sink]: [WARN] Task generator-task has no inputs
+[8910:generator-task]: [INFO] Spawing new device generator-task in process with pid 8910
+[8910:generator-task]: [15:54:56][INFO] 
+[8910:generator-task]:       ______      _    _______  _________ 
+[8910:generator-task]:      / ____/___ _(_)_______   |/  /_  __ \    version 1.9.1
+[8910:generator-task]:     / /_  / __ `/ / ___/__  /|_/ /_  / / /    build RELWITHDEBINFO
+[8910:generator-task]:    / __/ / /_/ / / /    _  /  / / / /_/ /     https://github.com/FairRootGroup/FairMQ
+[8910:generator-task]:   /_/    \__,_/_/_/     /_/  /_/  \___\_\     LGPL-3.0  © 2012-2025 GSI
+[8910:generator-task]: 
+[8910:generator-task]: [15:54:56][STATE] Starting FairMQ state machine --> IDLE
+[8914:aod-consumer-test-task]: [INFO] Spawing new device aod-consumer-test-task in process with pid 8914
+[8914:aod-consumer-test-task]: [15:54:56][INFO] 
+[8914:aod-consumer-test-task]:       ______      _    _______  _________ 
+[8914:aod-consumer-test-task]:      / ____/___ _(_)_______   |/  /_  __ \    version 1.9.1
+[8914:aod-consumer-test-task]:     / /_  / __ `/ / ___/__  /|_/ /_  / / /    build RELWITHDEBINFO
+[8914:aod-consumer-test-task]:    / __/ / /_/ / / /    _  /  / / / /_/ /     https://github.com/FairRootGroup/FairMQ
+[8914:aod-consumer-test-task]:   /_/    \__,_/_/_/     /_/  /_/  \___\_\     LGPL-3.0  © 2012-2025 GSI
+[8914:aod-consumer-test-task]: 
+[8914:aod-consumer-test-task]: [15:54:56][STATE] Starting FairMQ state machine --> IDLE
+[8910:generator-task]: [15:54:56][STATE] IDLE ---> INITIALIZING DEVICE
+[8914:aod-consumer-test-task]: [15:54:56][STATE] IDLE ---> INITIALIZING DEVICE
+[8908:internal-dpl-clock]: [15:54:56][STATE] INITIALIZING DEVICE ---> INITIALIZED
+[8908:internal-dpl-clock]: [15:54:56][STATE] INITIALIZED ---> BINDING
+[8908:internal-dpl-clock]: [15:54:56][STATE] BINDING ---> BOUND
+[8908:internal-dpl-clock]: [15:54:56][STATE] BOUND ---> CONNECTING
+[8908:internal-dpl-clock]: [15:54:56][STATE] CONNECTING ---> DEVICE READY
+[8908:internal-dpl-clock]: [15:54:56][STATE] DEVICE READY ---> INITIALIZING TASK
+[8908:internal-dpl-clock]: [15:54:56][STATE] INITIALIZING TASK ---> READY
+[8908:internal-dpl-clock]: [15:54:56][STATE] READY ---> RUNNING
+[8908:internal-dpl-clock]: [15:54:56][INFO] fair::mq::Device running...
+[8908:internal-dpl-clock]: [15:54:56][INFO] LHCPeriod is not available, using current month MAR
+[8909:internal-dpl-aod-reader]: [INFO] Instrumenting crash signals
+[8908:internal-dpl-clock]: [15:54:56][INFO] Correctly handshaken websocket connection.
+[INFO] Controller for internal-dpl-aod-reader not yet available.
+[8909:internal-dpl-aod-reader]: [INFO] Spawing new device internal-dpl-aod-reader in process with pid 8909
+[8916:internal-dpl-aod-global-analysis-file-sink]: [INFO] Instrumenting crash signals
+[8909:internal-dpl-aod-reader]: [15:54:56][INFO] 
+[8909:internal-dpl-aod-reader]:       ______      _    _______  _________ 
+[8909:internal-dpl-aod-reader]:      / ____/___ _(_)_______   |/  /_  __ \    version 1.9.1
+[8909:internal-dpl-aod-reader]:     / /_  / __ `/ / ___/__  /|_/ /_  / / /    build RELWITHDEBINFO
+[8909:internal-dpl-aod-reader]:    / __/ / /_/ / / /    _  /  / / / /_/ /     https://github.com/FairRootGroup/FairMQ
+[8909:internal-dpl-aod-reader]:   /_/    \__,_/_/_/     /_/  /_/  \___\_\     LGPL-3.0  © 2012-2025 GSI
+[8909:internal-dpl-aod-reader]: 
+[8909:internal-dpl-aod-reader]: [15:54:56][STATE] Starting FairMQ state machine --> IDLE
+[8917:internal-dpl-injected-dummy-sink]: [INFO] Instrumenting crash signals
+[8909:internal-dpl-aod-reader]: [15:54:56][STATE] IDLE ---> INITIALIZING DEVICE
+[8909:internal-dpl-aod-reader]: [15:54:56][WARN] Workflow with injected AODs has unsatisfied inputs:
+[8909:internal-dpl-aod-reader]: [15:54:56][WARN]   AOD/COLLISION/1
+[8909:internal-dpl-aod-reader]: [15:54:56][WARN]   AOD/BC/1
+[8909:internal-dpl-aod-reader]: [15:54:56][WARN]   AOD/TIMESTAMPS/0
+[8909:internal-dpl-aod-reader]: [15:54:56][WARN]   AOD/BCSEL/0
+[8909:internal-dpl-aod-reader]: [15:54:56][WARN]   AOD/EVSEL/0
+[8909:internal-dpl-aod-reader]: [15:54:56][WARN]   AOD/FT0MULT/0
+[8909:internal-dpl-aod-reader]: [15:54:56][WARN]   AOD/CENTFT0C/0
+[8909:internal-dpl-aod-reader]: [15:54:56][WARN]   AOD/CENTFT0Cvar1/0
+[8909:internal-dpl-aod-reader]: [15:54:56][WARN]   AOD/CENTRUN2V0M/0
+[8909:internal-dpl-aod-reader]: [15:54:56][WARN]   AOD/EMCALMCS/0
+[8909:internal-dpl-aod-reader]: [15:54:56][WARN]   AOD/MCCOLLISLABEL/0
+[8909:internal-dpl-aod-reader]: [15:54:56][WARN]   AOD/TRACK/0
+[8909:internal-dpl-aod-reader]: [15:54:56][WARN]   AOD/TRACKEXTRA/2
+[8909:internal-dpl-aod-reader]: [15:54:56][WARN]   AOD/TRACKCOV/0
+[8909:internal-dpl-aod-reader]: [15:54:56][WARN]   AOD/TRACKDCA/0
+[8909:internal-dpl-aod-reader]: [15:54:56][WARN]   AOD/TRACKDCACOV/0
+[8909:internal-dpl-aod-reader]: [15:54:56][WARN]   AOD/TRACKSELECTION/0
+[8909:internal-dpl-aod-reader]: [15:54:56][WARN]   AOD/TRACKSELEXTRA/0
+[8909:internal-dpl-aod-reader]: [15:54:56][WARN]   AOD/TRACKASSOC/0
+[8909:internal-dpl-aod-reader]: [15:54:56][WARN]   AOD/MCTRACKLABEL/0
+[8909:internal-dpl-aod-reader]: [15:54:56][WARN]   AOD/EMCALCLUSTERS/0
+[8909:internal-dpl-aod-reader]: [15:54:56][WARN]   AOD/EMCCLUSCELLS/0
+[8909:internal-dpl-aod-reader]: [15:54:56][WARN]   AOD/CALO/0
+[8909:internal-dpl-aod-reader]: [15:54:56][WARN]   AOD/EMCMATCHTRACKS/0
+[8909:internal-dpl-aod-reader]: [15:54:56][WARN]   AOD/EMCALMCCLUSTERS/0
+[8909:internal-dpl-aod-reader]: [15:54:56][WARN]   AOD/HFD0COLLID/0
+[8909:internal-dpl-aod-reader]: [15:54:56][WARN]   AOD/HFD0MCCOLLID/0
+[8909:internal-dpl-aod-reader]: [15:54:56][WARN]   AOD/HFD0ID/0
+[8909:internal-dpl-aod-reader]: [15:54:56][WARN]   AOD/HFD0PID/0
+[8909:internal-dpl-aod-reader]: [15:54:56][WARN]   AOD/HFDPCOLLID/0
+[8909:internal-dpl-aod-reader]: [15:54:56][WARN]   AOD/HFDPMCCOLLID/0
+[8909:internal-dpl-aod-reader]: [15:54:56][WARN]   AOD/HFDPID/0
+[8909:internal-dpl-aod-reader]: [15:54:56][WARN]   AOD/HFDPPID/0
+[8909:internal-dpl-aod-reader]: [15:54:56][WARN]   AOD/HFLCCOLLID/0
+[8909:internal-dpl-aod-reader]: [15:54:56][WARN]   AOD/HFLCMCCOLLID/0
+[8909:internal-dpl-aod-reader]: [15:54:56][WARN]   AOD/HFLCID/0
+[8909:internal-dpl-aod-reader]: [15:54:56][WARN]   AOD/HFLCPID/0
+[8909:internal-dpl-aod-reader]: [15:54:56][WARN]   AOD/HFBPCOLLID/0
+[8909:internal-dpl-aod-reader]: [15:54:56][WARN]   AOD/HFBPMCCOLLID/0
+[8909:internal-dpl-aod-reader]: [15:54:56][WARN]   AOD/HFBPID/0
+[8909:internal-dpl-aod-reader]: [15:54:56][WARN]   AOD/HFBPPID/0
+[8909:internal-dpl-aod-reader]: [15:54:56][WARN]   AOD/V0INDEX/0
+[8909:internal-dpl-aod-reader]: [15:54:56][WARN]   AOD/REDUCEVENTINFO/0
+[8909:internal-dpl-aod-reader]: [15:54:56][WARN]   AOD/RTDIELINFO/0
+[8909:internal-dpl-aod-reader]: [15:54:56][FATAL] Stopping.
+[8916:internal-dpl-aod-global-analysis-file-sink]: [INFO] Spawing new device internal-dpl-aod-global-analysis-file-sink in process with pid 8916
+[8909:internal-dpl-aod-reader]: [15:54:56][ERROR] Exception caught while in Init: Fatal error. Exiting with 1.
+[8916:internal-dpl-aod-global-analysis-file-sink]: [15:54:56][INFO] 
+[8916:internal-dpl-aod-global-analysis-file-sink]:       ______      _    _______  _________ 
+[8916:internal-dpl-aod-global-analysis-file-sink]:      / ____/___ _(_)_______   |/  /_  __ \    version 1.9.1
+[8916:internal-dpl-aod-global-analysis-file-sink]:     / /_  / __ `/ / ___/__  /|_/ /_  / / /    build RELWITHDEBINFO
+[8916:internal-dpl-aod-global-analysis-file-sink]:    / __/ / /_/ / / /    _  /  / / / /_/ /     https://github.com/FairRootGroup/FairMQ
+[8916:internal-dpl-aod-global-analysis-file-sink]:   /_/    \__,_/_/_/     /_/  /_/  \___\_\     LGPL-3.0  © 2012-2025 GSI
+[8916:internal-dpl-aod-global-analysis-file-sink]: 
+[8916:internal-dpl-aod-global-analysis-file-sink]: [15:54:56][STATE] Starting FairMQ state machine --> IDLE
+[8914:aod-consumer-test-task]: [15:54:56][STATE] INITIALIZING DEVICE ---> INITIALIZED
+[8914:aod-consumer-test-task]: [15:54:56][STATE] INITIALIZED ---> BINDING
+[8914:aod-consumer-test-task]: [15:54:56][STATE] BINDING ---> BOUND
+[8914:aod-consumer-test-task]: [15:54:56][STATE] BOUND ---> CONNECTING
+[8914:aod-consumer-test-task]: [15:54:56][STATE] CONNECTING ---> DEVICE READY
+[8914:aod-consumer-test-task]: [15:54:56][STATE] DEVICE READY ---> INITIALIZING TASK
+[8914:aod-consumer-test-task]: [15:54:56][STATE] INITIALIZING TASK ---> READY
+[8914:aod-consumer-test-task]: [15:54:56][STATE] READY ---> RUNNING
+[8914:aod-consumer-test-task]: [15:54:56][INFO] fair::mq::Device running...
+[8917:internal-dpl-injected-dummy-sink]: [INFO] Spawing new device internal-dpl-injected-dummy-sink in process with pid 8917
+[8914:aod-consumer-test-task]: [15:54:56][INFO] LHCPeriod is not available, using current month MAR
+[8914:aod-consumer-test-task]: [15:54:56][INFO] Correctly handshaken websocket connection.
+[8917:internal-dpl-injected-dummy-sink]: [15:54:56][INFO] 
+[8917:internal-dpl-injected-dummy-sink]:       ______      _    _______  _________ 
+[8917:internal-dpl-injected-dummy-sink]:      / ____/___ _(_)_______   |/  /_  __ \    version 1.9.1
+[8917:internal-dpl-injected-dummy-sink]:     / /_  / __ `/ / ___/__  /|_/ /_  / / /    build RELWITHDEBINFO
+[8917:internal-dpl-injected-dummy-sink]:    / __/ / /_/ / / /    _  /  / / / /_/ /     https://github.com/FairRootGroup/FairMQ
+[8917:internal-dpl-injected-dummy-sink]:   /_/    \__,_/_/_/     /_/  /_/  \___\_\     LGPL-3.0  © 2012-2025 GSI
+[8917:internal-dpl-injected-dummy-sink]: 
+[8917:internal-dpl-injected-dummy-sink]: [15:54:56][STATE] Starting FairMQ state machine --> IDLE
+[8916:internal-dpl-aod-global-analysis-file-sink]: [15:54:56][STATE] IDLE ---> INITIALIZING DEVICE
+[8916:internal-dpl-aod-global-analysis-file-sink]: [15:54:56][STATE] INITIALIZING DEVICE ---> INITIALIZED
+[8916:internal-dpl-aod-global-analysis-file-sink]: [15:54:56][STATE] INITIALIZED ---> BINDING
+[8916:internal-dpl-aod-global-analysis-file-sink]: [15:54:56][STATE] BINDING ---> BOUND
+[8916:internal-dpl-aod-global-analysis-file-sink]: [15:54:56][STATE] BOUND ---> CONNECTING
+[8916:internal-dpl-aod-global-analysis-file-sink]: [15:54:56][STATE] CONNECTING ---> DEVICE READY
+[8916:internal-dpl-aod-global-analysis-file-sink]: [15:54:56][STATE] DEVICE READY ---> INITIALIZING TASK
+[8916:internal-dpl-aod-global-analysis-file-sink]: [15:54:56][STATE] INITIALIZING TASK ---> READY
+[8916:internal-dpl-aod-global-analysis-file-sink]: [15:54:56][STATE] READY ---> RUNNING
+[8916:internal-dpl-aod-global-analysis-file-sink]: [15:54:56][INFO] fair::mq::Device running...
+[8917:internal-dpl-injected-dummy-sink]: [15:54:56][STATE] IDLE ---> INITIALIZING DEVICE
+[8916:internal-dpl-aod-global-analysis-file-sink]: [15:54:56][INFO] LHCPeriod is not available, using current month MAR
+[8916:internal-dpl-aod-global-analysis-file-sink]: [15:54:56][INFO] Correctly handshaken websocket connection.
+[8917:internal-dpl-injected-dummy-sink]: [15:54:56][STATE] INITIALIZING DEVICE ---> INITIALIZED
+[8917:internal-dpl-injected-dummy-sink]: [15:54:56][STATE] INITIALIZED ---> BINDING
+[8917:internal-dpl-injected-dummy-sink]: [15:54:56][STATE] BINDING ---> BOUND
+[8917:internal-dpl-injected-dummy-sink]: [15:54:56][STATE] BOUND ---> CONNECTING
+[8917:internal-dpl-injected-dummy-sink]: [15:54:56][STATE] CONNECTING ---> DEVICE READY
+[8917:internal-dpl-injected-dummy-sink]: [15:54:56][STATE] DEVICE READY ---> INITIALIZING TASK
+[8917:internal-dpl-injected-dummy-sink]: [15:54:56][STATE] INITIALIZING TASK ---> READY
+[8917:internal-dpl-injected-dummy-sink]: [15:54:56][STATE] READY ---> RUNNING
+[8917:internal-dpl-injected-dummy-sink]: [15:54:56][INFO] fair::mq::Device running...
+[8917:internal-dpl-injected-dummy-sink]: [15:54:56][INFO] LHCPeriod is not available, using current month MAR
+[8917:internal-dpl-injected-dummy-sink]: [15:54:56][INFO] Correctly handshaken websocket connection.
+[8909:internal-dpl-aod-reader]:     1   libO2Framework.dylib                0x0000000105bf5c20: std::__1::__function::__func<doChild(int, char**, o2::framework::ServiceRegistry&, o2::framework::RunningWorkflowInfo const&, o2::framework::RunningDeviceRef, o2::framework::DriverConfig const&, o2::framework::ProcessingPolicies, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, uv_loop_s*)::$_0, std::__1::allocator<doChild(int, char**, o2::framework::ServiceRegistry&, o2::framework::RunningWorkflowInfo const&, o2::framework::RunningDeviceRef, o2::framework::DriverConfig const&, o2::framework::ProcessingPolicies, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, uv_loop_s*)::$_0>, void ()>::operator()()
+[8909:internal-dpl-aod-reader]:     2   libFairLogger.2.1.0.dylib           0x00000001054f97c4: fair::Logger::~Logger()
+[8909:internal-dpl-aod-reader]:     3   libO2Framework.dylib                0x0000000105b8e198: std::__1::__function::__func<o2::framework::WorkflowHelpers::injectServiceDevices(std::__1::vector<o2::framework::DataProcessorSpec, std::__1::allocator<o2::framework::DataProcessorSpec>>&, o2::framework::ConfigContext&)::$_10, std::__1::allocator<o2::framework::WorkflowHelpers::injectServiceDevices(std::__1::vector<o2::framework::DataProcessorSpec, std::__1::allocator<o2::framework::DataProcessorSpec>>&, o2::framework::ConfigContext&)::$_10>, std::__1::function<void (o2::framework::ProcessingContext&)> (o2::framework::DeviceSpec const&)>::operator()(o2::framework::DeviceSpec const&)
+[8909:internal-dpl-aod-reader]:     4   libO2Framework.dylib                0x0000000105a51404: o2::framework::DataProcessingDevice::Init()
+[8909:internal-dpl-aod-reader]:     5   libfairmq.1.9.1.dylib               0x000000010758ecf4: fair::mq::Device::InitWrapper()
+[8909:internal-dpl-aod-reader]:     6   libfairmq.1.9.1.dylib               0x0000000107599b58: std::__1::__function::__func<fair::mq::Device::Device(fair::mq::ProgOptions*, fair::mq::tools::Version)::$_2, std::__1::allocator<fair::mq::Device::Device(fair::mq::ProgOptions*, fair::mq::tools::Version)::$_2>, void (fair::mq::State)>::operator()(fair::mq::State&&)
+[8909:internal-dpl-aod-reader]:     7   libfairmq.1.9.1.dylib               0x0000000107655c18: boost::detail::function::void_function_obj_invoker1<std::__1::function<void (fair::mq::State)>, void, fair::mq::State>::invoke(boost::detail::function::function_buffer&, fair::mq::State)
+[8909:internal-dpl-aod-reader]:     8   libfairmq.1.9.1.dylib               0x0000000107646cd4: boost::signals2::detail::slot_call_iterator_t<boost::signals2::detail::variadic_slot_invoker<boost::signals2::detail::void_type, fair::mq::Transition>, std::__1::__list_iterator<boost::shared_ptr<boost::signals2::detail::connection_body<std::__1::pair<boost::signals2::detail::slot_meta_group, boost::optional<int>>, boost::signals2::slot<void (fair::mq::Transition), boost::function<void (fair::mq::Transition)>>, boost::signals2::mutex>>, void*>, boost::signals2::detail::connection_body<std::__1::pair<boost::signals2::detail::slot_meta_group, boost::optional<int>>, boost::signals2::slot<void (fair::mq::Transition), boost::function<void (fair::mq::Transition)>>, boost::signals2::mutex>>::dereference() const
+[8909:internal-dpl-aod-reader]:     9   libfairmq.1.9.1.dylib               0x0000000107646a68: boost::signals2::detail::signal_impl<void (fair::mq::State), boost::signals2::optional_last_value<void>, int, std::__1::less<int>, boost::function<void (fair::mq::State)>, boost::function<void (boost::signals2::connection const&, fair::mq::State)>, boost::signals2::mutex>::operator()(fair::mq::State)
+[8909:internal-dpl-aod-reader]:     10  libfairmq.1.9.1.dylib               0x0000000107646670: fair::mq::fsm::Machine_::ProcessWork()
+[8909:internal-dpl-aod-reader]:     11  libfairmq.1.9.1.dylib               0x00000001076463a4: fair::mq::StateMachine::ProcessWork()
+[8909:internal-dpl-aod-reader]:     12  libfairmq.1.9.1.dylib               0x000000010759e20c: fair::mq::DeviceRunner::Run()
+[8909:internal-dpl-aod-reader]:     13  libO2Framework.dylib                0x0000000105bd50f0: doChild(int, char**, o2::framework::ServiceRegistry&, o2::framework::RunningWorkflowInfo const&, o2::framework::RunningDeviceRef, o2::framework::DriverConfig const&, o2::framework::ProcessingPolicies, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, uv_loop_s*)
+[8909:internal-dpl-aod-reader]:     14  libO2Framework.dylib                0x0000000105bde6c8: runStateMachine(std::__1::vector<o2::framework::DataProcessorSpec, std::__1::allocator<o2::framework::DataProcessorSpec>> const&, WorkflowInfo const&, std::__1::vector<o2::framework::DataProcessorInfo, std::__1::allocator<o2::framework::DataProcessorInfo>> const&, o2::framework::CommandInfo const&, o2::framework::DriverControl&, o2::framework::DriverInfo&, o2::framework::DriverConfig&, std::__1::vector<o2::framework::DeviceMetricsInfo, std::__1::allocator<o2::framework::DeviceMetricsInfo>>&, std::__1::vector<o2::framework::ConfigParamSpec, std::__1::allocator<o2::framework::ConfigParamSpec>> const&, boost::program_options::variables_map&, std::__1::vector<o2::framework::ServiceSpec, std::__1::allocator<o2::framework::ServiceSpec>>&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>>)
+[8909:internal-dpl-aod-reader]:     15  libO2Framework.dylib                0x0000000105beb210: doMain(int, char**, std::__1::vector<o2::framework::DataProcessorSpec, std::__1::allocator<o2::framework::DataProcessorSpec>> const&, std::__1::vector<o2::framework::ChannelConfigurationPolicy, std::__1::allocator<o2::framework::ChannelConfigurationPolicy>> const&, std::__1::vector<o2::framework::CompletionPolicy, std::__1::allocator<o2::framework::CompletionPolicy>> const&, std::__1::vector<o2::framework::DispatchPolicy, std::__1::allocator<o2::framework::DispatchPolicy>> const&, std::__1::vector<o2::framework::ResourcePolicy, std::__1::allocator<o2::framework::ResourcePolicy>> const&, std::__1::vector<o2::framework::CallbacksPolicy, std::__1::allocator<o2::framework::CallbacksPolicy>> const&, std::__1::vector<o2::framework::SendingPolicy, std::__1::allocator<o2::framework::SendingPolicy>> const&, std::__1::vector<o2::framework::ConfigParamSpec, std::__1::allocator<o2::framework::ConfigParamSpec>> const&, std::__1::vector<o2::framework::ConfigParamSpec, std::__1::allocator<o2::framework::ConfigParamSpec>> const&, o2::framework::ConfigContext&)
+[8909:internal-dpl-aod-reader]:     16  o2-analysis-je-jet-deriveddata-prod 0x000000010223399c: mainNoCatch(int, char**)
+[8909:internal-dpl-aod-reader]:     17  libO2Framework.dylib                0x0000000105bcf89c: callMain(int, char**, int (*)(int, char**))
+[8909:internal-dpl-aod-reader]:     18  o2-analysis-je-jet-deriveddata-prod 0x0000000102234bb4: main
+[8909:internal-dpl-aod-reader]:     19  dyld                                0x000000018bdd4274: start
+[8912:internal-dpl-aod-spawner]: [INFO] Instrumenting crash signals
+[8913:jet-deriveddata-producer]: [INFO] Instrumenting crash signals
+[8915:internal-dpl-aod-writer]: [INFO] Instrumenting crash signals
+[ERROR] Workflow crashed - PID 8909 (internal-dpl-aod-reader) did not exit correctly however it's not clear why. Exit code forced to 128.
+[INFO] QUIT_REQUESTED
+[ERROR] Workflow crashed - PID 8913 (jet-deriveddata-producer) was killed abnormally with Terminated: 15 and exited code was set to 143.
+[ERROR] Workflow crashed - PID 8912 (internal-dpl-aod-spawner) was killed abnormally with Terminated: 15 and exited code was set to 143.
+[ERROR] Workflow crashed - PID 8915 (internal-dpl-aod-writer) was killed abnormally with Terminated: 15 and exited code was set to 143.
+[8911:mctracks-to-aod]: [15:54:56][INFO] Received device shutdown request (signal 15).
+[8911:mctracks-to-aod]: [15:54:56][INFO] Waiting for graceful device shutdown. Hit Ctrl-C again to abort immediately.
+[8911:mctracks-to-aod]: [15:54:56][STATE] Transition COMPLETE INIT incoming, but another state transition is already ongoing.
+[8908:internal-dpl-clock]: [15:54:56][INFO] Received device shutdown request (signal 15).
+[8908:internal-dpl-clock]: [15:54:56][INFO] Waiting for graceful device shutdown. Hit Ctrl-C again to abort immediately.
+[8908:internal-dpl-clock]: [15:54:56][INFO] New state requested. No timeout set, quitting immediately as per --completion-policy
+[8910:generator-task]: [15:54:56][INFO] Received device shutdown request (signal 15).
+[8910:generator-task]: [15:54:56][INFO] Waiting for graceful device shutdown. Hit Ctrl-C again to abort immediately.
+[8910:generator-task]: [15:54:56][STATE] Transition COMPLETE INIT incoming, but another state transition is already ongoing.
+[8914:aod-consumer-test-task]: [15:54:56][INFO] Received device shutdown request (signal 15).
+[8914:aod-consumer-test-task]: [15:54:56][INFO] Waiting for graceful device shutdown. Hit Ctrl-C again to abort immediately.
+[8914:aod-consumer-test-task]: [15:54:56][INFO] New state requested. No timeout set, quitting immediately as per --completion-policy
+[8914:aod-consumer-test-task]: [15:54:56][STATE] RUNNING ---> READY
+[8914:aod-consumer-test-task]: [15:54:56][STATE] READY ---> RESETTING TASK
+[8914:aod-consumer-test-task]: [15:54:56][STATE] RESETTING TASK ---> DEVICE READY
+[8914:aod-consumer-test-task]: [15:54:56][STATE] DEVICE READY ---> RESETTING DEVICE
+[8916:internal-dpl-aod-global-analysis-file-sink]: [15:54:56][INFO] Received device shutdown request (signal 15).
+[8916:internal-dpl-aod-global-analysis-file-sink]: [15:54:56][INFO] Waiting for graceful device shutdown. Hit Ctrl-C again to abort immediately.
+[8917:internal-dpl-injected-dummy-sink]: [15:54:56][INFO] Received device shutdown request (signal 15).
+[8917:internal-dpl-injected-dummy-sink]: [15:54:56][INFO] Waiting for graceful device shutdown. Hit Ctrl-C again to abort immediately.
+[8916:internal-dpl-aod-global-analysis-file-sink]: [15:54:56][INFO] New state requested. No timeout set, quitting immediately as per --completion-policy
+[8917:internal-dpl-injected-dummy-sink]: [15:54:56][INFO] New state requested. No timeout set, quitting immediately as per --completion-policy
+[8916:internal-dpl-aod-global-analysis-file-sink]: [15:54:56][STATE] RUNNING ---> READY
+[8916:internal-dpl-aod-global-analysis-file-sink]: [15:54:56][STATE] READY ---> RESETTING TASK
+[8916:internal-dpl-aod-global-analysis-file-sink]: [15:54:56][STATE] RESETTING TASK ---> DEVICE READY
+[8916:internal-dpl-aod-global-analysis-file-sink]: [15:54:56][STATE] DEVICE READY ---> RESETTING DEVICE
+[8917:internal-dpl-injected-dummy-sink]: [15:54:56][STATE] RUNNING ---> READY
+[8917:internal-dpl-injected-dummy-sink]: [15:54:56][STATE] READY ---> RESETTING TASK
+[8917:internal-dpl-injected-dummy-sink]: [15:54:56][STATE] RESETTING TASK ---> DEVICE READY
+[8914:aod-consumer-test-task]: [15:54:56][STATE] RESETTING DEVICE ---> IDLE
+[8914:aod-consumer-test-task]: [15:54:56][STATE] IDLE ---> EXITING
+[8917:internal-dpl-injected-dummy-sink]: [15:54:56][STATE] DEVICE READY ---> RESETTING DEVICE
+[8914:aod-consumer-test-task]: [15:54:56][STATE] Exiting FairMQ state machine
+[8916:internal-dpl-aod-global-analysis-file-sink]: [15:54:56][STATE] RESETTING DEVICE ---> IDLE
+[8916:internal-dpl-aod-global-analysis-file-sink]: [15:54:56][STATE] IDLE ---> EXITING
+[8916:internal-dpl-aod-global-analysis-file-sink]: [15:54:56][STATE] Exiting FairMQ state machine
+[8917:internal-dpl-injected-dummy-sink]: [15:54:56][STATE] RESETTING DEVICE ---> IDLE
+[8917:internal-dpl-injected-dummy-sink]: [15:54:56][STATE] IDLE ---> EXITING
+[8917:internal-dpl-injected-dummy-sink]: [15:54:56][STATE] Exiting FairMQ state machine
+[8911:mctracks-to-aod]: [15:54:56][STATE] INITIALIZING DEVICE ---> INITIALIZED
+[8911:mctracks-to-aod]: [15:54:56][STATE] INITIALIZED ---> RESETTING DEVICE
+[8911:mctracks-to-aod]: [15:54:56][STATE] RESETTING DEVICE ---> IDLE
+[8911:mctracks-to-aod]: [15:54:56][STATE] IDLE ---> EXITING
+[8911:mctracks-to-aod]: [15:54:56][STATE] Exiting FairMQ state machine
+[8908:internal-dpl-clock]: [15:54:56][INFO] Sending end-of-stream message to channel from_internal-dpl-clock_to_internal-dpl-aod-reader
+[8908:internal-dpl-clock]: [15:54:56][INFO] Sending end-of-stream message to channel from_internal-dpl-clock_to_generator-task
+[8908:internal-dpl-clock]: [15:54:56][STATE] RUNNING ---> READY
+[8908:internal-dpl-clock]: [15:54:56][STATE] READY ---> RESETTING TASK
+[8908:internal-dpl-clock]: [15:54:56][STATE] RESETTING TASK ---> DEVICE READY
+[8908:internal-dpl-clock]: [15:54:56][STATE] DEVICE READY ---> RESETTING DEVICE
+[8908:internal-dpl-clock]: [15:54:56][INFO] Cleaning up for shared memory id '43a0537f'...
+[8908:internal-dpl-clock]: [15:54:56][INFO] Found 0 unmanaged regions...
+[8908:internal-dpl-clock]: [15:54:56][INFO] Found 1 managed segments...
+[8908:internal-dpl-clock]: [15:54:56][INFO] Successfully removed 'fmq_43a0537f_m_0'.
+[8908:internal-dpl-clock]: [15:54:56][INFO] Successfully removed 'fmq_43a0537f_mng'.
+[8908:internal-dpl-clock]: [15:54:56][STATE] RESETTING DEVICE ---> IDLE
+[8908:internal-dpl-clock]: [15:54:56][STATE] IDLE ---> EXITING
+[8908:internal-dpl-clock]: [15:54:56][STATE] Exiting FairMQ state machine
+[8910:generator-task]: [15:54:56][INFO] Running with official detector version 'ALICE2'
+[8910:generator-task]: Warning in <TDatabasePDG::AddParticle>: Particle with PDGcode=1000030040 already defined
+[8910:generator-task]: [15:54:56][INFO] ** Generator to use: 'pythia8pp'
+[8910:generator-task]: 
+[8910:generator-task]:  *------------------------------------------------------------------------------------* 
+[8910:generator-task]:  |                                                                                    | 
+[8910:generator-task]:  |  *------------------------------------------------------------------------------*  | 
+[8910:generator-task]:  |  |                                                                              |  | 
+[8910:generator-task]:  |  |                                                                              |  | 
+[8910:generator-task]:  |  |   PPP   Y   Y  TTTTT  H   H  III    A      Welcome to the Lund Monte Carlo!  |  | 
+[8910:generator-task]:  |  |   P  P   Y Y     T    H   H   I    A A     This is PYTHIA version 8.311      |  | 
+[8910:generator-task]:  |  |   PPP     Y      T    HHHHH   I   AAAAA    Last date of change:  8 Mar 2024  |  | 
+[8910:generator-task]:  |  |   P       Y      T    H   H   I   A   A                                      |  | 
+[8910:generator-task]:  |  |   P       Y      T    H   H  III  A   A    Now is 27 Mar 2025 at 15:54:56    |  | 
+[8910:generator-task]:  |  |                                                                              |  | 
+[8910:generator-task]:  |  |   Program documentation and an archive of historic versions is found on:     |  | 
+[8910:generator-task]:  |  |                                                                              |  | 
+[8910:generator-task]:  |  |                               https://pythia.org/                            |  | 
+[8910:generator-task]:  |  |                                                                              |  | 
+[8910:generator-task]:  |  |   PYTHIA is authored by a collaboration consisting of:                       |  | 
+[8910:generator-task]:  |  |                                                                              |  | 
+[8910:generator-task]:  |  |   Javira Altmann, Christian Bierlich, Naomi Cooke, Nishita Desai,            |  | 
+[8910:generator-task]:  |  |   Leif Gellersen, Ilkka Helenius, Philip Ilten, Leif Lonnblad,               |  | 
+[8910:generator-task]:  |  |   Stephen Mrenna, Christian Preuss, Torbjorn Sjostrand, Peter Skands,        |  | 
+[8910:generator-task]:  |  |   Marius Utheim, and Rob Verheyen.                                           |  | 
+[8910:generator-task]:  |  |                                                                              |  | 
+[8910:generator-task]:  |  |   The complete list of authors, including contact information and            |  | 
+[8910:generator-task]:  |  |   affiliations, can be found on https://pythia.org/.                         |  | 
+[8910:generator-task]:  |  |   Problems or bugs should be reported on email at authors@pythia.org.        |  | 
+[8910:generator-task]:  |  |                                                                              |  | 
+[8910:generator-task]:  |  |   The main program reference is C. Bierlich et al,                           |  | 
+[8910:generator-task]:  |  |   'A comprehensive guide to the physics and usage of Pythia 8.3',            |  | 
+[8910:generator-task]:  |  |   SciPost Phys. Codebases 8-r8.3 (2022) [arXiv:2203.11601 [hep-ph]]          |  | 
+[8910:generator-task]:  |  |                                                                              |  | 
+[8910:generator-task]:  |  |   PYTHIA is released under the GNU General Public Licence version 2 or later.|  | 
+[8910:generator-task]:  |  |   Please respect the MCnet Guidelines for Event Generator Authors and Users. |  | 
+[8910:generator-task]:  |  |                                                                              |  | 
+[8910:generator-task]:  |  |   Disclaimer: this program comes without any guarantees.                     |  | 
+[8910:generator-task]:  |  |   Beware of errors and use common sense when interpreting results.           |  | 
+[8910:generator-task]:  |  |                                                                              |  | 
+[8910:generator-task]:  |  |   Copyright (C) 2024 Torbjorn Sjostrand                                      |  | 
+[8910:generator-task]:  |  |                                                                              |  | 
+[8910:generator-task]:  |  |                                                                              |  | 
+[8910:generator-task]:  |  *------------------------------------------------------------------------------*  | 
+[8910:generator-task]:  |                                                                                    | 
+[8910:generator-task]:  *------------------------------------------------------------------------------------* 
+[8910:generator-task]: 
+[8910:generator-task]: [15:54:56][INFO] Instance 'Pythia8' generator with following parameters
+[8910:generator-task]: [15:54:56][INFO] config: /Users/millot/alice/sw/osx_arm64/O2/dev-local4/share/Generators/egconfig/pythia8_inel.cfg
+[8910:generator-task]: [15:54:56][INFO] hooksFileName: 
+[8910:generator-task]: [15:54:56][INFO] hooksFuncName: 
+[8910:generator-task]: [15:54:56][INFO] Setting 'Pythia8' base configuration: /Users/millot/alice/sw/osx_arm64/O2/dev-local4/share/Generators/egconfig/pythia8_inel.cfg
+[8910:generator-task]: 
+[8910:generator-task]: [15:54:56][INFO] Disabling vertexing
+[8910:generator-task]: [15:54:56][INFO] The mean vertex is set to :
+[8910:generator-task]: Vtx {+0.0000e+00,+0.0000e+00,+0.0000e+00} Cov.:{{0.000e+00..},{0.000e+00,0.000e+00..},{0.000e+00,0.000e+00,0.000e+00}} Slopes {+0.0000e+00,+0.0000e+00}
+[8910:generator-task]: [15:54:56][INFO] Initialising primary generator
+[8910:generator-task]: [15:54:56][INFO] GeneratorPythia8: Using random seed from gRandom % 900000001: 555249946
+[8910:generator-task]: [15:54:56][INFO] Reading configuration from file: /Users/millot/alice/sw/osx_arm64/O2/dev-local4/share/Generators/egconfig/pythia8_inel.cfg
+[8910:generator-task]: 
+[8910:generator-task]:  *-------  PYTHIA Process Initialization  --------------------------*
+[8910:generator-task]:  |                                                                  |
+[8910:generator-task]:  | We collide p+ with p+ at a CM energy of 1.400e+04 GeV            |
+[8910:generator-task]:  |                                                                  |
+[8910:generator-task]:  |------------------------------------------------------------------|
+[8910:generator-task]:  |                                                    |             |
+[8910:generator-task]:  | Subprocess                                    Code |   Estimated |
+[8910:generator-task]:  |                                                    |    max (mb) |
+[8910:generator-task]:  |                                                    |             |
+[8910:generator-task]:  |------------------------------------------------------------------|
+[8910:generator-task]:  |                                                    |             |
+[8910:generator-task]:  | non-diffractive                                101 |   5.717e+01 |
+[8910:generator-task]:  | A B -> X B single diffractive                  103 |   6.442e+00 |
+[8910:generator-task]:  | A B -> A X single diffractive                  104 |   6.442e+00 |
+[8910:generator-task]:  | A B -> X X double diffractive                  105 |   8.881e+00 |
+[8910:generator-task]:  | A B -> A X B central diffractive               106 |   0.000e+00 |
+[8910:generator-task]:  |                                                                  |
+[8910:generator-task]:  *-------  End PYTHIA Process Initialization -----------------------*
+[8910:generator-task]: 
+[8910:generator-task]:  *-------  PYTHIA Multiparton Interactions Initialization  ---------* 
+[8910:generator-task]:  |                                                                  | 
+[8910:generator-task]:  |                   sigmaNonDiffractive =    57.17 mb              | 
+[8910:generator-task]:  |                                                                  | 
+[8910:generator-task]:  |    pT0 =  2.65 gives sigmaInteraction =   327.37 mb: accepted    | 
+[8910:generator-task]:  |                                                                  | 
+[8910:generator-task]:  *-------  End PYTHIA Multiparton Interactions Initialization  -----* 
+[8910:generator-task]: 
+[8910:generator-task]:  *-------  PYTHIA Multiparton Interactions Initialization  ---------* 
+[8910:generator-task]:  |                                                                  | 
+[8910:generator-task]:  |   diffraction XB for p+ on p+                                    | 
+[8910:generator-task]:  |                                                                  | 
+[8910:generator-task]:  |   diffractive mass = 1.00e+01 GeV and sigmaNorm =    10.00 mb    | 
+[8910:generator-task]:  |    pT0 =  0.56 gives sigmaInteraction =    24.99 mb: accepted    | 
+[8910:generator-task]:  |   diffractive mass = 1.62e+01 GeV and sigmaNorm =    10.00 mb    | 
+[8910:generator-task]:  |    pT0 =  0.62 gives sigmaInteraction =    24.26 mb: accepted    | 
+[8910:generator-task]:  |   diffractive mass = 2.63e+01 GeV and sigmaNorm =    10.00 mb    | 
+[8910:generator-task]:  |    pT0 =  0.69 gives sigmaInteraction =    22.09 mb: accepted    | 
+[8910:generator-task]:  |   diffractive mass = 4.26e+01 GeV and sigmaNorm =    10.00 mb    | 
+[8910:generator-task]:  |    pT0 =  0.76 gives sigmaInteraction =    20.11 mb: accepted    | 
+[8910:generator-task]:  |   diffractive mass = 6.90e+01 GeV and sigmaNorm =    10.00 mb    | 
+[8910:generator-task]:  |    pT0 =  0.84 gives sigmaInteraction =    18.20 mb: accepted    | 
+[8910:generator-task]:  |   diffractive mass = 1.12e+02 GeV and sigmaNorm =    10.00 mb    | 
+[8910:generator-task]:  |    pT0 =  0.94 gives sigmaInteraction =    16.93 mb: accepted    | 
+[8910:generator-task]:  |   diffractive mass = 1.81e+02 GeV and sigmaNorm =    10.00 mb    | 
+[8910:generator-task]:  |    pT0 =  1.04 gives sigmaInteraction =    16.52 mb: accepted    | 
+[8910:generator-task]:  |   diffractive mass = 2.94e+02 GeV and sigmaNorm =    10.00 mb    | 
+[8910:generator-task]:  |    pT0 =  1.15 gives sigmaInteraction =    16.97 mb: accepted    | 
+[8910:generator-task]:  |   diffractive mass = 4.76e+02 GeV and sigmaNorm =    10.00 mb    | 
+[8910:generator-task]:  |    pT0 =  1.28 gives sigmaInteraction =    18.93 mb: accepted    | 
+[8910:generator-task]:  |   diffractive mass = 7.72e+02 GeV and sigmaNorm =    10.00 mb    | 
+[8910:generator-task]:  |    pT0 =  1.42 gives sigmaInteraction =    21.56 mb: accepted    | 
+[8910:generator-task]:  |   diffractive mass = 1.25e+03 GeV and sigmaNorm =    10.00 mb    | 
+[8910:generator-task]:  |    pT0 =  1.57 gives sigmaInteraction =    25.68 mb: accepted    | 
+[8910:generator-task]:  |   diffractive mass = 2.03e+03 GeV and sigmaNorm =    10.00 mb    | 
+[8910:generator-task]:  |    pT0 =  1.75 gives sigmaInteraction =    31.01 mb: accepted    | 
+[8910:generator-task]:  |   diffractive mass = 3.29e+03 GeV and sigmaNorm =    10.00 mb    | 
+[8910:generator-task]:  |    pT0 =  1.94 gives sigmaInteraction =    37.25 mb: accepted    | 
+[8910:generator-task]:  |   diffractive mass = 5.33e+03 GeV and sigmaNorm =    10.00 mb    | 
+[8910:generator-task]:  |    pT0 =  2.15 gives sigmaInteraction =    44.84 mb: accepted    | 
+[8910:generator-task]:  |   diffractive mass = 8.64e+03 GeV and sigmaNorm =    10.00 mb    | 
+[8910:generator-task]:  |    pT0 =  2.39 gives sigmaInteraction =    53.15 mb: accepted    | 
+[8910:generator-task]:  |   diffractive mass = 1.40e+04 GeV and sigmaNorm =    10.00 mb    | 
+[8910:generator-task]:  |    pT0 =  2.65 gives sigmaInteraction =    62.40 mb: accepted    | 
+[8910:generator-task]:  |                                                                  | 
+[8910:generator-task]:  *-------  End PYTHIA Multiparton Interactions Initialization  -----* 
+[8910:generator-task]:  PYTHIA Warning in MultipartonInteractions::init: maximum increased by factor 4.156
+[8910:generator-task]: 
+[8910:generator-task]:  *-------  PYTHIA Multiparton Interactions Initialization  ---------* 
+[8910:generator-task]:  |                                                                  | 
+[8910:generator-task]:  |   diffraction AX for p+ on p+                                    | 
+[8910:generator-task]:  |                                                                  | 
+[8910:generator-task]:  |   diffractive mass = 1.00e+01 GeV and sigmaNorm =    10.00 mb    | 
+[8910:generator-task]:  |    pT0 =  0.56 gives sigmaInteraction =    25.11 mb: accepted    | 
+[8910:generator-task]:  |   diffractive mass = 1.62e+01 GeV and sigmaNorm =    10.00 mb    | 
+[8910:generator-task]:  |    pT0 =  0.62 gives sigmaInteraction =    24.10 mb: accepted    | 
+[8910:generator-task]:  |   diffractive mass = 2.63e+01 GeV and sigmaNorm =    10.00 mb    | 
+[8910:generator-task]:  |    pT0 =  0.69 gives sigmaInteraction =    22.34 mb: accepted    | 
+[8910:generator-task]:  |   diffractive mass = 4.26e+01 GeV and sigmaNorm =    10.00 mb    | 
+[8910:generator-task]:  |    pT0 =  0.76 gives sigmaInteraction =    19.93 mb: accepted    | 
+[8910:generator-task]:  |   diffractive mass = 6.90e+01 GeV and sigmaNorm =    10.00 mb    | 
+[8910:generator-task]:  |    pT0 =  0.84 gives sigmaInteraction =    18.19 mb: accepted    | 
+[8910:generator-task]:  |   diffractive mass = 1.12e+02 GeV and sigmaNorm =    10.00 mb    | 
+[8910:generator-task]:  |    pT0 =  0.94 gives sigmaInteraction =    16.87 mb: accepted    | 
+[8910:generator-task]:  |   diffractive mass = 1.81e+02 GeV and sigmaNorm =    10.00 mb    | 
+[8910:generator-task]:  |    pT0 =  1.04 gives sigmaInteraction =    16.43 mb: accepted    | 
+[8910:generator-task]:  |   diffractive mass = 2.94e+02 GeV and sigmaNorm =    10.00 mb    | 
+[8910:generator-task]:  |    pT0 =  1.15 gives sigmaInteraction =    17.13 mb: accepted    | 
+[8910:generator-task]:  |   diffractive mass = 4.76e+02 GeV and sigmaNorm =    10.00 mb    | 
+[8910:generator-task]:  |    pT0 =  1.28 gives sigmaInteraction =    18.92 mb: accepted    | 
+[8910:generator-task]:  |   diffractive mass = 7.72e+02 GeV and sigmaNorm =    10.00 mb    | 
+[8910:generator-task]:  |    pT0 =  1.42 gives sigmaInteraction =    21.81 mb: accepted    | 
+[8910:generator-task]:  |   diffractive mass = 1.25e+03 GeV and sigmaNorm =    10.00 mb    | 
+[8910:generator-task]:  |    pT0 =  1.57 gives sigmaInteraction =    25.60 mb: accepted    | 
+[8910:generator-task]:  |   diffractive mass = 2.03e+03 GeV and sigmaNorm =    10.00 mb    | 
+[8910:generator-task]:  |    pT0 =  1.75 gives sigmaInteraction =    31.08 mb: accepted    | 
+[8910:generator-task]:  |   diffractive mass = 3.29e+03 GeV and sigmaNorm =    10.00 mb    | 
+[8910:generator-task]:  |    pT0 =  1.94 gives sigmaInteraction =    37.08 mb: accepted    | 
+[8910:generator-task]:  |   diffractive mass = 5.33e+03 GeV and sigmaNorm =    10.00 mb    | 
+[8910:generator-task]:  |    pT0 =  2.15 gives sigmaInteraction =    44.63 mb: accepted    | 
+[8910:generator-task]:  |   diffractive mass = 8.64e+03 GeV and sigmaNorm =    10.00 mb    | 
+[8910:generator-task]:  |    pT0 =  2.39 gives sigmaInteraction =    53.28 mb: accepted    | 
+[8910:generator-task]:  |   diffractive mass = 1.40e+04 GeV and sigmaNorm =    10.00 mb    | 
+[8910:generator-task]:  |    pT0 =  2.65 gives sigmaInteraction =    62.98 mb: accepted    | 
+[8910:generator-task]:  |                                                                  | 
+[8910:generator-task]:  *-------  End PYTHIA Multiparton Interactions Initialization  -----* 
+[8910:generator-task]: 
+[8910:generator-task]:  *-------  PYTHIA Multiparton Interactions Initialization  ---------* 
+[8910:generator-task]:  |                                                                  | 
+[8910:generator-task]:  |   diffraction AXB for p+ on p+                                   | 
+[8910:generator-task]:  |                                                                  | 
+[8910:generator-task]:  |   diffractive mass = 1.00e+01 GeV and sigmaNorm =    10.00 mb    | 
+[8910:generator-task]:  |    pT0 =  0.56 gives sigmaInteraction =     5.90 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  0.50 gives sigmaInteraction =     8.81 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  0.45 gives sigmaInteraction =    13.17 mb: accepted    | 
+[8910:generator-task]:  |   diffractive mass = 1.62e+01 GeV and sigmaNorm =    10.00 mb    | 
+[8910:generator-task]:  |    pT0 =  0.62 gives sigmaInteraction =     4.77 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  0.56 gives sigmaInteraction =     6.96 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  0.50 gives sigmaInteraction =    10.25 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  0.45 gives sigmaInteraction =    15.12 mb: accepted    | 
+[8910:generator-task]:  |   diffractive mass = 2.63e+01 GeV and sigmaNorm =    10.00 mb    | 
+[8910:generator-task]:  |    pT0 =  0.69 gives sigmaInteraction =     3.84 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  0.62 gives sigmaInteraction =     5.46 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  0.56 gives sigmaInteraction =     7.79 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  0.50 gives sigmaInteraction =    11.37 mb: accepted    | 
+[8910:generator-task]:  |   diffractive mass = 4.26e+01 GeV and sigmaNorm =    10.00 mb    | 
+[8910:generator-task]:  |    pT0 =  0.76 gives sigmaInteraction =     3.14 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  0.69 gives sigmaInteraction =     4.36 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  0.62 gives sigmaInteraction =     6.06 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  0.55 gives sigmaInteraction =     8.65 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  0.50 gives sigmaInteraction =    12.26 mb: accepted    | 
+[8910:generator-task]:  |   diffractive mass = 6.90e+01 GeV and sigmaNorm =    10.00 mb    | 
+[8910:generator-task]:  |    pT0 =  0.84 gives sigmaInteraction =     2.71 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  0.76 gives sigmaInteraction =     3.64 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  0.68 gives sigmaInteraction =     4.85 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  0.62 gives sigmaInteraction =     6.69 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  0.55 gives sigmaInteraction =     9.33 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  0.50 gives sigmaInteraction =    13.11 mb: accepted    | 
+[8910:generator-task]:  |   diffractive mass = 1.12e+02 GeV and sigmaNorm =    10.00 mb    | 
+[8910:generator-task]:  |    pT0 =  0.94 gives sigmaInteraction =     2.50 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  0.84 gives sigmaInteraction =     3.23 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  0.76 gives sigmaInteraction =     4.21 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  0.68 gives sigmaInteraction =     5.57 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  0.61 gives sigmaInteraction =     7.41 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  0.55 gives sigmaInteraction =    10.15 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  0.50 gives sigmaInteraction =    13.89 mb: accepted    | 
+[8910:generator-task]:  |   diffractive mass = 1.81e+02 GeV and sigmaNorm =    10.00 mb    | 
+[8910:generator-task]:  |    pT0 =  1.04 gives sigmaInteraction =     2.55 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  0.94 gives sigmaInteraction =     3.13 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  0.84 gives sigmaInteraction =     3.92 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  0.76 gives sigmaInteraction =     4.99 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  0.68 gives sigmaInteraction =     6.41 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  0.61 gives sigmaInteraction =     8.33 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  0.55 gives sigmaInteraction =    11.21 mb: accepted    | 
+[8910:generator-task]:  |   diffractive mass = 2.94e+02 GeV and sigmaNorm =    10.00 mb    | 
+[8910:generator-task]:  |    pT0 =  1.15 gives sigmaInteraction =     2.75 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  1.04 gives sigmaInteraction =     3.33 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  0.93 gives sigmaInteraction =     4.01 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  0.84 gives sigmaInteraction =     4.86 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  0.76 gives sigmaInteraction =     5.95 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  0.68 gives sigmaInteraction =     7.43 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  0.61 gives sigmaInteraction =     9.50 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  0.55 gives sigmaInteraction =    12.24 mb: accepted    | 
+[8910:generator-task]:  |   diffractive mass = 4.76e+02 GeV and sigmaNorm =    10.00 mb    | 
+[8910:generator-task]:  |    pT0 =  1.28 gives sigmaInteraction =     3.09 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  1.15 gives sigmaInteraction =     3.66 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  1.04 gives sigmaInteraction =     4.36 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  0.93 gives sigmaInteraction =     5.12 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  0.84 gives sigmaInteraction =     6.15 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  0.76 gives sigmaInteraction =     7.24 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  0.68 gives sigmaInteraction =     8.87 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  0.61 gives sigmaInteraction =    10.94 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  0.55 gives sigmaInteraction =    13.68 mb: accepted    | 
+[8910:generator-task]:  |   diffractive mass = 7.72e+02 GeV and sigmaNorm =    10.00 mb    | 
+[8910:generator-task]:  |    pT0 =  1.42 gives sigmaInteraction =     3.60 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  1.28 gives sigmaInteraction =     4.23 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  1.15 gives sigmaInteraction =     4.86 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  1.03 gives sigmaInteraction =     5.65 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  0.93 gives sigmaInteraction =     6.56 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  0.84 gives sigmaInteraction =     7.72 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  0.75 gives sigmaInteraction =     8.99 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  0.68 gives sigmaInteraction =    10.69 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  0.61 gives sigmaInteraction =    12.92 mb: accepted    | 
+[8910:generator-task]:  |   diffractive mass = 1.25e+03 GeV and sigmaNorm =    10.00 mb    | 
+[8910:generator-task]:  |    pT0 =  1.57 gives sigmaInteraction =     4.10 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  1.42 gives sigmaInteraction =     4.80 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  1.28 gives sigmaInteraction =     5.63 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  1.15 gives sigmaInteraction =     6.44 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  1.03 gives sigmaInteraction =     7.39 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  0.93 gives sigmaInteraction =     8.37 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  0.84 gives sigmaInteraction =     9.61 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  0.75 gives sigmaInteraction =    11.03 mb: accepted    | 
+[8910:generator-task]:  |   diffractive mass = 2.03e+03 GeV and sigmaNorm =    10.00 mb    | 
+[8910:generator-task]:  |    pT0 =  1.75 gives sigmaInteraction =     4.73 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  1.57 gives sigmaInteraction =     5.57 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  1.42 gives sigmaInteraction =     6.36 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  1.27 gives sigmaInteraction =     7.39 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  1.15 gives sigmaInteraction =     8.36 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  1.03 gives sigmaInteraction =     9.39 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  0.93 gives sigmaInteraction =    10.74 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  0.84 gives sigmaInteraction =    12.02 mb: accepted    | 
+[8910:generator-task]:  |   diffractive mass = 3.29e+03 GeV and sigmaNorm =    10.00 mb    | 
+[8910:generator-task]:  |    pT0 =  1.94 gives sigmaInteraction =     5.36 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  1.74 gives sigmaInteraction =     6.22 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  1.57 gives sigmaInteraction =     7.22 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  1.41 gives sigmaInteraction =     8.33 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  1.27 gives sigmaInteraction =     9.42 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  1.14 gives sigmaInteraction =    10.59 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  1.03 gives sigmaInteraction =    11.95 mb: accepted    | 
+[8910:generator-task]:  |   diffractive mass = 5.33e+03 GeV and sigmaNorm =    10.00 mb    | 
+[8910:generator-task]:  |    pT0 =  2.15 gives sigmaInteraction =     6.04 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  1.94 gives sigmaInteraction =     7.12 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  1.74 gives sigmaInteraction =     8.24 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  1.57 gives sigmaInteraction =     9.38 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  1.41 gives sigmaInteraction =    10.74 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  1.27 gives sigmaInteraction =    12.06 mb: accepted    | 
+[8910:generator-task]:  |   diffractive mass = 8.64e+03 GeV and sigmaNorm =    10.00 mb    | 
+[8910:generator-task]:  |    pT0 =  2.39 gives sigmaInteraction =     6.74 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  2.15 gives sigmaInteraction =     7.81 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  1.93 gives sigmaInteraction =     9.24 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  1.74 gives sigmaInteraction =    10.42 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  1.57 gives sigmaInteraction =    12.06 mb: accepted    | 
+[8910:generator-task]:  |   diffractive mass = 1.40e+04 GeV and sigmaNorm =    10.00 mb    | 
+[8910:generator-task]:  |    pT0 =  2.65 gives sigmaInteraction =     7.18 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  2.38 gives sigmaInteraction =     8.63 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  2.14 gives sigmaInteraction =    10.08 mb: rejected    | 
+[8910:generator-task]:  |    pT0 =  1.93 gives sigmaInteraction =    11.57 mb: accepted    | 
+[8910:generator-task]:  |                                                                  | 
+[8910:generator-task]:  *-------  End PYTHIA Multiparton Interactions Initialization  -----* 
+[8910:generator-task]: 
+[8910:generator-task]:  *-------  PYTHIA Flag + Mode + Parm + Word + FVec + MVec + PVec + WVec Settings (changes only)  ------------------* 
+[8910:generator-task]:  |                                                                                                                 | 
+[8910:generator-task]:  | Name                                          |                      Now |      Default         Min         Max | 
+[8910:generator-task]:  |                                               |                          |                                      | 
+[8910:generator-task]:  | ParticleDecays:limitTau0                      |                       on |          off                         | 
+[8910:generator-task]:  | Random:seed                                   |                555249946 |           -1               900000000 | 
+[8910:generator-task]:  | Random:setSeed                                |                       on |          off                         | 
+[8910:generator-task]:  | SoftQCD:inelastic                             |                       on |          off                         | 
+[8910:generator-task]:  |                                                                                                                 | 
+[8910:generator-task]:  *-------  End PYTHIA Flag + Mode + Parm + Word + FVec + MVec + PVec + WVec Settings  -----------------------------* 
+[8910:generator-task]: 
+[8910:generator-task]:  --------  PYTHIA Particle Data Table (changed only)  ------------------------------------------------------------------------------
+[8910:generator-task]:  
+[8910:generator-task]:       id   name            antiName         spn chg col      m0        mWidth      mMin       mMax       tau0    res dec ext vis wid
+[8910:generator-task]:              no onMode   bRatio   meMode     products 
+[8910:generator-task]: 
+[8910:generator-task]:  no particle data has been changed from its default value 
+[8910:generator-task]: 
+[8910:generator-task]:  --------  End PYTHIA Particle Data Table  -----------------------------------------------------------------------------------------
+[8910:generator-task]: 
+[8910:generator-task]: [15:55:05][STATE] INITIALIZING DEVICE ---> INITIALIZED
+[8910:generator-task]: [15:55:05][STATE] INITIALIZED ---> RESETTING DEVICE
+[8910:generator-task]: [15:55:05][INFO] Cleaning up for shared memory id '43a0537f'...
+[8910:generator-task]: [15:55:05][INFO] Found 0 unmanaged regions...
+[8910:generator-task]: [15:55:05][INFO] Found 1 managed segments...
+[8910:generator-task]: [15:55:05][INFO] Successfully removed 'fmq_43a0537f_m_0'.
+[8910:generator-task]: [15:55:05][INFO] Successfully removed 'fmq_43a0537f_mng'.
+[8910:generator-task]: [15:55:05][STATE] RESETTING DEVICE ---> IDLE
+[8910:generator-task]: [15:55:05][STATE] IDLE ---> EXITING
+[8910:generator-task]: [15:55:05][STATE] Exiting FairMQ state machine
+[INFO] ## Processes completed. Run summary:
+[INFO] ### Devices started: 10
+[INFO]  - Device internal-dpl-clock: pid 8908 (exit 0)
+[ERROR]  - Device internal-dpl-aod-reader: pid 8909 (exit 128)
+[INFO]    - First error: [15:54:56][FATAL] Stopping.
+[INFO]    - Last error:     19  dyld                                0x000000018bdd4274: start
+[INFO]  - Device generator-task: pid 8910 (exit 0)
+[INFO]  - Device mctracks-to-aod: pid 8911 (exit 0)
+[ERROR]  - Device internal-dpl-aod-spawner: pid 8912 (exit 143)
+[ERROR]  - Device jet-deriveddata-producer: pid 8913 (exit 143)
+[INFO]  - Device aod-consumer-test-task: pid 8914 (exit 0)
+[ERROR]  - Device internal-dpl-aod-writer: pid 8915 (exit 143)
+[INFO]  - Device internal-dpl-aod-global-analysis-file-sink: pid 8916 (exit 0)
+[INFO]  - Device internal-dpl-injected-dummy-sink: pid 8917 (exit 0)
+[INFO] ## Analysis Run Summary ##
+[INFO] Dumping used configuration in dpl-config.json
+[ERROR] SEVERE: Device internal-dpl-aod-reader (8909) had at least one message above severity 7: Stopping.

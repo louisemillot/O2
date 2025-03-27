@@ -28,6 +28,7 @@ struct AodConsumerTestTask {
     registry.add<TH1>("phi", "phi", HistType::kTH1F, {{100, 0, 2 * PI}}, false);
     registry.add<TH1>("eta", "eta", HistType::kTH1F, {{100, -5, 5}}, false);
     registry.add<TH1>("pt", "pt", HistType::kTH1F, {{100, 0, 5}}, false);
+    registry.add<TH1>("px", "px", HistType::kTH1F, {{100, 0, 5}}, false);
   }
 
   void process(aod::McCollision const&, aod::McParticles const& mcParticles)
@@ -37,6 +38,7 @@ struct AodConsumerTestTask {
       registry.fill(HIST("pt"), mcparticle.pt());
       registry.fill(HIST("eta"), mcparticle.eta());
       registry.fill(HIST("phi"), mcparticle.phi());
+      registry.fill(HIST("px"), mcparticle.px());
     }
   }
 };

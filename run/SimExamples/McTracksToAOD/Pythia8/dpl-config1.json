@@ -1,0 +1,30 @@
+{
+    "internal-dpl-clock": "",
+    "generator-task": {
+        "generator": "pythia8pp",
+        "nEvents": "1000",
+        "trigger": "",
+        "configFile": "",
+        "configKeyValues": "",
+        "seed": "0",
+        "aggregate-timeframe": "10",
+        "vertexMode": "kNoVertex",
+        "time-limit": "-1",
+        "output": "",
+        "orbit-offset-enumeration": "0",
+        "orbit-multiplier-enumeration": "0",
+        "start-value-enumeration": "0",
+        "end-value-enumeration": "-1",
+        "step-value-enumeration": "1"
+    },
+    "mctracks-to-aod": {
+        "interaction-rate": "100",
+        "filter-mctracks": "false",
+        "tf-offset": "0"
+    },
+    "internal-dpl-aod-writer": "",
+    "internal-dpl-aod-spawner": "",
+    "aod-consumer-test-task": "",
+    "internal-dpl-aod-global-analysis-file-sink": "",
+    "internal-dpl-injected-dummy-sink": ""
+}
